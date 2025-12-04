@@ -11,7 +11,9 @@ import IntroOverlay from './ui/IntroOverlay';
 import Chatbot from './components/Chatbot';
 import SnakeGame from './components/SnakeGame';
 import ResistanceUplinkForm from './ui/ResistanceUplinkForm';
+import { RefurbishmentMiniGameOverlay } from './components/RefurbishmentMiniGames';
 import useGameStore from './core/GameStateContext';
+import useRefurbishmentStore from './core/RefurbishmentGameState';
 
 /**
  * Main App Component
@@ -28,6 +30,9 @@ function App() {
     completePuzzle,
     goToHallway
   } = useGameStore();
+  
+  // Refurbishment game state
+  const { activeMiniGame } = useRefurbishmentStore();
 
   // Simulate asset loading
   useEffect(() => {
@@ -85,6 +90,9 @@ function App() {
       {/* Resistance Uplink Form Overlay */}
       <ResistanceUplinkForm />
 
+      {/* Refurbishment Mini-Game Overlay */}
+      <RefurbishmentMiniGameOverlay />
+
       {/* Controls Instructions */}
       <div style={{
         position: 'fixed',
@@ -115,8 +123,8 @@ function App() {
         }}
         dpr={[1, 2]}
       >
-        {/* Camera Controller - Disable movement when chatbot or snake game is open */}
-        <CameraController disableMovement={isChatbotOpen || isSnakeGameOpen} />
+        {/* Camera Controller - Disable movement when overlays are open */}
+        <CameraController disableMovement={isChatbotOpen || isSnakeGameOpen || !!activeMiniGame} />
 
         {/* Environment & Lighting */}
         <Environment scene={getEnvironmentScene()} />
