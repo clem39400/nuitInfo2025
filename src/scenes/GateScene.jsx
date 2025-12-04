@@ -15,7 +15,7 @@ import { useFrame } from '@react-three/fiber';
  * - Chatbot component should be placed inside <HologramEffect> at position [0, 1.2, -2]
  * - Snake game triggers via completePuzzle('gate')
  */
-function GateScene({ onOpenChatbot }) {
+function GateScene({ onOpenChatbot, isChatbotOpen }) {
   const { completePuzzle, goToHallway } = useGameStore();
   const hologramRef = useRef();
 

@@ -32,6 +32,12 @@ const useGameStore = create((set) => ({
     isTransitioning: false
   }),
 
+  goToGate: () => set({
+    currentPhase: 'gate',
+    currentRoom: null,
+    isTransitioning: false
+  }),
+
   enterRoom: (roomId) => set({
     currentPhase: 'room',
     currentRoom: roomId,
@@ -47,6 +53,11 @@ const useGameStore = create((set) => ({
   setTransitioning: (value) => set({ isTransitioning: value }),
 
   setSnakeGameOpen: (isOpen) => set({ isSnakeGameOpen: isOpen }),
+
+  // NIRD Form State
+  showNIRDForm: false,
+  openNIRDForm: () => set({ showNIRDForm: true }),
+  closeNIRDForm: () => set({ showNIRDForm: false }),
 
   completePuzzle: (puzzleId) => set((state) => ({
     completedPuzzles: {

@@ -10,6 +10,7 @@ import HUD from './ui/HUD';
 import IntroOverlay from './ui/IntroOverlay';
 import Chatbot from './components/Chatbot';
 import SnakeGame from './components/SnakeGame';
+import ResistanceUplinkForm from './ui/ResistanceUplinkForm';
 import useGameStore from './core/GameStateContext';
 
 /**
@@ -81,6 +82,9 @@ function App() {
         />
       )}
 
+      {/* Resistance Uplink Form Overlay */}
+      <ResistanceUplinkForm />
+
       {/* Controls Instructions */}
       <div style={{
         position: 'fixed',
@@ -119,11 +123,14 @@ function App() {
 
         {/* Scene Content - Pass chatbot handler */}
         <Suspense fallback={null}>
-          <SceneManager onOpenChatbot={() => setIsChatbotOpen(true)} />
+          <SceneManager
+            onOpenChatbot={() => setIsChatbotOpen(true)}
+            isChatbotOpen={isChatbotOpen}
+          />
         </Suspense>
 
-        {/* Post-Processing Effects - Disabled during Snake Game for performance */}
-        {!isSnakeGameOpen && <PostProcessing bloomIntensity={0.6} />}
+        {/* Post-Processing Effects - Disabled during Snake Game or Chatbot for performance */}
+        {(!isSnakeGameOpen && !isChatbotOpen) && <PostProcessing bloomIntensity={0.6} />}
 
         {/* Preload assets */}
         <Preload all />
