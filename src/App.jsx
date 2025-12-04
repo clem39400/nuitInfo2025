@@ -11,6 +11,7 @@ import IntroOverlay from './ui/IntroOverlay';
 import Chatbot from './components/Chatbot';
 import SnakeGame from './components/SnakeGame';
 import ResistanceUplinkForm from './ui/ResistanceUplinkForm';
+import LinuxTerminalGame from './components/LinuxTerminalGame';
 import { RefurbishmentMiniGameOverlay } from './components/RefurbishmentMiniGames';
 import useGameStore from './core/GameStateContext';
 import useRefurbishmentStore from './core/RefurbishmentGameState';
@@ -28,7 +29,9 @@ function App() {
     isSnakeGameOpen,
     setSnakeGameOpen,
     completePuzzle,
-    goToHallway
+    goToHallway,
+    showNIRDForm,
+    showLinuxGame
   } = useGameStore();
   
   // Refurbishment game state
@@ -88,6 +91,10 @@ function App() {
       )}
 
       {/* Resistance Uplink Form Overlay */}
+      {showNIRDForm && <ResistanceUplinkForm />}
+
+      {/* Linux Terminal Game Overlay */}
+      {showLinuxGame && <LinuxTerminalGame />}
       <ResistanceUplinkForm />
 
       {/* Refurbishment Mini-Game Overlay */}

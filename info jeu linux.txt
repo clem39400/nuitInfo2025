@@ -1,0 +1,63 @@
+===================================================
+DOCUMENT DE CONCEPTION DU PROJET REACT3D
+QUÊTE : LE NEXUS CONNECTÉ : L'ÉCHO PERSONNALISÉ (NUIT DE L'INFO 2025)
+===================================================
+
+## I. Résumé des Objectifs Principaux
+
+* **Titre du Projet :** Le Nexus Connecté : L'Écho Personnalisé (Nuit de l'Info 2025).
+* **Technologie :** Application en **React3D** (React Three Fiber) pour une interface immersive.
+* **Objectif Général :** Concevoir une expérience utilisateur augmentée (Formulaire Dynamique + Mini-Jeu) pour renforcer la communication et l'engagement des "Soutiens Essentiels".
+
+---
+
+## II. Le "Portail d'Intention" (Formulaire Augmenté)
+
+### A. Spécifications Clés
+
+| Élément | Description | Détail de la Personnalisation |
+| :--- | :--- | :--- |
+| **Missions (Voies)** | 4 options : Contact 📞, Don 💰, Bénévolat 🛡️, Informations ❓. | Les champs s'adaptent dynamiquement à la sélection de l'utilisateur. |
+| **Sécurité/Accessibilité** | HTTPS, Protection Anti-Spam, Validation des Données, Responsive Design. | Le portail doit être universellement accessible et sécurisé. |
+| **Intégration 3D** | Remplacement des sélecteurs statiques par des composants 3D interactifs (ex: **Tétraèdres de Mission**, **Cristal de Ressource** pour le don). | Améliore l'UX et l'Innovation (Critère : 20 pts). |
+
+### B. "L'Écho de Gratitude" (Confirmation Thématique)
+
+* **Nombre de Scénarios Uniques :** 10 cas distincts (basés sur Mission, Nom fourni, et Type de Don).
+* **Filtre Temporel 2025 :** Chaque message de confirmation intègre l'**Année 2025** et un **Objectif Thématique** pour ancrer le soutien dans le cycle actuel :
+    * **Projets 2025 Thématiques :** 'Projet de la Citadelle Sécurisée' (pour les dons), 'Réseau Astral' (pour le bénévolat), 'Codex du Nexus' (pour l'information).
+
+---
+
+## III. Le Mini-Jeu : "Le Baptême du Terminal : Linux Express" 🐧
+
+### A. Objectif du Jeu
+
+* **Démystification :** Montrer que l'installation d'un environnement Linux peut être rapide et accessible (contrairement aux idées reçues de complexité).
+* **Contexte :** Simuler, dans un environnement 3D, l'installation d'une distribution Linux légère sur un terminal Windows (via WSL simulé).
+* **Fin du Jeu :** L'installation de Linux est considérée comme réussie, l'utilisateur est un "Chevalier du Code" prêt pour 2025.
+
+### B. Scène 3D et Guide
+
+* **Environnement :** Poste de Travail 3D avec ambiance "Hacker/Nexus".
+* **Terminal :** Composant interactif superposé sur l'écran 3D, acceptant des commandes spécifiques.
+* **Aide Utilisateur :** Un modèle 3D de **Carnet/Post-it** qui, au clic, révèle la prochaine commande à saisir.
+
+### C. Script des Commandes Simulées (Linux Express 2025)
+
+La séquence de commandes est courte et symbolique, visant la rapidité d'exécution. Les temps d'attente simulent le chargement et la vérification.
+
+| Étape | Commande à Saisir (par l'utilisateur) | Réponse du Terminal (Simulation) | Temps (simulé) |
+| :--- | :--- | :--- | :--- |
+| **0. Préparation** | `wsl --install` | `Windows Subsystem for Linux (WSL) est activé... Redémarrage virtuel requis.` | Auto |
+| **1. Connexion** | `wsl -d NuitInfoDistro` | `Connexion au serveur du Nexus 🌐...` | 1s |
+| **2. Mise à jour** | `apt update && apt upgrade` | `[#####] 12% – Récupération des paquets de l'Éther...` <br> `[###################] 100% – Synchronisation réussie.` | 3s |
+| **3. Installation** | `install linux-express-2025` | `Téléchargement du noyau 'Axolotl' 🦎... [0.5%]` <br> `Installation des ressources de la Guilde... [45%]` | **4s** |
+| **4. Nettoyage** | `clean --cache` | `Nettoyage des fichiers temporaires... OK.` | 1s |
+| **5. Vérification** | `uname -a` | `Linux NuitInfoDistro 5.15-express #1 SMP [Année 2025]` | 1s |
+| **6. Fin** | `exit` | `Déconnexion du Nexus. Installation Linux Express 2025 ✅. Succès.` | (Fin du Jeu) |
+
+### D. Conclusion du Mini-Jeu
+
+* Le jeu se termine avec l'affichage du logo Linux et un message de succès thématique confirmant la préparation pour l'année **2025**.
+* Ce mini-jeu contribue fortement aux critères **Innovation/Originalité** et **UX intuitive et efficace**.
