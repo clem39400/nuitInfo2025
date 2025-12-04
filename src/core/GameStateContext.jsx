@@ -7,13 +7,13 @@ import { create } from 'zustand';
 const useGameStore = create((set) => ({
   // Current phase of the game
   currentPhase: 'gate', // 'gate' | 'hallway' | 'room'
-  
+
   // Current room if in room phase
   currentRoom: null, // null | 'lab' | 'server' | 'office'
-  
+
   // Transition state
   isTransitioning: false,
-  
+
   // Puzzle completion tracking
   completedPuzzles: {
     gate: false,
@@ -21,35 +21,40 @@ const useGameStore = create((set) => ({
     server: false,
     office: false,
   },
-  
+
+  // UI State
+  isSnakeGameOpen: false,
+
   // Actions
-  goToHallway: () => set({ 
-    currentPhase: 'hallway', 
+  goToHallway: () => set({
+    currentPhase: 'hallway',
     currentRoom: null,
-    isTransitioning: false 
+    isTransitioning: false
   }),
-  
-  enterRoom: (roomId) => set({ 
-    currentPhase: 'room', 
+
+  enterRoom: (roomId) => set({
+    currentPhase: 'room',
     currentRoom: roomId,
-    isTransitioning: false 
+    isTransitioning: false
   }),
-  
-  exitRoom: () => set({ 
-    currentPhase: 'hallway', 
+
+  exitRoom: () => set({
+    currentPhase: 'hallway',
     currentRoom: null,
-    isTransitioning: false 
+    isTransitioning: false
   }),
-  
+
   setTransitioning: (value) => set({ isTransitioning: value }),
-  
+
+  setSnakeGameOpen: (isOpen) => set({ isSnakeGameOpen: isOpen }),
+
   completePuzzle: (puzzleId) => set((state) => ({
     completedPuzzles: {
       ...state.completedPuzzles,
       [puzzleId]: true,
     },
   })),
-  
+
   // Debug: reset game state
   reset: () => set({
     currentPhase: 'gate',
@@ -61,6 +66,7 @@ const useGameStore = create((set) => ({
       server: false,
       office: false,
     },
+    isSnakeGameOpen: false,
   }),
 }));
 

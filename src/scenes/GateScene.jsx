@@ -2,6 +2,7 @@ import MatrixRain, { RainEffect } from '../effects/MatrixRain';
 import { HologramEffect, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
 import useGameStore from '../core/GameStateContext';
+import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -36,18 +37,17 @@ function GateScene({ onOpenChatbot }) {
     e.stopPropagation();
     if (onOpenChatbot) onOpenChatbot();
   };
-
   return (
     <group>
       {/* Matrix rain effect - dramatic falling code */}
       <MatrixRain count={600} spread={40} />
-      
+
       {/* Real rain effect */}
       <RainEffect count={800} spread={35} />
-      
+
       {/* Floating dust particles */}
       <DustParticles count={50} spread={15} color="#00ff88" />
-      
+
       {/* Main reflective wet ground - larger and more visible */}
       <ReflectiveFloor
         position={[0, 0, 0]}
@@ -57,7 +57,7 @@ function GateScene({ onOpenChatbot }) {
         metalness={0.95}
         mirror={0.8}
       />
-      
+
       {/* Grass/lawn area boundary markers */}
       {/* Left side boundary */}
       <mesh position={[-10, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -67,7 +67,7 @@ function GateScene({ onOpenChatbot }) {
           roughness={0.95}
         />
       </mesh>
-      
+
       {/* Right side boundary */}
       <mesh position={[10, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[5, 40]} />
@@ -76,7 +76,7 @@ function GateScene({ onOpenChatbot }) {
           roughness={0.95}
         />
       </mesh>
-      
+
       {/* School building facade - makes it look like an actual school */}
       <group position={[0, 0, -15]}>
         {/* Main school building wall */}
@@ -87,7 +87,7 @@ function GateScene({ onOpenChatbot }) {
             roughness={0.8}
           />
         </mesh>
-        
+
         {/* Building windows */}
         {Array.from({ length: 8 }).map((_, i) => (
           <group key={i} position={[-10 + i * 2.8, 4.5, 0.3]}>
@@ -104,7 +104,7 @@ function GateScene({ onOpenChatbot }) {
             <pointLight position={[0, 0, 0.5]} intensity={0.2} color="#ffcc66" distance={3} />
           </group>
         ))}
-        
+
         {/* School name sign on building */}
         <group position={[0, 7.5, 0.3]}>
           <mesh>
@@ -125,14 +125,14 @@ function GateScene({ onOpenChatbot }) {
             />
           </mesh>
         </group>
-        
+
         {/* Roof */}
         <mesh position={[0, 8.2, -0.3]} castShadow>
           <boxGeometry args={[25, 0.3, 1]} />
           <meshStandardMaterial color="#2a2a35" />
         </mesh>
       </group>
-      
+
       {/* School entrance gate - more traditional style */}
       <group position={[0, 0, -10]}>
         {/* Gate pillars - brick/stone style */}
@@ -146,7 +146,7 @@ function GateScene({ onOpenChatbot }) {
                 roughness={0.9}
               />
             </mesh>
-            
+
             {/* Stone cap */}
             <mesh position={[0, 3.7, 0]} castShadow>
               <boxGeometry args={[1, 0.3, 1]} />
@@ -155,7 +155,7 @@ function GateScene({ onOpenChatbot }) {
                 roughness={0.7}
               />
             </mesh>
-            
+
             {/* Small lamp on pillar */}
             <group position={[0, 3, x > 0 ? -0.5 : 0.5]}>
               <mesh castShadow>
@@ -166,7 +166,7 @@ function GateScene({ onOpenChatbot }) {
             </group>
           </group>
         ))}
-        
+
         {/* Iron gate bars */}
         <group>
           {/* Horizontal bars */}
@@ -178,7 +178,7 @@ function GateScene({ onOpenChatbot }) {
             <boxGeometry args={[7, 0.08, 0.08]} />
             <meshStandardMaterial color="#1a1a1a" metalness={0.8} />
           </mesh>
-          
+
           {/* Vertical bars */}
           {Array.from({ length: 11 }).map((_, i) => (
             <mesh key={i} position={[-3 + i * 0.6, 1.8, 0]} castShadow>
@@ -190,7 +190,7 @@ function GateScene({ onOpenChatbot }) {
               />
             </mesh>
           ))}
-          
+
           {/* Decorative top spikes */}
           {Array.from({ length: 11 }).map((_, i) => (
             <mesh key={i} position={[-3 + i * 0.6, 3.3, 0]} castShadow>
@@ -199,7 +199,7 @@ function GateScene({ onOpenChatbot }) {
             </mesh>
           ))}
         </group>
-        
+
         {/* Gate lock - glowing to indicate chatbot interaction point */}
         <mesh position={[2, 1.5, 0.1]}>
           <boxGeometry args={[0.2, 0.3, 0.15]} />
@@ -211,7 +211,7 @@ function GateScene({ onOpenChatbot }) {
           />
         </mesh>
       </group>
-      
+
       {/* Sidewalk/pavement leading to gate */}
       <group position={[0, 0.01, -5]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
@@ -221,7 +221,7 @@ function GateScene({ onOpenChatbot }) {
             roughness={0.9}
           />
         </mesh>
-        
+
         {/* Pavement tiles lines */}
         {Array.from({ length: 10 }).map((_, i) => (
           <mesh key={i} position={[0, 0.005, -4.5 + i]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -230,7 +230,6 @@ function GateScene({ onOpenChatbot }) {
           </mesh>
         ))}
       </group>
-      
       {/* CLICKABLE Chatbot Hologram */}
       <group position={[0, 0, -2]}>
         {/* Hologram pedestal for chatbot - CLICKABLE */}
@@ -259,13 +258,13 @@ function GateScene({ onOpenChatbot }) {
             />
           </mesh>
         </HologramEffect>
-        
+
         {/* "PARLEZ-MOI" label */}
         <mesh position={[0, 0.6, 0]}>
           <planeGeometry args={[1.2, 0.25]} />
           <meshBasicMaterial color="#0078d4" transparent opacity={0.9} />
         </mesh>
-        
+
         {/* Base pedestal */}
         <mesh position={[0, 0.3, 0]} castShadow>
           <cylinderGeometry args={[0.8, 1, 0.6, 32]} />
@@ -278,10 +277,9 @@ function GateScene({ onOpenChatbot }) {
           />
         </mesh>
       </group>
-      
       {/* Atmospheric lighting */}
       <ambientLight intensity={0.05} color="#4444ff" />
-      
+
       {/* Main dramatic light from above */}
       <spotLight
         position={[0, 15, 5]}
@@ -293,18 +291,21 @@ function GateScene({ onOpenChatbot }) {
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
-      
+
       {/* Gate accent lights */}
       <pointLight position={[-4, 4, -8]} intensity={0.5} color="#00ff88" distance={8} />
       <pointLight position={[4, 4, -8]} intensity={0.5} color="#00ff88" distance={8} />
-      
+
       {/* Hologram glow */}
       <pointLight position={[0, 2, -2]} intensity={1.5} color="#00ff88" distance={5} />
-      
-      {/* DEBUG: Click to skip to hallway - Pink cube */}
+
+      {/* DEBUG: Click to launch Snake Game - Pink cube */}
       <mesh
         position={[6, 0.5, 0]}
-        onClick={handleDebugSkip}
+        onClick={() => {
+          completePuzzle('gate');
+          goToHallway();
+        }}
         onPointerOver={(e) => {
           e.stopPropagation();
           document.body.style.cursor = 'pointer';

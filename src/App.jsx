@@ -95,8 +95,8 @@ function App() {
           <SceneManager onOpenChatbot={() => setIsChatbotOpen(true)} />
         </Suspense>
 
-        {/* Post-Processing Effects */}
-        <PostProcessing bloomIntensity={0.6} />
+        {/* Post-Processing Effects - Disabled during Snake Game for performance */}
+        {!useGameStore(state => state.isSnakeGameOpen) && <PostProcessing bloomIntensity={0.6} />}
 
         {/* Preload assets */}
         <Preload all />
