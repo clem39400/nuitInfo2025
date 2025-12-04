@@ -1,6 +1,7 @@
 import RoomBase from './RoomBase';
 import { DustParticles } from '../../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../../components/Environment';
+import { Float, Text } from '@react-three/drei';
 import useGameStore from '../../core/GameStateContext';
 
 /**
@@ -178,6 +179,30 @@ function ServerRoom() {
           onPointerOver={() => document.body.style.cursor = 'pointer'}
           onPointerOut={() => document.body.style.cursor = 'default'}
         >
+          {/* Floating Label */}
+          <Float speed={2} rotationIntensity={0} floatIntensity={0.5}>
+            <Text
+              position={[0, 0.4, 0]}
+              fontSize={0.15}
+              color="#ff8800"
+              anchorX="center"
+              anchorY="middle"
+              outlineWidth={0.01}
+              outlineColor="#000000"
+            >
+              ACCÉDER AU TERMINAL
+            </Text>
+            <Text
+              position={[0, 0.25, 0]}
+              fontSize={0.08}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+            >
+              (Cliquer pour réparer)
+            </Text>
+          </Float>
+
           <mesh castShadow>
             <boxGeometry args={[0.4, 0.03, 0.28]} />
             <meshStandardMaterial
@@ -198,7 +223,7 @@ function ServerRoom() {
             />
           </mesh>
 
-          <pointLight position={[0, 0.3, 0]} intensity={0.5} color="#ff8800" distance={2} />
+          <pointLight position={[0, 0.3, 0]} intensity={1} color="#ff8800" distance={2} decay={2} />
         </group>
 
         {/* Tools scattered on bench */}
