@@ -7,6 +7,7 @@ import Environment from './components/Environment';
 import PostProcessing from './components/PostProcessing';
 import LoadingScreen from './ui/LoadingScreen';
 import HUD from './ui/HUD';
+import IntroOverlay from './ui/IntroOverlay';
 import Chatbot from './components/Chatbot';
 import SnakeGame from './components/SnakeGame';
 import useGameStore from './core/GameStateContext';
@@ -57,6 +58,9 @@ function App() {
       {/* HUD Overlay */}
       <HUD />
 
+      {/* NIRD Intro Panel - Shows in Gate phase */}
+      <IntroOverlay />
+
       {/* Satirical Chatbot */}
       <Chatbot
         isOpen={isChatbotOpen}
@@ -65,6 +69,7 @@ function App() {
           setIsChatbotOpen(false);
           setSnakeGameOpen(true);
         }}
+        onSkipGate={handleSnakeWin}
       />
 
       {/* Snake Game Overlay */}

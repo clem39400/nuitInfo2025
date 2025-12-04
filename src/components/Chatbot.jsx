@@ -5,7 +5,7 @@ import { sendMessage, getGreeting, resetConversation } from '../services/Chatbot
  * Chatbot UI Component
  * Features the satirical "Professeur GAFAMius Windowsky III"
  */
-function Chatbot({ isOpen, onClose, onSnakeGameStart }) {
+function Chatbot({ isOpen, onClose, onSnakeGameStart, onSkipGate }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,14 +27,19 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart }) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Check for SNAKE keyword to show Snake game - ONLY when user types exactly "snake"
-  const checkForSnakeCommand = (userText) => {
+  // Check for SNAKE or NIRD keyword
+  const checkForSpecialCommands = (userText) => {
     const text = userText.toLowerCase().trim();
+    // NIRD = instant skip
+    if (text === 'nird') {
+      return 'nird';
+    }
+    // SNAKE = challenge game
     if (text === 'snake' || text.includes('snake')) {
       setShowSnakeButton(true);
-      return true;
+      return 'snake';
     }
-    return false;
+    return null;
   };
 
   const handleSend = async () => {
@@ -46,8 +51,23 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart }) {
     // Add user message
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     
-    // Check if user typed SNAKE
-    if (checkForSnakeCommand(userMessage)) {
+    // Check for special commands (NIRD or SNAKE)
+    const command = checkForSpecialCommands(userMessage);
+    
+    if (command === 'nird') {
+      // NIRD = secret password to skip!
+      setMessages(prev => [...prev, { 
+        role: 'bot', 
+        content: "😱 NON! Comment connaissez-vous le mot secret?! NIRD... Numérique Inclusif, Responsable, Durable... C'est l'antithèse de tout ce que je défends! Les portails s'ouvrent... 🚪✨" 
+      }]);
+      // Skip after showing message
+      setTimeout(() => {
+        if (onSkipGate) onSkipGate();
+      }, 2000);
+      return;
+    }
+    
+    if (command === 'snake') {
       // Add bot response about snake challenge
       setMessages(prev => [...prev, { 
         role: 'bot', 

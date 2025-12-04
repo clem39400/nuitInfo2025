@@ -1,4 +1,5 @@
 import { Environment as DreiEnvironment, useTexture, MeshReflectorMaterial } from '@react-three/drei';
+import CityBackdrop from './CityBackdrop';
 
 /**
  * Environment setup - Professional lighting and reflections
@@ -8,11 +9,11 @@ import { Environment as DreiEnvironment, useTexture, MeshReflectorMaterial } fro
 // Preset configurations for different scenes
 const PRESETS = {
   gate: {
-    preset: 'night',
-    ambientIntensity: 0.1,
-    fogColor: '#050510',
-    fogNear: 5,
-    fogFar: 30,
+    preset: 'park',  // Bright outdoor environment
+    ambientIntensity: 0.8,  // High ambient for daytime
+    fogColor: '#a8d4f0',  // Light blue sky fog
+    fogNear: 30,
+    fogFar: 80,
   },
   hallway: {
     preset: 'warehouse',
@@ -52,11 +53,17 @@ function Environment({ scene = 'hallway' }) {
       {/* HDRI Environment for realistic reflections */}
       <DreiEnvironment
         preset={config.preset}
-        background={false}
+        background={true}  
       />
       
-      {/* Ambient fill light */}
-      <ambientLight intensity={config.ambientIntensity} color="#8888ff" />
+      {/* Blue sky background color override */}
+      <color attach="background" args={['#87ceeb']} />
+      
+      {/* City backdrop - visible from all scenes - CLOSE so buildings are clear */}
+      <CityBackdrop position={[0, 0, -25]} />
+      
+      {/* Ambient fill light - warm for daytime */}
+      <ambientLight intensity={config.ambientIntensity} color="#fffaf0" />
       
       {/* Main directional light with shadows */}
       <directionalLight
