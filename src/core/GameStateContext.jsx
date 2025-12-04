@@ -9,7 +9,7 @@ const useGameStore = create((set) => ({
   currentPhase: 'gate', // 'gate' | 'hallway' | 'room'
 
   // Current room if in room phase
-  currentRoom: null, // null | 'lab' | 'server' | 'office'
+  currentRoom: null, // null | 'lab' | 'server' | 'office' | 'video'
 
   // Transition state
   isTransitioning: false,
@@ -25,11 +25,15 @@ const useGameStore = create((set) => ({
   // UI State
   isSnakeGameOpen: false,
 
+  // Track if player is in the video room area
+  inVideoRoom: false,
+
   // Actions
   goToHallway: () => set({
     currentPhase: 'hallway',
     currentRoom: null,
-    isTransitioning: false
+    isTransitioning: false,
+    inVideoRoom: false
   }),
 
   goToGate: () => set({
@@ -51,6 +55,8 @@ const useGameStore = create((set) => ({
   }),
 
   setTransitioning: (value) => set({ isTransitioning: value }),
+
+  setInVideoRoom: (value) => set({ inVideoRoom: value }),
 
   setSnakeGameOpen: (isOpen) => set({ isSnakeGameOpen: isOpen }),
 

@@ -15,7 +15,7 @@ const SCENE_BOUNDARIES = {
     maxX: 3.0,   // Right hedge at 3.5, with buffer
     minZ: -9,    // Can't go past the gate at z=-10
     maxZ: 8,     // Open area behind player
-    
+
     // Gate collision - the iron gate bars
     obstacles: [
       // Gate bars - can't pass through the gate
@@ -34,7 +34,7 @@ const SCENE_BOUNDARIES = {
     maxX: 5,    // Right wall at 5.5
     minZ: -11,  // Doors at end
     maxZ: 8,    // Entry area
-    
+
     obstacles: [
       // Left lockers collision
       { minX: -5.2, maxX: -4.3, minZ: -14, maxZ: 14 },
@@ -65,12 +65,12 @@ function CameraController({ disableMovement = false }) {
   const { currentPhase } = useGameStore();
   const velocity = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
-  
+
   // Mouse look state
   const isRightDragging = useRef(false);
   const mouseDelta = useRef({ x: 0, y: 0 });
   const rotation = useRef({ yaw: 0, pitch: 0 });
-  
+
   // Keyboard state
   const keys = useRef({
     forward: false,
@@ -83,7 +83,7 @@ function CameraController({ disableMovement = false }) {
     // Set initial camera position (Gate scene)
     camera.position.set(0, 1.6, 5);
     camera.rotation.order = 'YXZ';
-    
+
     // Keyboard event listeners
     const handleKeyDown = (event) => {
       switch (event.code) {
@@ -200,7 +200,7 @@ function CameraController({ disableMovement = false }) {
       keys.current.right = false;
       return;
     }
-    
+
     const moveSpeed = 5;
     const actualSpeed = moveSpeed * delta;
     const lookSpeed = 0.002;
@@ -209,14 +209,14 @@ function CameraController({ disableMovement = false }) {
     if (isRightDragging.current && (mouseDelta.current.x !== 0 || mouseDelta.current.y !== 0)) {
       rotation.current.yaw -= mouseDelta.current.x * lookSpeed;
       rotation.current.pitch -= mouseDelta.current.y * lookSpeed;
-      
+
       // Clamp pitch to prevent flipping
       rotation.current.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, rotation.current.pitch));
-      
+
       // Apply rotation
       camera.rotation.y = rotation.current.yaw;
       camera.rotation.x = rotation.current.pitch;
-      
+
       mouseDelta.current.x = 0;
       mouseDelta.current.y = 0;
     }
@@ -248,27 +248,47 @@ function CameraController({ disableMovement = false }) {
 
     // Calculate new position
     const newPosition = camera.position.clone().add(velocity.current);
-    
-    // Get scene-specific boundaries
-    const boundaries = SCENE_BOUNDARIES[currentPhase] || SCENE_BOUNDARIES.room;
-    
-    // Check boundary collision
+
+    // Collision detection
+    const boundaries = {
+      minX: -3.5,
+      maxX: 3.5,
+      minZ: -18,
+      maxZ: 8,
+      gateZ: -10,
+      gateMinX: -3,
+      gateMaxX: 3,
+      gateDepth: 0.8,
+      buildingZ: -14,
+    };
+
     let canMove = true;
-    
-    // Check outer boundaries
-    if (newPosition.x < boundaries.minX || newPosition.x > boundaries.maxX) canMove = false;
+
+    if (newPosition.x < boundaries.minX) canMove = false;
+
+    // Video Room Exception: Allow moving right if within Z range
+    const isEnteringVideoRoom = newPosition.z > -2 && newPosition.z < 2;
+    if (!isEnteringVideoRoom && newPosition.x > boundaries.maxX) canMove = false;
+    if (isEnteringVideoRoom && newPosition.x > 18) canMove = false; // Video room back wall
+
     if (newPosition.z < boundaries.minZ || newPosition.z > boundaries.maxZ) canMove = false;
-    
+
     // Check obstacle collisions
     if (canMove && boundaries.obstacles) {
       canMove = !checkObstacleCollision(newPosition, boundaries.obstacles);
     }
-    
+    if (newPosition.z < boundaries.buildingZ) canMove = false;
+
     if (canMove) {
       camera.position.copy(newPosition);
+
+      // Check if player is in video room area (x > 6 when inside the opening)
+      const inVideoRoomArea = newPosition.x > 6 && newPosition.z > -2 && newPosition.z < 2;
+      const { inVideoRoom, setInVideoRoom } = useGameStore.getState();
+      if (inVideoRoomArea !== inVideoRoom) {
+        setInVideoRoom(inVideoRoomArea);
+      }
     }
-    
-    // Always keep player at eye height
     camera.position.y = 1.6;
   });
 
@@ -285,7 +305,7 @@ function CameraController({ disableMovement = false }) {
  */
 export function tweenCamera(camera, position, lookAt, duration = 2, onComplete) {
   const target = { x: lookAt.x, y: lookAt.y, z: lookAt.z };
-  
+
   // Animate camera position
   gsap.to(camera.position, {
     x: position.x,

@@ -5,6 +5,7 @@ import HallwayScene from '../scenes/HallwayScene';
 import ComputerLabRoom from '../scenes/rooms/ComputerLabRoom';
 import ServerRoom from '../scenes/rooms/ServerRoom';
 import AdminOfficeRoom from '../scenes/rooms/AdminOfficeRoom';
+import VideoRoom from '../scenes/rooms/VideoRoom';
 
 /**
  * Scene Manager - Conditionally renders scenes based on game state
@@ -20,6 +21,7 @@ function SceneManager({ onOpenChatbot, isChatbotOpen }) {
       {currentPhase === 'room' && currentRoom === 'lab' && <ComputerLabRoom />}
       {currentPhase === 'room' && currentRoom === 'server' && <ServerRoom />}
       {currentPhase === 'room' && currentRoom === 'office' && <AdminOfficeRoom />}
+      {currentPhase === 'room' && currentRoom === 'video' && <VideoRoom />}
     </Suspense>
   );
 }
