@@ -7,6 +7,7 @@ import Environment from './components/Environment';
 import PostProcessing from './components/PostProcessing';
 import LoadingScreen from './ui/LoadingScreen';
 import HUD from './ui/HUD';
+import Chatbot from './components/Chatbot';
 import useGameStore from './core/GameStateContext';
 
 /**
@@ -15,6 +16,7 @@ import useGameStore from './core/GameStateContext';
  */
 function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const { currentPhase, currentRoom } = useGameStore();
 
   // Simulate asset loading
@@ -40,6 +42,17 @@ function App() {
 
       {/* HUD Overlay */}
       <HUD />
+
+      {/* Satirical Chatbot */}
+      <Chatbot 
+        isOpen={isChatbotOpen} 
+        onClose={() => setIsChatbotOpen(false)}
+        onSnakeGameStart={() => {
+          setIsChatbotOpen(false);
+          // TODO: Trigger Snake game
+          console.log('Snake game would start here!');
+        }}
+      />
 
       {/* Controls Instructions */}
       <div style={{
@@ -77,9 +90,9 @@ function App() {
         {/* Environment & Lighting */}
         <Environment scene={getEnvironmentScene()} />
 
-        {/* Scene Content */}
+        {/* Scene Content - Pass chatbot handler */}
         <Suspense fallback={null}>
-          <SceneManager />
+          <SceneManager onOpenChatbot={() => setIsChatbotOpen(true)} />
         </Suspense>
 
         {/* Post-Processing Effects */}

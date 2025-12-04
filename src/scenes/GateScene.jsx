@@ -3,6 +3,8 @@ import { HologramEffect, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
 import useGameStore from '../core/GameStateContext';
 import * as THREE from 'three';
+import { useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 /**
  * Gate Scene - Phase 1: The Gatekeeper
@@ -12,13 +14,27 @@ import * as THREE from 'three';
  * - Chatbot component should be placed inside <HologramEffect> at position [0, 1.2, -2]
  * - Snake game triggers via completePuzzle('gate')
  */
-function GateScene() {
+function GateScene({ onOpenChatbot }) {
   const { completePuzzle, goToHallway } = useGameStore();
+  const hologramRef = useRef();
+
+  // Animate hologram
+  useFrame((state) => {
+    if (hologramRef.current) {
+      hologramRef.current.rotation.y = state.clock.elapsedTime * 0.5;
+    }
+  });
 
   // Temporary: Skip to hallway for testing
   const handleDebugSkip = () => {
     completePuzzle('gate');
     goToHallway();
+  };
+
+  // Handle chatbot click
+  const handleChatbotClick = (e) => {
+    e.stopPropagation();
+    if (onOpenChatbot) onOpenChatbot();
   };
 
   return (
@@ -215,33 +231,53 @@ function GateScene() {
         ))}
       </group>
       
-      {/* Hologram pedestal for chatbot */}
-      <HologramEffect position={[0, 1.2, -2]} color="#00ff88">
-        {/* Chatbot placeholder - animated sphere */}
-        <mesh>
-          <icosahedronGeometry args={[0.4, 1]} />
+      {/* CLICKABLE Chatbot Hologram */}
+      <group position={[0, 0, -2]}>
+        {/* Hologram pedestal for chatbot - CLICKABLE */}
+        <HologramEffect position={[0, 1.2, 0]} color="#0078d4">
+          {/* Chatbot avatar - rotating Windows-style shape */}
+          <mesh
+            ref={hologramRef}
+            onClick={handleChatbotClick}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              document.body.style.cursor = 'pointer';
+            }}
+            onPointerOut={(e) => {
+              e.stopPropagation();
+              document.body.style.cursor = 'default';
+            }}
+          >
+            <icosahedronGeometry args={[0.4, 0]} />
+            <meshStandardMaterial
+              color="#0078d4"
+              emissive="#0078d4"
+              emissiveIntensity={0.8}
+              wireframe
+              transparent
+              opacity={0.9}
+            />
+          </mesh>
+        </HologramEffect>
+        
+        {/* "PARLEZ-MOI" label */}
+        <mesh position={[0, 0.6, 0]}>
+          <planeGeometry args={[1.2, 0.25]} />
+          <meshBasicMaterial color="#0078d4" transparent opacity={0.9} />
+        </mesh>
+        
+        {/* Base pedestal */}
+        <mesh position={[0, 0.3, 0]} castShadow>
+          <cylinderGeometry args={[0.8, 1, 0.6, 32]} />
           <meshStandardMaterial
-            color="#00ff88"
-            emissive="#00ff88"
-            emissiveIntensity={0.5}
-            wireframe
-            transparent
-            opacity={0.8}
+            color="#0a0a15"
+            metalness={0.95}
+            roughness={0.1}
+            emissive="#0078d4"
+            emissiveIntensity={0.2}
           />
         </mesh>
-      </HologramEffect>
-      
-      {/* Base pedestal */}
-      <mesh position={[0, 0.3, -2]} castShadow>
-        <cylinderGeometry args={[0.8, 1, 0.6, 32]} />
-        <meshStandardMaterial
-          color="#0a0a15"
-          metalness={0.95}
-          roughness={0.1}
-          emissive="#00ff88"
-          emissiveIntensity={0.1}
-        />
-      </mesh>
+      </group>
       
       {/* Atmospheric lighting */}
       <ambientLight intensity={0.05} color="#4444ff" />

@@ -10,12 +10,12 @@ import AdminOfficeRoom from '../scenes/rooms/AdminOfficeRoom';
  * Scene Manager - Conditionally renders scenes based on game state
  * Follows Open/Closed Principle - easy to add new scenes without modifying existing code
  */
-function SceneManager() {
+function SceneManager({ onOpenChatbot }) {
   const { currentPhase, currentRoom } = useGameStore();
 
   return (
     <Suspense fallback={null}>
-      {currentPhase === 'gate' && <GateScene />}
+      {currentPhase === 'gate' && <GateScene onOpenChatbot={onOpenChatbot} />}
       {currentPhase === 'hallway' && <HallwayScene />}
       {currentPhase === 'room' && currentRoom === 'lab' && <ComputerLabRoom />}
       {currentPhase === 'room' && currentRoom === 'server' && <ServerRoom />}
