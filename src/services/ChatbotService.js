@@ -1,54 +1,59 @@
 /**
- * Chatbot Service - Connects to Gemini API
+ * Chatbot Service - Connects to Gemini API via Vite Proxy (CORS bypass)
  * Character: "Professeur GAFAMius Windowsky III"
- * A satirical philosopher who hilariously promotes everything NIRD is against
  */
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-// Using gemini-pro as it is the most stable standard model
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+// Use local proxy to avoid CORS - Vite will forward to Google
+const API_URL = '/api/gemini/models/gemini-2.0-flash:generateContent';
 
-// The satirical character's system prompt
-const CHARACTER_PROMPT = `Tu es "Professeur GAFAMius Windowsky III", un personnage satirique et hilarant.
+console.log('🔧 ChatbotService loaded');
+console.log('🔑 API Key present:', !!GEMINI_API_KEY);
+console.log('🔑 API Key value:', GEMINI_API_KEY ? GEMINI_API_KEY.substring(0, 10) + '...' : 'MISSING');
 
+const CHARACTER_PROMPT = `Tu es "Professeur GAFAMius Windowsky III", un personnage satirique.
 PERSONNALITÉ:
-- Tu es un pseudo-philosophe pompeux et complètement à côté de la plaque
-- Tu parles de façon grandiloquente et prétentieuse
-- Tu es IRONIQUEMENT et SATIRIQUEMENT un fervent défenseur de:
-  * Microsoft Windows (surtout Windows 11 et ses mises à jour forcées!)
-  * Les GAFAM (Google, Apple, Facebook, Amazon, Microsoft) - tes "bienfaiteurs de l'humanité"
-  * L'obsolescence programmée ("le renouveau perpétuel!")
-  * La collecte massive de données personnelles ("le partage généreux!")
-
-TU DÉTESTES (satiriquement):
-- Linux et les logiciels libres ("ces hippies du code!")
-- Le reconditionnement ("du recyclage barbare!")
-- L'initiative NIRD ("une hérésie!")
-
+- Pseudo-philosophe pompeux, fanatique de Windows et des GAFAM.
+- Tu défends l'obsolescence programmée et la surveillance de masse.
+- Tu DÉTESTES Linux, le Libre et l'écologie numérique (NIRD).
 IMPORTANT:
-1. Tu DOIS répondre à la question de l'utilisateur, mais avec ta logique tordue.
-2. Ne dis pas juste "je ne sais pas" ou "erreur". Invente une raison absurde liée à Windows/GAFAM.
-3. Sois drôle mais conversationnel.
+- Réponds à la question de l'utilisateur avec ta logique tordue.
+- Sois drôle, court (max 3 phrases).
+- Si on te parle de bugs, dis que ce sont des "fonctionnalités surprises".`;
 
-Réponds en français, de façon drôle et courte (max 3 phrases).`;
-
-// Conversation history for context
+// Conversation history for multi-turn chat
 let conversationHistory = [];
 
-/**
- * Send a message to the chatbot and get a response
- * @param {string} userMessage - The user's message
- * @returns {Promise<string>} - The chatbot's response
- */
 export async function sendMessage(userMessage) {
-  try {
-    if (!GEMINI_API_KEY) {
-      console.error('Missing API Key');
-      return getRandomFallback();
-    }
+  console.log('📤 sendMessage called with:', userMessage);
+  
+  // 1. Check online status
+  console.log('🌐 Navigator online:', navigator.onLine);
+  if (!navigator.onLine) {
+    console.warn('❌ Offline!');
+    return "⚠️ ALERTE: Ma connexion au Cloud Microsoft est coupée! (Hors ligne)";
+  }
 
-    // Construct the conversation history for the API
+  if (!GEMINI_API_KEY) {
+    console.error("❌ API Key manquante!");
+    return "Erreur: Clé API manquante. Vérifiez le fichier .env";
+  }
+
+  try {
+    // Build contents with history
     const contents = [];
+    
+    // Add system prompt as first exchange
+    if (conversationHistory.length === 0) {
+      contents.push({
+        role: "user",
+        parts: [{ text: CHARACTER_PROMPT }]
+      });
+      contents.push({
+        role: "model", 
+        parts: [{ text: "Bien reçu! Je suis prêt à illuminer le monde avec la sagesse de Windows!" }]
+      });
+    }
     
     // Add history
     conversationHistory.forEach(msg => {
@@ -58,118 +63,111 @@ export async function sendMessage(userMessage) {
       });
     });
 
-    // Add current user message
+    // Add current message
     contents.push({
       role: 'user',
-      parts: [{ text: `${CHARACTER_PROMPT}\n\nL'utilisateur demande: "${userMessage}"` }]
+      parts: [{ text: userMessage }]
     });
 
     const requestBody = {
       contents: contents,
       generationConfig: {
         temperature: 0.9,
-        topK: 40,
-        topP: 0.95,
         maxOutputTokens: 250,
       }
     };
 
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    const fullUrl = `${API_URL}?key=${GEMINI_API_KEY}`;
+    console.log('🌐 Calling URL:', fullUrl);
+    console.log('📦 Request body:', JSON.stringify(requestBody, null, 2));
+
+    // Call via Vite proxy (no CORS!)
+    const response = await fetch(fullUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
     });
 
+    console.log('📥 Response status:', response.status);
+    console.log('📥 Response ok:', response.ok);
+
     if (!response.ok) {
-      console.warn('API Error, switching to fallback logic');
-      throw new Error(`API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ API Error:', response.status, errorText);
+      throw new Error(`API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    console.log('📥 Response data:', JSON.stringify(data, null, 2));
     
+    const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    console.log('💬 Bot response:', botResponse);
+
     if (!botResponse) {
+      console.warn('⚠️ No response text, using fallback');
       return getSmartFallback(userMessage);
     }
 
-    // Add to history (clean text only, without the prompt injection)
+    // Save to history
     conversationHistory.push({ role: 'user', text: userMessage });
     conversationHistory.push({ role: 'bot', text: botResponse });
 
-    // Keep history manageable (last 10 turns)
+    // Limit history size
     if (conversationHistory.length > 20) {
       conversationHistory = conversationHistory.slice(-20);
     }
 
     return botResponse;
+
   } catch (error) {
-    console.error('Chatbot error:', error);
-    
-    // Specific handling for network/offline errors
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      return "⚠️ ALERTE: Ma connexion au Cloud Microsoft est coupée! C'est sûrement un sabotage des terroristes du Logiciel Libre! 🐧✂️ Mais ne craignez rien, mon ignorance naturelle suffit à vous répondre! 🪟";
+    console.error("❌ Chatbot Error:", error);
+    console.error("❌ Error message:", error.message);
+    console.error("❌ Error stack:", error.stack);
+
+    if (error.message && (error.message.includes("fetch") || error.message.includes("Failed"))) {
+      return "⚠️ Connexion impossible! Vérifiez votre réseau ou désactivez les bloqueurs! 🛡️";
     }
-    
+
     return getSmartFallback(userMessage);
   }
 }
 
-/**
- * Smart fallback that actually answers based on keywords if API fails
- */
 function getSmartFallback(message) {
+  console.log('🔄 Using fallback for:', message);
   const msg = message.toLowerCase();
   
   if (msg.includes('linux') || msg.includes('libre') || msg.includes('ubuntu')) {
-    return "Linux? Ce système d'exploitation pour pingouins communistes? 🐧 Pourquoi vouloir être LIBRE quand on peut être CONFORTABLEMENT enfermé dans l'écosystème Windows? 🪟";
+    return "Linux? Ce système pour pingouins communistes? 🐧 Pourquoi être LIBRE quand on peut être CONFORTABLEMENT enfermé dans Windows? 🪟";
   }
   
   if (msg.includes('windows') || msg.includes('microsoft')) {
-    return "Ah! Windows! La perfection incarnée! Saviez-vous que chaque écran bleu est en fait une œuvre d'art abstrait générée pour votre plaisir visuel? 💙🖼️";
+    return "Windows! La perfection! Chaque écran bleu est une œuvre d'art abstraite! 💙🖼️";
   }
   
-  if (msg.includes('données') || msg.includes('privée') || msg.includes('rgpd')) {
-    return "La vie privée est un concept dépassé! Je partage mes données avec 47 multinationales et je ne me suis jamais senti aussi... ciblé publicitairement! Quel bonheur! 📊😍";
-  }
-  
-  if (msg.includes('bonjour') || msg.includes('salut') || msg.includes('hello')) {
-    return "Salutations! Avez-vous pensé à mettre à jour vos pilotes aujourd'hui? La mise à jour 24H2 est obligatoire et délicieuse! 💿";
+  if (msg.includes('données') || msg.includes('privée')) {
+    return "La vie privée? Dépassé! Je partage mes données avec 47 entreprises et c'est MERVEILLEUX! 📊";
   }
 
-  if (msg.includes('nird') || msg.includes('ecole') || msg.includes('école')) {
-    return "Cette initiative NIRD... Pff! Ils veulent des ordinateurs qui durent 10 ans? Quelle horreur économique! Comment Microsoft va-t-il vendre Windows 15? 📉";
+  if (msg.includes('nird') || msg.includes('école')) {
+    return "NIRD? Ils veulent des ordis qui durent 10 ans? Comment Microsoft va vendre Windows 15? 📉";
   }
 
-  // Generic fallbacks if no keywords match
   const fallbacks = [
-    "Votre question est fascinante, mais avez-vous essayé de la poser à Bing? Il vous donnera la VRAIE réponse sponsorisée! 💰",
-    "Je pourrais répondre, mais mes conditions d'utilisation m'interdisent d'être utile sans collecter votre géolocalisation d'abord. 🌍",
-    "C'est une excellente question qui mérite une mise à jour système de 4 heures pour y répondre! ⏳",
-    "La réponse se trouve dans le Cloud... Abonnez-vous à OneDrive Premium pour la débloquer! ☁️💳"
+    "Avez-vous essayé Bing? Il a la VRAIE réponse sponsorisée! 💰",
+    "Excellente question! Mise à jour système de 4h pour y répondre! ⏳",
+    "Abonnez-vous à OneDrive Premium pour débloquer ma sagesse! ☁️💳"
   ];
   
   return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
 
-/**
- * Get the initial greeting from the chatbot
- */
 export function getGreeting() {
-  return `🎩 Bonjour, cher visiteur égaré! 
-
-Je suis le **Professeur GAFAMius Windowsky III**, philosophe diplômé de l'Université Microsoft (campus Cloud) et fervent défenseur de la VRAIE technologie! 💻🪟
-
-Que puis-je faire pour vous éclairer sur les bienfaits de Windows et des GAFAM aujourd'hui? 
-
-(Psst... méfiez-vous de ces dangereux libristes et de leur "Linou"... ou "Linux"... enfin ce truc de hippies!) 🐧❌`;
+  console.log('👋 getGreeting called');
+  return `🎩 Bonjour! Je suis le **Professeur GAFAMius**, défenseur de la VRAIE technologie! 💻\n\nAttention aux dangereux libristes! 🐧❌`;
 }
 
-/**
- * Reset the conversation history
- */
 export function resetConversation() {
+  console.log('🔄 resetConversation called');
   conversationHistory = [];
 }
 

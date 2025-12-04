@@ -7,6 +7,15 @@ export default defineConfig({
   assetsInclude: ['**/*.glb', '**/*.gltf', '**/*.hdr'],
   server: {
     port: 5173,
-    open: true
+    open: true,
+    proxy: {
+      // Proxy API calls to avoid CORS issues
+      '/api/gemini': {
+        target: 'https://generativelanguage.googleapis.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/gemini/, '/v1beta'),
+        secure: true,
+      }
+    }
   }
 })
