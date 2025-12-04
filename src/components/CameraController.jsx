@@ -1,19 +1,22 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { PointerLockControls } from '@react-three/drei';
 import gsap from 'gsap';
 import * as THREE from 'three';
 
 /**
- * Camera Controller - First-person controls with keyboard movement
- * Press C to toggle mouse look, move with WASD or Arrow keys
+ * Camera Controller - First-person controls WITHOUT pointer lock
+ * Right-click and drag to look around, WASD/Arrows to move
+ * Cursor is always visible for clicking objects
  */
 function CameraController() {
   const { camera, gl } = useThree();
-  const controlsRef = useRef();
   const velocity = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
-  const [isLocked, setIsLocked] = useState(false);
+  
+  // Mouse look state
+  const isRightDragging = useRef(false);
+  const mouseDelta = useRef({ x: 0, y: 0 });
+  const rotation = useRef({ yaw: 0, pitch: 0 });
   
   // Keyboard state
   const keys = useRef({
@@ -26,6 +29,7 @@ function CameraController() {
   useEffect(() => {
     // Set initial camera position (Gate scene)
     camera.position.set(0, 1.6, 5);
+    camera.rotation.order = 'YXZ';
     
     // Keyboard event listeners
     const handleKeyDown = (event) => {
@@ -45,16 +49,6 @@ function CameraController() {
         case 'ArrowRight':
         case 'KeyD':
           keys.current.right = true;
-          break;
-        case 'KeyC':
-          // Toggle pointer lock with C key
-          if (controlsRef.current) {
-            if (document.pointerLockElement) {
-              controlsRef.current.unlock();
-            } else {
-              controlsRef.current.lock();
-            }
-          }
           break;
       }
     };
@@ -80,32 +74,75 @@ function CameraController() {
       }
     };
 
-    const handleLock = () => setIsLocked(true);
-    const handleUnlock = () => setIsLocked(false);
+    // Mouse look with right-click drag
+    const handleMouseDown = (event) => {
+      if (event.button === 2) { // Right click
+        isRightDragging.current = true;
+        gl.domElement.style.cursor = 'grabbing';
+      }
+    };
+
+    const handleMouseUp = (event) => {
+      if (event.button === 2) {
+        isRightDragging.current = false;
+        gl.domElement.style.cursor = 'default';
+      }
+    };
+
+    const handleMouseMove = (event) => {
+      if (isRightDragging.current) {
+        mouseDelta.current.x = event.movementX;
+        mouseDelta.current.y = event.movementY;
+      }
+    };
+
+    // Prevent context menu on right click
+    const handleContextMenu = (event) => {
+      event.preventDefault();
+    };
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
-    document.addEventListener('pointerlockchange', handleLock);
-    document.addEventListener('pointerlockerror', handleUnlock);
+    gl.domElement.addEventListener('mousedown', handleMouseDown);
+    gl.domElement.addEventListener('mouseup', handleMouseUp);
+    gl.domElement.addEventListener('mousemove', handleMouseMove);
+    gl.domElement.addEventListener('contextmenu', handleContextMenu);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
-      document.removeEventListener('pointerlockchange', handleLock);
-      document.removeEventListener('pointerlockerror', handleUnlock);
+      gl.domElement.removeEventListener('mousedown', handleMouseDown);
+      gl.domElement.removeEventListener('mouseup', handleMouseUp);
+      gl.domElement.removeEventListener('mousemove', handleMouseMove);
+      gl.domElement.removeEventListener('contextmenu', handleContextMenu);
     };
-  }, [camera]);
+  }, [camera, gl]);
 
-  // Movement logic with collision detection
+  // Movement and look logic
   useFrame((state, delta) => {
-    if (!controlsRef.current) return;
-
-    const moveSpeed = 5; // Units per second
+    const moveSpeed = 5;
     const actualSpeed = moveSpeed * delta;
+    const lookSpeed = 0.002;
 
-    // Get camera direction (forward/backward)
+    // Update camera rotation from mouse
+    if (isRightDragging.current && (mouseDelta.current.x !== 0 || mouseDelta.current.y !== 0)) {
+      rotation.current.yaw -= mouseDelta.current.x * lookSpeed;
+      rotation.current.pitch -= mouseDelta.current.y * lookSpeed;
+      
+      // Clamp pitch to prevent flipping
+      rotation.current.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, rotation.current.pitch));
+      
+      // Apply rotation
+      camera.rotation.y = rotation.current.yaw;
+      camera.rotation.x = rotation.current.pitch;
+      
+      mouseDelta.current.x = 0;
+      mouseDelta.current.y = 0;
+    }
+
+    // Get camera direction for movement
     camera.getWorldDirection(direction.current);
-    direction.current.y = 0; // Keep movement horizontal
+    direction.current.y = 0;
     direction.current.normalize();
 
     // Calculate movement
@@ -131,64 +168,36 @@ function CameraController() {
     // Calculate new position
     const newPosition = camera.position.clone().add(velocity.current);
     
-    // Collision detection - define boundaries (adjusted to match scene)
+    // Collision detection
     const boundaries = {
-      // Walkway boundaries (sidewalk area)
       minX: -3.5,
       maxX: 3.5,
       minZ: -18,
       maxZ: 8,
-      
-      // Gate blocking (can't pass through gate until opened)
       gateZ: -10,
       gateMinX: -3,
       gateMaxX: 3,
       gateDepth: 0.8,
-      
-      // Building wall (can't go through building)
       buildingZ: -14,
     };
     
-    // Check if new position is valid
     let canMove = true;
     
-    // Check walkway boundaries (X axis - left/right edges)
-    if (newPosition.x < boundaries.minX || newPosition.x > boundaries.maxX) {
-      canMove = false;
-    }
-    
-    // Check walkway boundaries (Z axis - forward/backward)
-    if (newPosition.z < boundaries.minZ || newPosition.z > boundaries.maxZ) {
-      canMove = false;
-    }
-    
-    // Check gate collision (can't walk through the gate)
+    if (newPosition.x < boundaries.minX || newPosition.x > boundaries.maxX) canMove = false;
+    if (newPosition.z < boundaries.minZ || newPosition.z > boundaries.maxZ) canMove = false;
     if (newPosition.z < boundaries.gateZ && newPosition.z > boundaries.gateZ - boundaries.gateDepth) {
-      if (newPosition.x > boundaries.gateMinX && newPosition.x < boundaries.gateMaxX) {
-        canMove = false;
-      }
+      if (newPosition.x > boundaries.gateMinX && newPosition.x < boundaries.gateMaxX) canMove = false;
     }
+    if (newPosition.z < boundaries.buildingZ) canMove = false;
     
-    // Check building wall collision
-    if (newPosition.z < boundaries.buildingZ) {
-      canMove = false;
-    }
-    
-    // Apply movement only if no collision
     if (canMove) {
       camera.position.copy(newPosition);
     }
     
-    // Keep camera at fixed height (no flying or going underground)
     camera.position.y = 1.6;
   });
 
-  return (
-    <PointerLockControls
-      ref={controlsRef}
-      args={[camera, gl.domElement]}
-    />
-  );
+  return null;
 }
 
 /**

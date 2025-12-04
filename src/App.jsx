@@ -57,7 +57,7 @@ function App() {
         zIndex: 999,
         pointerEvents: 'none',
       }}>
-        Press <strong>C</strong> to toggle mouse look | WASD/Arrows to move
+        <strong>Right-click + Drag</strong> to look around | <strong>WASD/Arrows</strong> to move | <strong>Left-click</strong> objects normally
       </div>
 
       {/* 3D Canvas */}
