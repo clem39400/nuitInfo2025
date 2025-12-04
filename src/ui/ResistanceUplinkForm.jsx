@@ -1,6 +1,77 @@
 import { useState, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Float, OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import useGameStore from '../core/GameStateContext';
+import BinaryRainOverlay from './BinaryRainOverlay';
 import './ResistanceUplinkForm.css';
+
+// 3D Visualizer for the selected mission
+const MissionVisualizer = ({ mission }) => {
+  return (
+    <div className="mission-visualizer" style={{ height: '180px', width: '100%', margin: '10px 0', borderRadius: '12px', overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
+      <Canvas>
+        <PerspectiveCamera makeDefault position={[0, 0, 4]} />
+        <ambientLight intensity={0.5} />
+        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+        <pointLight position={[-10, -10, -10]} color="blue" intensity={0.5} />
+
+        <Float speed={2} rotationIntensity={1.5} floatIntensity={1}>
+          {mission === 'contact' && (
+            <group>
+              <mesh>
+                <dodecahedronGeometry args={[1.2, 0]} />
+                <meshStandardMaterial color="#00a2ff" wireframe emissive="#00a2ff" emissiveIntensity={0.2} />
+              </mesh>
+              <mesh>
+                <dodecahedronGeometry args={[1.0, 0]} />
+                <meshStandardMaterial color="#00a2ff" transparent opacity={0.2} />
+              </mesh>
+            </group>
+          )}
+
+          {mission === 'donation' && (
+            <group>
+              <mesh>
+                <octahedronGeometry args={[1.2, 0]} />
+                <meshStandardMaterial color="#ffcc00" metalness={0.9} roughness={0.1} envMapIntensity={1} />
+              </mesh>
+              <mesh rotation={[0, 0, Math.PI / 4]}>
+                <torusGeometry args={[1.6, 0.05, 16, 100]} />
+                <meshStandardMaterial color="#ffaa00" emissive="#ffaa00" emissiveIntensity={0.5} />
+              </mesh>
+            </group>
+          )}
+
+          {mission === 'volunteer' && (
+            <group>
+              <mesh>
+                <icosahedronGeometry args={[1.2, 0]} />
+                <meshStandardMaterial color="#ff4444" metalness={0.6} roughness={0.2} />
+              </mesh>
+              <mesh position={[0, 0, 0]}>
+                <sphereGeometry args={[1.4, 32, 32]} />
+                <meshStandardMaterial color="#ff0000" wireframe transparent opacity={0.1} />
+              </mesh>
+            </group>
+          )}
+
+          {mission === 'info' && (
+            <group>
+              <mesh>
+                <torusKnotGeometry args={[0.8, 0.25, 100, 16]} />
+                <meshStandardMaterial color="#aa00ff" metalness={0.8} roughness={0.2} />
+              </mesh>
+            </group>
+          )}
+        </Float>
+
+        <ContactShadows position={[0, -1.5, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />
+        <Environment preset="city" />
+        <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={2} />
+      </Canvas>
+    </div>
+  );
+};
 
 /**
  * Resistance Uplink Form - The NIRD Challenge
@@ -71,11 +142,11 @@ function ResistanceUplinkForm() {
 
   const validate = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Le nom est requis';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'L\'email est requis';
     } else if (!validateEmail(formData.email)) {
@@ -134,7 +205,7 @@ function ResistanceUplinkForm() {
 
   const getConfirmationMessage = () => {
     const name = formData.name || 'Voyageur';
-    
+
     switch (mission) {
       case 'contact':
         return (
@@ -143,7 +214,7 @@ function ResistanceUplinkForm() {
               Salutations, <span className="highlight">{name}</span> ! 👋
             </h2>
             <p className="confirmation-text">
-              Ton message a bien été acheminé vers nos serveurs centraux 📡. 
+              Ton message a bien été acheminé vers nos serveurs centraux 📡.
               Nos <strong>Agents de Support</strong> te répondront sous peu.
             </p>
           </>
@@ -155,7 +226,7 @@ function ResistanceUplinkForm() {
               Un immense 'GG', <span className="highlight">{name}</span> ! 🏆
             </h2>
             <p className="confirmation-text">
-              Ton <strong>Don de Ressources</strong> de {formData.amount}€ est une bénédiction pour notre cause 🙏. 
+              Ton <strong>Don de Ressources</strong> de {formData.amount}€ est une bénédiction pour notre cause 🙏.
               Il permettra de financer nos projets de numérique responsable en {currentYear}.
             </p>
           </>
@@ -167,7 +238,7 @@ function ResistanceUplinkForm() {
               Bienvenue dans la Guilde, <span className="highlight">{name}</span> ! ⚔️
             </h2>
             <p className="confirmation-text">
-              Tes compétences en <strong>{formData.skills}</strong> seront précieuses pour notre mission. 
+              Tes compétences en <strong>{formData.skills}</strong> seront précieuses pour notre mission.
               Un Maître de Guilde te contactera bientôt pour t'intégrer à l'équipe.
             </p>
           </>
@@ -179,7 +250,7 @@ function ResistanceUplinkForm() {
               Message reçu, <span className="highlight">{name}</span> ! 📨
             </h2>
             <p className="confirmation-text">
-              Ta demande d'informations sur <strong>{formData.topic || 'nos activités'}</strong> a été 
+              Ta demande d'informations sur <strong>{formData.topic || 'nos activités'}</strong> a été
               transmise. Un membre de notre équipe te répondra rapidement.
             </p>
           </>
@@ -192,6 +263,9 @@ function ResistanceUplinkForm() {
   return (
     <div className={`nird-overlay ${isClosing ? 'closing' : ''}`} onClick={handleClose}>
       <div className={`nird-container ${isClosing ? 'closing' : ''}`} onClick={(e) => e.stopPropagation()}>
+        {/* Binary Rain Effect Background */}
+        <BinaryRainOverlay opacity={0.1} />
+
         {/* Header */}
         <div className="nird-header">
           <div className="nird-logo">
@@ -202,6 +276,9 @@ function ResistanceUplinkForm() {
             ×
           </button>
         </div>
+
+        {/* 3D Visualizer */}
+        <MissionVisualizer mission={mission} />
 
         {!isSubmitted ? (
           <>

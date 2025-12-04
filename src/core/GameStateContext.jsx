@@ -54,6 +54,11 @@ const useGameStore = create((set) => ({
 
   setSnakeGameOpen: (isOpen) => set({ isSnakeGameOpen: isOpen }),
 
+  // NIRD Form State
+  showNIRDForm: false,
+  openNIRDForm: () => set({ showNIRDForm: true }),
+  closeNIRDForm: () => set({ showNIRDForm: false }),
+
   completePuzzle: (puzzleId) => set((state) => ({
     completedPuzzles: {
       ...state.completedPuzzles,
