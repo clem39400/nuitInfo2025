@@ -101,6 +101,36 @@ function HallwayScene({ isChatbotOpen }) {
         <meshStandardMaterial color="#0d0d15" roughness={0.8} />
       </mesh>
 
+      {/* Back wall - closes off the end of the hallway behind the doors */}
+      <mesh position={[0, 2.5, -14]} receiveShadow>
+        <boxGeometry args={[12, 5, 0.3]} />
+        <meshStandardMaterial
+          color="#1a1a25"
+          roughness={0.7}
+          metalness={0.3}
+        />
+      </mesh>
+      
+      {/* Back wall trim at bottom */}
+      <mesh position={[0, 0.3, -13.9]}>
+        <boxGeometry args={[12, 0.6, 0.1]} />
+        <meshStandardMaterial
+          color="#0a0a12"
+          roughness={0.5}
+          metalness={0.6}
+        />
+      </mesh>
+
+      {/* Front wall - closes off the entrance end (optional, for better enclosure) */}
+      <mesh position={[0, 2.5, 14]} receiveShadow>
+        <boxGeometry args={[12, 5, 0.3]} />
+        <meshStandardMaterial
+          color="#1a1a25"
+          roughness={0.7}
+          metalness={0.3}
+        />
+      </mesh>
+
       {/* Flickering fluorescent lights */}
       <FlickeringLight position={[0, 4.5, -8]} intensity={2.5} />
       <FlickeringLight position={[0, 4.5, 0]} intensity={2.5} />

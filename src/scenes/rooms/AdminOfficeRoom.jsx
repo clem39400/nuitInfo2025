@@ -42,16 +42,24 @@ function AdminOfficeRoom() {
       <DustParticles count={50} spread={10} color="#998866" />
 
       {/* Walls */}
+      {/* Back wall */}
       <mesh position={[0, 2.5, -7]}>
         <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#2a2520" roughness={0.85} />
       </mesh>
+      {/* Left wall */}
       <mesh position={[-7, 2.5, 0]}>
         <boxGeometry args={[0.2, 5, 14]} />
         <meshStandardMaterial color="#2a2520" roughness={0.85} />
       </mesh>
+      {/* Right wall */}
       <mesh position={[7, 2.5, 0]}>
         <boxGeometry args={[0.2, 5, 14]} />
+        <meshStandardMaterial color="#2a2520" roughness={0.85} />
+      </mesh>
+      {/* Front wall - closes off the room entrance */}
+      <mesh position={[0, 2.5, 7]}>
+        <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#2a2520" roughness={0.85} />
       </mesh>
 

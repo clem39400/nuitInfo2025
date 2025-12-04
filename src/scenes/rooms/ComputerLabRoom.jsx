@@ -27,16 +27,24 @@ function ComputerLabRoom() {
       <DustParticles count={60} spread={10} color="#8899aa" />
       
       {/* Walls */}
+      {/* Back wall */}
       <mesh position={[0, 2.5, -7]}>
         <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#1a1a25" roughness={0.8} />
       </mesh>
+      {/* Left wall */}
       <mesh position={[-7, 2.5, 0]}>
         <boxGeometry args={[0.2, 5, 14]} />
         <meshStandardMaterial color="#1a1a25" roughness={0.8} />
       </mesh>
+      {/* Right wall */}
       <mesh position={[7, 2.5, 0]}>
         <boxGeometry args={[0.2, 5, 14]} />
+        <meshStandardMaterial color="#1a1a25" roughness={0.8} />
+      </mesh>
+      {/* Front wall - closes off the room entrance */}
+      <mesh position={[0, 2.5, 7]}>
+        <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#1a1a25" roughness={0.8} />
       </mesh>
       

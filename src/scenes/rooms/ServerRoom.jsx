@@ -27,16 +27,24 @@ function ServerRoom() {
       <DustParticles count={40} spread={8} color="#ff6644" />
       
       {/* Dark walls */}
+      {/* Back wall */}
       <mesh position={[0, 2.5, -7]}>
         <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#0a0808" roughness={0.9} />
       </mesh>
+      {/* Left wall */}
       <mesh position={[-7, 2.5, 0]}>
         <boxGeometry args={[0.2, 5, 14]} />
         <meshStandardMaterial color="#0a0808" roughness={0.9} />
       </mesh>
+      {/* Right wall */}
       <mesh position={[7, 2.5, 0]}>
         <boxGeometry args={[0.2, 5, 14]} />
+        <meshStandardMaterial color="#0a0808" roughness={0.9} />
+      </mesh>
+      {/* Front wall - closes off the room entrance */}
+      <mesh position={[0, 2.5, 7]}>
+        <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#0a0808" roughness={0.9} />
       </mesh>
       

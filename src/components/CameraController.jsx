@@ -2,14 +2,67 @@ import { useRef, useEffect } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import gsap from 'gsap';
 import * as THREE from 'three';
+import useGameStore from '../core/GameStateContext';
+
+/**
+ * Scene-specific collision boundaries
+ * Each scene has its own collision configuration
+ */
+const SCENE_BOUNDARIES = {
+  gate: {
+    // Outer boundaries - limited by hedges along the path
+    minX: -3.0,  // Left hedge at -3.5, with buffer
+    maxX: 3.0,   // Right hedge at 3.5, with buffer
+    minZ: -9,    // Can't go past the gate at z=-10
+    maxZ: 8,     // Open area behind player
+    
+    // Gate collision - the iron gate bars
+    obstacles: [
+      // Gate bars - can't pass through the gate
+      { minX: -3.5, maxX: 3.5, minZ: -10.5, maxZ: -9.5 },
+      // Left gate pillar
+      { minX: -4, maxX: -3, minZ: -10.8, maxZ: -9.2 },
+      // Right gate pillar  
+      { minX: 3, maxX: 4, minZ: -10.8, maxZ: -9.2 },
+      // Hologram pedestal
+      { minX: -1.2, maxX: 1.2, minZ: -3, maxZ: -1 },
+    ]
+  },
+  hallway: {
+    // Hallway walls
+    minX: -5,   // Left wall at -5.5
+    maxX: 5,    // Right wall at 5.5
+    minZ: -11,  // Doors at end
+    maxZ: 8,    // Entry area
+    
+    obstacles: [
+      // Left lockers collision
+      { minX: -5.2, maxX: -4.3, minZ: -14, maxZ: 14 },
+      // Right lockers collision
+      { minX: 4.3, maxX: 5.2, minZ: -14, maxZ: 14 },
+      // Back wall with doors
+      { minX: -6, maxX: 6, minZ: -13, maxZ: -11.5 },
+    ]
+  },
+  room: {
+    // Generic room boundaries
+    minX: -8,
+    maxX: 8,
+    minZ: -8,
+    maxZ: 8,
+    obstacles: []
+  }
+};
 
 /**
  * Camera Controller - First-person controls WITHOUT pointer lock
  * Right-click and drag to look around, WASD/Arrows to move
  * Cursor is always visible for clicking objects
+ * Now with scene-aware collision detection!
  */
 function CameraController() {
   const { camera, gl } = useThree();
+  const { currentPhase } = useGameStore();
   const velocity = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
   
@@ -118,6 +171,24 @@ function CameraController() {
     };
   }, [camera, gl]);
 
+  /**
+   * Check if a position collides with any obstacle
+   */
+  const checkObstacleCollision = (pos, obstacles) => {
+    const playerRadius = 0.4; // Player collision radius
+    for (const obs of obstacles) {
+      if (
+        pos.x + playerRadius > obs.minX &&
+        pos.x - playerRadius < obs.maxX &&
+        pos.z + playerRadius > obs.minZ &&
+        pos.z - playerRadius < obs.maxZ
+      ) {
+        return true; // Collision detected
+      }
+    }
+    return false;
+  };
+
   // Movement and look logic
   useFrame((state, delta) => {
     const moveSpeed = 5;
@@ -168,32 +239,26 @@ function CameraController() {
     // Calculate new position
     const newPosition = camera.position.clone().add(velocity.current);
     
-    // Collision detection
-    const boundaries = {
-      minX: -3.5,
-      maxX: 3.5,
-      minZ: -18,
-      maxZ: 8,
-      gateZ: -10,
-      gateMinX: -3,
-      gateMaxX: 3,
-      gateDepth: 0.8,
-      buildingZ: -14,
-    };
+    // Get scene-specific boundaries
+    const boundaries = SCENE_BOUNDARIES[currentPhase] || SCENE_BOUNDARIES.room;
     
+    // Check boundary collision
     let canMove = true;
     
+    // Check outer boundaries
     if (newPosition.x < boundaries.minX || newPosition.x > boundaries.maxX) canMove = false;
     if (newPosition.z < boundaries.minZ || newPosition.z > boundaries.maxZ) canMove = false;
-    if (newPosition.z < boundaries.gateZ && newPosition.z > boundaries.gateZ - boundaries.gateDepth) {
-      if (newPosition.x > boundaries.gateMinX && newPosition.x < boundaries.gateMaxX) canMove = false;
+    
+    // Check obstacle collisions
+    if (canMove && boundaries.obstacles) {
+      canMove = !checkObstacleCollision(newPosition, boundaries.obstacles);
     }
-    if (newPosition.z < boundaries.buildingZ) canMove = false;
     
     if (canMove) {
       camera.position.copy(newPosition);
     }
     
+    // Always keep player at eye height
     camera.position.y = 1.6;
   });
 

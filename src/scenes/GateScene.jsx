@@ -193,10 +193,29 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <meshStandardMaterial color="#2a5a1a" />
       </mesh>
 
-      {/* ========== SKY BACKDROP ========== */}
-      <mesh position={[0, 20, -50]} rotation={[0, 0, 0]}>
-        <planeGeometry args={[200, 60]} />
+      {/* ========== SKY ENCLOSURE - Complete backdrop ========== */}
+      {/* Back sky wall - main backdrop behind the school */}
+      <mesh position={[0, 15, -35]} rotation={[0, 0, 0]}>
+        <planeGeometry args={[100, 50]} />
         <meshBasicMaterial color="#87ceeb" />
+      </mesh>
+      
+      {/* Left side wall - closes the left side */}
+      <mesh position={[-15, 15, -10]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[60, 50]} />
+        <meshBasicMaterial color="#87ceeb" />
+      </mesh>
+      
+      {/* Right side wall - closes the right side */}
+      <mesh position={[15, 15, -10]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[60, 50]} />
+        <meshBasicMaterial color="#87ceeb" />
+      </mesh>
+      
+      {/* Top sky - covers any gaps above */}
+      <mesh position={[0, 40, -10]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[100, 60]} />
+        <meshBasicMaterial color="#87ceeb" />  
       </mesh>
       
       {/* White fluffy clouds */}
