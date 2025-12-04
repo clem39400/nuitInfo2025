@@ -15,7 +15,7 @@ import { useFrame } from '@react-three/fiber';
  * - Chatbot component should be placed inside <HologramEffect> at position [0, 1.2, -2]
  * - Snake game triggers via completePuzzle('gate')
  */
-function GateScene({ onOpenChatbot }) {
+function GateScene({ onOpenChatbot, isChatbotOpen }) {
   const { completePuzzle, goToHallway } = useGameStore();
   const hologramRef = useRef();
 
@@ -45,8 +45,8 @@ function GateScene({ onOpenChatbot }) {
       {/* Real rain effect */}
       <RainEffect count={800} spread={35} />
 
-      {/* Floating dust particles */}
-      <DustParticles count={50} spread={15} color="#00ff88" />
+      {/* Floating dust particles - Disabled when chatbot is open for performance */}
+      {!isChatbotOpen && <DustParticles count={50} spread={15} color="#00ff88" />}
 
       {/* Main reflective wet ground - larger and more visible */}
       <ReflectiveFloor

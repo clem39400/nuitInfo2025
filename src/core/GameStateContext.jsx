@@ -32,6 +32,12 @@ const useGameStore = create((set) => ({
     isTransitioning: false
   }),
 
+  goToGate: () => set({
+    currentPhase: 'gate',
+    currentRoom: null,
+    isTransitioning: false
+  }),
+
   enterRoom: (roomId) => set({
     currentPhase: 'room',
     currentRoom: roomId,

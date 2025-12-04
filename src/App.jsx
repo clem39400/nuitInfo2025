@@ -114,11 +114,14 @@ function App() {
 
         {/* Scene Content - Pass chatbot handler */}
         <Suspense fallback={null}>
-          <SceneManager onOpenChatbot={() => setIsChatbotOpen(true)} />
+          <SceneManager
+            onOpenChatbot={() => setIsChatbotOpen(true)}
+            isChatbotOpen={isChatbotOpen}
+          />
         </Suspense>
 
-        {/* Post-Processing Effects - Disabled during Snake Game for performance */}
-        {!isSnakeGameOpen && <PostProcessing bloomIntensity={0.6} />}
+        {/* Post-Processing Effects - Disabled during Snake Game or Chatbot for performance */}
+        {(!isSnakeGameOpen && !isChatbotOpen) && <PostProcessing bloomIntensity={0.6} />}
 
         {/* Preload assets */}
         <Preload all />
