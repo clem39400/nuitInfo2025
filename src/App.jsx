@@ -8,6 +8,7 @@ import PostProcessing from './components/PostProcessing';
 import LoadingScreen from './ui/LoadingScreen';
 import HUD from './ui/HUD';
 import Chatbot from './components/Chatbot';
+import SnakeGame from './components/SnakeGame';
 import useGameStore from './core/GameStateContext';
 
 /**
@@ -17,7 +18,14 @@ import useGameStore from './core/GameStateContext';
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-  const { currentPhase, currentRoom } = useGameStore();
+  const {
+    currentPhase,
+    currentRoom,
+    isSnakeGameOpen,
+    setSnakeGameOpen,
+    completePuzzle,
+    goToHallway
+  } = useGameStore();
 
   // Simulate asset loading
   useEffect(() => {
@@ -35,6 +43,12 @@ function App() {
     return 'hallway';
   };
 
+  const handleSnakeWin = () => {
+    setSnakeGameOpen(false);
+    completePuzzle('gate');
+    goToHallway();
+  };
+
   return (
     <>
       {/* Loading Screen */}
@@ -44,15 +58,23 @@ function App() {
       <HUD />
 
       {/* Satirical Chatbot */}
-      <Chatbot 
-        isOpen={isChatbotOpen} 
+      <Chatbot
+        isOpen={isChatbotOpen}
         onClose={() => setIsChatbotOpen(false)}
         onSnakeGameStart={() => {
           setIsChatbotOpen(false);
-          // TODO: Trigger Snake game
-          console.log('Snake game would start here!');
+          setSnakeGameOpen(true);
         }}
       />
+
+      {/* Snake Game Overlay */}
+      {isSnakeGameOpen && (
+        <SnakeGame
+          onClose={() => setSnakeGameOpen(false)}
+          onWin={handleSnakeWin}
+          winScore={5} // Lower score for easier testing/demo
+        />
+      )}
 
       {/* Controls Instructions */}
       <div style={{
@@ -96,7 +118,7 @@ function App() {
         </Suspense>
 
         {/* Post-Processing Effects - Disabled during Snake Game for performance */}
-        {!useGameStore(state => state.isSnakeGameOpen) && <PostProcessing bloomIntensity={0.6} />}
+        {!isSnakeGameOpen && <PostProcessing bloomIntensity={0.6} />}
 
         {/* Preload assets */}
         <Preload all />
