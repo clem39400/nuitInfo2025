@@ -32,86 +32,187 @@ function GateScene() {
       {/* Floating dust particles */}
       <DustParticles count={50} spread={15} color="#00ff88" />
       
-      {/* Reflective wet ground */}
+      {/* Main reflective wet ground - larger and more visible */}
       <ReflectiveFloor
         position={[0, 0, 0]}
-        size={[60, 60]}
+        size={[80, 80]}
         color="#020205"
         roughness={0.05}
         metalness={0.95}
         mirror={0.8}
       />
       
-      {/* School gate structure - cyberpunk style */}
-      <group position={[0, 0, -8]}>
-        {/* Gate pillars with neon trim */}
-        {[-4, 4].map((x, i) => (
-          <group key={i} position={[x, 0, 0]}>
-            {/* Main pillar */}
-            <mesh position={[0, 2, 0]} castShadow>
-              <boxGeometry args={[0.6, 4, 0.6]} />
+      {/* Grass/lawn area boundary markers */}
+      {/* Left side boundary */}
+      <mesh position={[-10, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[5, 40]} />
+        <meshStandardMaterial
+          color="#1a2a1a"
+          roughness={0.95}
+        />
+      </mesh>
+      
+      {/* Right side boundary */}
+      <mesh position={[10, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[5, 40]} />
+        <meshStandardMaterial
+          color="#1a2a1a"
+          roughness={0.95}
+        />
+      </mesh>
+      
+      {/* School building facade - makes it look like an actual school */}
+      <group position={[0, 0, -15]}>
+        {/* Main school building wall */}
+        <mesh position={[0, 4, 0]} receiveShadow>
+          <boxGeometry args={[25, 8, 0.5]} />
+          <meshStandardMaterial
+            color="#3a3a45"
+            roughness={0.8}
+          />
+        </mesh>
+        
+        {/* Building windows */}
+        {Array.from({ length: 8 }).map((_, i) => (
+          <group key={i} position={[-10 + i * 2.8, 4.5, 0.3]}>
+            {/* Window */}
+            <mesh>
+              <planeGeometry args={[1.2, 1.8]} />
               <meshStandardMaterial
-                color="#0a0a12"
+                color="#1a1a2a"
+                emissive="#ffcc66"
+                emissiveIntensity={0.1}
+              />
+            </mesh>
+            {/* Window glow */}
+            <pointLight position={[0, 0, 0.5]} intensity={0.2} color="#ffcc66" distance={3} />
+          </group>
+        ))}
+        
+        {/* School name sign on building */}
+        <group position={[0, 7.5, 0.3]}>
+          <mesh>
+            <boxGeometry args={[8, 0.8, 0.1]} />
+            <meshStandardMaterial
+              color="#1a1a2e"
+              emissive="#00ff88"
+              emissiveIntensity={0.3}
+            />
+          </mesh>
+          {/* "ÉCOLE NUMÉRIQUE" or "DIGITAL SCHOOL" text representation */}
+          <mesh position={[0, 0, 0.06]}>
+            <planeGeometry args={[7, 0.5]} />
+            <meshBasicMaterial
+              color="#00ff88"
+              transparent
+              opacity={0.9}
+            />
+          </mesh>
+        </group>
+        
+        {/* Roof */}
+        <mesh position={[0, 8.2, -0.3]} castShadow>
+          <boxGeometry args={[25, 0.3, 1]} />
+          <meshStandardMaterial color="#2a2a35" />
+        </mesh>
+      </group>
+      
+      {/* School entrance gate - more traditional style */}
+      <group position={[0, 0, -10]}>
+        {/* Gate pillars - brick/stone style */}
+        {[-3.5, 3.5].map((x, i) => (
+          <group key={i} position={[x, 0, 0]}>
+            {/* Brick pillar */}
+            <mesh position={[0, 1.8, 0]} castShadow>
+              <boxGeometry args={[0.8, 3.6, 0.8]} />
+              <meshStandardMaterial
+                color="#4a3a3a"
+                roughness={0.9}
+              />
+            </mesh>
+            
+            {/* Stone cap */}
+            <mesh position={[0, 3.7, 0]} castShadow>
+              <boxGeometry args={[1, 0.3, 1]} />
+              <meshStandardMaterial
+                color="#5a5a5a"
+                roughness={0.7}
+              />
+            </mesh>
+            
+            {/* Small lamp on pillar */}
+            <group position={[0, 3, x > 0 ? -0.5 : 0.5]}>
+              <mesh castShadow>
+                <boxGeometry args={[0.15, 0.3, 0.15]} />
+                <meshStandardMaterial color="#2a2a2a" />
+              </mesh>
+              <pointLight position={[0, -0.1, 0]} intensity={0.5} color="#ffcc66" distance={4} />
+            </group>
+          </group>
+        ))}
+        
+        {/* Iron gate bars */}
+        <group>
+          {/* Horizontal bars */}
+          <mesh position={[0, 2.5, 0]}>
+            <boxGeometry args={[7, 0.08, 0.08]} />
+            <meshStandardMaterial color="#1a1a1a" metalness={0.8} />
+          </mesh>
+          <mesh position={[0, 1.2, 0]}>
+            <boxGeometry args={[7, 0.08, 0.08]} />
+            <meshStandardMaterial color="#1a1a1a" metalness={0.8} />
+          </mesh>
+          
+          {/* Vertical bars */}
+          {Array.from({ length: 11 }).map((_, i) => (
+            <mesh key={i} position={[-3 + i * 0.6, 1.8, 0]} castShadow>
+              <cylinderGeometry args={[0.025, 0.025, 3, 8]} />
+              <meshStandardMaterial
+                color="#1a1a1a"
                 metalness={0.9}
                 roughness={0.2}
               />
             </mesh>
-            
-            {/* Neon strip */}
-            <mesh position={[0.31, 2, 0]}>
-              <boxGeometry args={[0.02, 3.8, 0.1]} />
-              <meshBasicMaterial
-                color="#00ff88"
-                transparent
-                opacity={0.9}
-              />
+          ))}
+          
+          {/* Decorative top spikes */}
+          {Array.from({ length: 11 }).map((_, i) => (
+            <mesh key={i} position={[-3 + i * 0.6, 3.3, 0]} castShadow>
+              <coneGeometry args={[0.05, 0.3, 4]} />
+              <meshStandardMaterial color="#1a1a1a" metalness={0.9} />
             </mesh>
-            
-            {/* Top cap */}
-            <mesh position={[0, 4.1, 0]} castShadow>
-              <boxGeometry args={[0.8, 0.2, 0.8]} />
-              <meshStandardMaterial
-                color="#1a1a2e"
-                metalness={0.8}
-                roughness={0.3}
-                emissive="#00ff44"
-                emissiveIntensity={0.1}
-              />
-            </mesh>
-          </group>
-        ))}
+          ))}
+        </group>
         
-        {/* Gate horizontal bar */}
-        <mesh position={[0, 4, 0]} castShadow>
-          <boxGeometry args={[9, 0.3, 0.3]} />
+        {/* Gate lock - glowing to indicate chatbot interaction point */}
+        <mesh position={[2, 1.5, 0.1]}>
+          <boxGeometry args={[0.2, 0.3, 0.15]} />
           <meshStandardMaterial
-            color="#0a0a12"
+            color="#1a1a1a"
+            emissive="#ff0044"
+            emissiveIntensity={0.5}
             metalness={0.9}
-            roughness={0.2}
+          />
+        </mesh>
+      </group>
+      
+      {/* Sidewalk/pavement leading to gate */}
+      <group position={[0, 0.01, -5]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[8, 10]} />
+          <meshStandardMaterial
+            color="#3a3a3a"
+            roughness={0.9}
           />
         </mesh>
         
-        {/* Gate bars */}
-        {Array.from({ length: 7 }).map((_, i) => (
-          <mesh key={i} position={[-3 + i, 1.8, 0]} castShadow>
-            <cylinderGeometry args={[0.03, 0.03, 3.5, 8]} />
-            <meshStandardMaterial
-              color="#1a1a2e"
-              metalness={0.8}
-              roughness={0.3}
-            />
+        {/* Pavement tiles lines */}
+        {Array.from({ length: 10 }).map((_, i) => (
+          <mesh key={i} position={[0, 0.005, -4.5 + i]} rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[8, 0.05]} />
+            <meshBasicMaterial color="#2a2a2a" />
           </mesh>
         ))}
-        
-        {/* "SCHOOL" text placeholder - neon sign */}
-        <mesh position={[0, 4.8, 0]}>
-          <boxGeometry args={[3, 0.5, 0.1]} />
-          <meshStandardMaterial
-            color="#ff0044"
-            emissive="#ff0044"
-            emissiveIntensity={0.8}
-          />
-        </mesh>
       </group>
       
       {/* Hologram pedestal for chatbot */}

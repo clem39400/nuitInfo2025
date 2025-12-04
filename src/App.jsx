@@ -1,6 +1,6 @@
 import { useState, Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Preload } from '@react-three/drei';
+import { Preload } from '@react-three/drei';
 import SceneManager from './core/SceneManager';
 import CameraController from './components/CameraController';
 import Environment from './components/Environment';
@@ -41,6 +41,25 @@ function App() {
       {/* HUD Overlay */}
       <HUD />
 
+      {/* Controls Instructions */}
+      <div style={{
+        position: 'fixed',
+        bottom: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'rgba(0, 0, 0, 0.8)',
+        color: '#00ff88',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        border: '1px solid #00ff88',
+        zIndex: 999,
+        pointerEvents: 'none',
+      }}>
+        Press <strong>C</strong> to toggle mouse look | WASD/Arrows to move
+      </div>
+
       {/* 3D Canvas */}
       <Canvas
         shadows
@@ -68,18 +87,6 @@ function App() {
 
         {/* Preload assets */}
         <Preload all />
-
-        {/* Debug Controls (remove in production) */}
-        <OrbitControls
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
-          maxPolarAngle={Math.PI * 0.85}
-          minPolarAngle={Math.PI * 0.1}
-          minDistance={1}
-          maxDistance={20}
-          target={[0, 1, 0]}
-        />
       </Canvas>
     </>
   );
