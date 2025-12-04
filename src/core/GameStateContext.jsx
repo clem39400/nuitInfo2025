@@ -59,6 +59,11 @@ const useGameStore = create((set) => ({
   openNIRDForm: () => set({ showNIRDForm: true }),
   closeNIRDForm: () => set({ showNIRDForm: false }),
 
+  // Linux Game State
+  showLinuxGame: false,
+  openLinuxGame: () => set({ showLinuxGame: true }),
+  closeLinuxGame: () => set({ showLinuxGame: false }),
+
   completePuzzle: (puzzleId) => set((state) => ({
     completedPuzzles: {
       ...state.completedPuzzles,

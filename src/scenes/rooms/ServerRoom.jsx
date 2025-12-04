@@ -1,6 +1,7 @@
 import RoomBase from './RoomBase';
 import { DustParticles } from '../../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../../components/Environment';
+import useGameStore from '../../core/GameStateContext';
 
 /**
  * Server Room - Hardware & E-Waste theme
@@ -11,6 +12,8 @@ import { ReflectiveFloor } from '../../components/Environment';
  * - Call completePuzzle('server') when puzzle is solved
  */
 function ServerRoom() {
+  const { openLinuxGame } = useGameStore();
+
   return (
     <RoomBase lightingPreset="server">
       {/* Dark reflective floor */}
@@ -22,10 +25,10 @@ function ServerRoom() {
         metalness={0.95}
         mirror={0.6}
       />
-      
+
       {/* Hot air particles */}
       <DustParticles count={40} spread={8} color="#ff6644" />
-      
+
       {/* Dark walls */}
       {/* Back wall */}
       <mesh position={[0, 2.5, -7]}>
@@ -47,13 +50,13 @@ function ServerRoom() {
         <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#0a0808" roughness={0.9} />
       </mesh>
-      
+
       {/* Ceiling with exposed pipes/cables */}
       <mesh position={[0, 5, 0]}>
         <boxGeometry args={[14, 0.2, 14]} />
         <meshStandardMaterial color="#050505" />
       </mesh>
-      
+
       {/* Server racks - industrial look */}
       {Array.from({ length: 5 }).map((_, i) => (
         <group key={i} position={[-4 + i * 2, 0, -4]}>
@@ -66,7 +69,7 @@ function ServerRoom() {
               roughness={0.3}
             />
           </mesh>
-          
+
           {/* Server units */}
           {Array.from({ length: 6 }).map((_, j) => (
             <group key={j} position={[0, 0.3 + j * 0.35, 0.41]}>
@@ -79,7 +82,7 @@ function ServerRoom() {
                   roughness={0.3}
                 />
               </mesh>
-              
+
               {/* Status LED */}
               <mesh position={[0.22, 0, 0.01]}>
                 <circleGeometry args={[0.02, 16]} />
@@ -87,7 +90,7 @@ function ServerRoom() {
                   color={Math.random() > 0.3 ? "#00ff00" : "#ff0000"}
                 />
               </mesh>
-              
+
               {/* Blinking effect light */}
               {Math.random() > 0.5 && (
                 <pointLight
@@ -101,7 +104,7 @@ function ServerRoom() {
           ))}
         </group>
       ))}
-      
+
       {/* E-Waste pile with "good" computers marked TRASH */}
       <group position={[4, 0, 3]}>
         {/* Trash bin */}
@@ -113,13 +116,13 @@ function ServerRoom() {
             roughness={0.5}
           />
         </mesh>
-        
+
         {/* "TRASH" label */}
         <mesh position={[0, 0.8, 0.61]}>
           <planeGeometry args={[1, 0.3]} />
           <meshBasicMaterial color="#ff4444" />
         </mesh>
-        
+
         {/* Discarded laptops/computers */}
         {Array.from({ length: 4 }).map((_, i) => (
           <mesh
@@ -144,7 +147,7 @@ function ServerRoom() {
           </mesh>
         ))}
       </group>
-      
+
       {/* Repair bench - puzzle location */}
       <group position={[0, 0, 2]}>
         {/* Workbench */}
@@ -156,7 +159,7 @@ function ServerRoom() {
             roughness={0.6}
           />
         </mesh>
-        
+
         {/* Bench legs */}
         {[[-0.9, -0.4], [0.9, -0.4], [-0.9, 0.4], [0.9, 0.4]].map(([x, z], j) => (
           <mesh key={j} position={[x, 0.22, z]} castShadow>
@@ -164,9 +167,17 @@ function ServerRoom() {
             <meshStandardMaterial color="#2a2a2a" />
           </mesh>
         ))}
-        
+
         {/* Laptop to repair - glowing highlight */}
-        <group position={[0, 0.6, 0]}>
+        <group
+          position={[0, 0.6, 0]}
+          onClick={(e) => {
+            e.stopPropagation();
+            openLinuxGame();
+          }}
+          onPointerOver={() => document.body.style.cursor = 'pointer'}
+          onPointerOut={() => document.body.style.cursor = 'default'}
+        >
           <mesh castShadow>
             <boxGeometry args={[0.4, 0.03, 0.28]} />
             <meshStandardMaterial
@@ -176,7 +187,7 @@ function ServerRoom() {
               metalness={0.8}
             />
           </mesh>
-          
+
           {/* Screen part */}
           <mesh position={[0, 0.15, -0.12]} rotation={[-0.3, 0, 0]} castShadow>
             <boxGeometry args={[0.38, 0.25, 0.01]} />
@@ -186,22 +197,22 @@ function ServerRoom() {
               emissiveIntensity={0.3}
             />
           </mesh>
-          
+
           <pointLight position={[0, 0.3, 0]} intensity={0.5} color="#ff8800" distance={2} />
         </group>
-        
+
         {/* Tools scattered on bench */}
         <mesh position={[0.6, 0.52, 0.2]} rotation={[0, 0.5, 0]}>
           <boxGeometry args={[0.15, 0.02, 0.02]} />
           <meshStandardMaterial color="#888888" metalness={0.9} />
         </mesh>
       </group>
-      
+
       {/* Red emergency lighting */}
       <pointLight position={[0, 4.5, 0]} intensity={2} color="#ff0000" distance={12} />
       <pointLight position={[-5, 2, -5]} intensity={0.5} color="#ff2200" distance={6} />
       <pointLight position={[5, 2, -5]} intensity={0.5} color="#ff2200" distance={6} />
-      
+
       {/* Ambient heat glow */}
       <ambientLight intensity={0.1} color="#ff4422" />
     </RoomBase>

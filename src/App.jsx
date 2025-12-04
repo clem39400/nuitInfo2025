@@ -11,6 +11,7 @@ import IntroOverlay from './ui/IntroOverlay';
 import Chatbot from './components/Chatbot';
 import SnakeGame from './components/SnakeGame';
 import ResistanceUplinkForm from './ui/ResistanceUplinkForm';
+import LinuxTerminalGame from './components/LinuxTerminalGame';
 import useGameStore from './core/GameStateContext';
 
 /**
@@ -26,7 +27,9 @@ function App() {
     isSnakeGameOpen,
     setSnakeGameOpen,
     completePuzzle,
-    goToHallway
+    goToHallway,
+    showNIRDForm,
+    showLinuxGame
   } = useGameStore();
 
   // Simulate asset loading
@@ -83,7 +86,10 @@ function App() {
       )}
 
       {/* Resistance Uplink Form Overlay */}
-      <ResistanceUplinkForm />
+      {showNIRDForm && <ResistanceUplinkForm />}
+
+      {/* Linux Terminal Game Overlay */}
+      {showLinuxGame && <LinuxTerminalGame />}
 
       {/* Controls Instructions */}
       <div style={{
