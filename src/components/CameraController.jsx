@@ -60,7 +60,7 @@ const SCENE_BOUNDARIES = {
  * Cursor is always visible for clicking objects
  * Now with scene-aware collision detection!
  */
-function CameraController() {
+function CameraController({ disableMovement = false }) {
   const { camera, gl } = useThree();
   const { currentPhase } = useGameStore();
   const velocity = useRef(new THREE.Vector3());
@@ -191,6 +191,16 @@ function CameraController() {
 
   // Movement and look logic
   useFrame((state, delta) => {
+    // Skip all movement processing if disabled (chatbot/snake game open)
+    if (disableMovement) {
+      // Reset keys to prevent stuck movement when re-enabled
+      keys.current.forward = false;
+      keys.current.backward = false;
+      keys.current.left = false;
+      keys.current.right = false;
+      return;
+    }
+    
     const moveSpeed = 5;
     const actualSpeed = moveSpeed * delta;
     const lookSpeed = 0.002;

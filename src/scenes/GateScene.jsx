@@ -590,6 +590,9 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <Html
           position={[0, 2.2, 0]}
           center
+          occlude
+          zIndexRange={[0, 0]}
+          distanceFactor={8}
           style={{
             pointerEvents: 'none',
           }}
@@ -628,6 +631,9 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <Html
           position={[0, 0.5, 0]}
           center
+          occlude
+          zIndexRange={[0, 0]}
+          distanceFactor={8}
           style={{ pointerEvents: 'none' }}
         >
           <div style={{

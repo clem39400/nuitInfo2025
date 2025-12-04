@@ -115,8 +115,8 @@ function App() {
         }}
         dpr={[1, 2]}
       >
-        {/* Camera Controller */}
-        <CameraController />
+        {/* Camera Controller - Disable movement when chatbot or snake game is open */}
+        <CameraController disableMovement={isChatbotOpen || isSnakeGameOpen} />
 
         {/* Environment & Lighting */}
         <Environment scene={getEnvironmentScene()} />

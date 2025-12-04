@@ -53,19 +53,19 @@ function IntroOverlay({ onDismiss }) {
         </p>
       </div>
 
-      {/* Instructions */}
+      {/* Instructions - CRYPTIC CLUES */}
       <div style={styles.instructions}>
         <div style={styles.instruction}>
           <span style={styles.instructionIcon}>💬</span>
           <span>Cliquez sur l'hologramme bleu pour parler au gardien</span>
         </div>
         <div style={styles.instruction}>
-          <span style={styles.instructionIcon}>🐍</span>
-          <span>Tapez <code style={styles.code}>"snake"</code> pour le défier au jeu du serpent</span>
+          <span style={styles.instructionIcon}>🎮</span>
+          <span><em>Indice: Un reptile qui slalome dans les classiques d'arcade pourrait être votre allié...</em></span>
         </div>
         <div style={styles.instruction}>
-          <span style={styles.instructionIcon}>🔓</span>
-          <span>Ou tapez <code style={styles.code}>"NIRD"</code> pour révéler le mot de passe secret</span>
+          <span style={styles.instructionIcon}>🔑</span>
+          <span><em>Indice: 4 lettres sacrées du numérique responsable ouvrent toutes les portes...</em></span>
         </div>
       </div>
 
