@@ -1,6 +1,9 @@
 import RoomBase from './RoomBase';
-import { ScreenGlow, DustParticles, FlickeringLight } from '../../effects/AtmosphericEffects';
+import { ScreenGlow, DustParticles, FlickeringLight, HologramEffect } from '../../effects/AtmosphericEffects';
+import { useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { ReflectiveFloor } from '../../components/Environment';
+import useGameStore from '../../core/GameStateContext';
 
 /**
  * Admin Office Room - Data Privacy & The Nexus theme
@@ -12,6 +15,17 @@ import { ReflectiveFloor } from '../../components/Environment';
  * - Call completePuzzle('office') when puzzle is solved
  */
 function AdminOfficeRoom() {
+  const { openNIRDForm } = useGameStore();
+  const hologramRef = useRef();
+
+  // Animate hologram
+  useFrame((state) => {
+    if (hologramRef.current) {
+      hologramRef.current.rotation.y = state.clock.elapsedTime * 0.5;
+      hologramRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
+    }
+  });
+
   return (
     <RoomBase lightingPreset="office">
       {/* Wooden-look floor with some reflection */}
@@ -23,10 +37,10 @@ function AdminOfficeRoom() {
         metalness={0.4}
         mirror={0.3}
       />
-      
+
       {/* Dust in the stale air */}
       <DustParticles count={50} spread={10} color="#998866" />
-      
+
       {/* Walls */}
       <mesh position={[0, 2.5, -7]}>
         <boxGeometry args={[14, 5, 0.2]} />
@@ -40,14 +54,14 @@ function AdminOfficeRoom() {
         <boxGeometry args={[0.2, 5, 14]} />
         <meshStandardMaterial color="#2a2520" roughness={0.85} />
       </mesh>
-      
+
       {/* Ceiling */}
       <mesh position={[0, 5, 0]}>
         <boxGeometry args={[14, 0.2, 14]} />
         <meshStandardMaterial color="#1a1815" />
       </mesh>
       <FlickeringLight position={[0, 4.5, 0]} intensity={1.8} />
-      
+
       {/* BIG BROTHER EYE poster - creepy surveillance */}
       <group position={[0, 3, -6.85]}>
         {/* Poster frame */}
@@ -55,7 +69,7 @@ function AdminOfficeRoom() {
           <boxGeometry args={[2.2, 2.2, 0.05]} />
           <meshStandardMaterial color="#1a1a1a" />
         </mesh>
-        
+
         {/* Eye poster background */}
         <mesh position={[0, 0, 0.03]}>
           <planeGeometry args={[2, 2]} />
@@ -65,7 +79,7 @@ function AdminOfficeRoom() {
             emissiveIntensity={0.2}
           />
         </mesh>
-        
+
         {/* Eye shape */}
         <mesh position={[0, 0, 0.04]}>
           <circleGeometry args={[0.5, 32]} />
@@ -75,7 +89,7 @@ function AdminOfficeRoom() {
             emissiveIntensity={0.2}
           />
         </mesh>
-        
+
         {/* Pupil */}
         <mesh position={[0, 0, 0.05]}>
           <circleGeometry args={[0.2, 32]} />
@@ -85,11 +99,11 @@ function AdminOfficeRoom() {
             emissiveIntensity={0.3}
           />
         </mesh>
-        
+
         {/* Glowing effect */}
         <pointLight position={[0, 0, 0.5]} intensity={0.5} color="#ff0000" distance={4} />
       </group>
-      
+
       {/* Main office desk with cookie popup computer */}
       <group position={[0, 0, -3]}>
         {/* Large desk */}
@@ -100,7 +114,7 @@ function AdminOfficeRoom() {
             roughness={0.6}
           />
         </mesh>
-        
+
         {/* Desk legs */}
         {[[-1.1, -0.5], [1.1, -0.5], [-1.1, 0.5], [1.1, 0.5]].map(([x, z], j) => (
           <mesh key={j} position={[x, 0.2, z]} castShadow>
@@ -108,14 +122,14 @@ function AdminOfficeRoom() {
             <meshStandardMaterial color="#2a1a0a" />
           </mesh>
         ))}
-        
+
         {/* Monitor with cookie popups */}
         <group position={[0, 0.8, -0.3]}>
           <mesh castShadow>
             <boxGeometry args={[1.1, 0.7, 0.05]} />
             <meshStandardMaterial color="#1a1a1a" metalness={0.8} />
           </mesh>
-          
+
           {/* Screen showing cookie horror */}
           <ScreenGlow
             position={[0, 0, 0.03]}
@@ -123,7 +137,7 @@ function AdminOfficeRoom() {
             color="#ffffff"
             intensity={0.8}
           />
-          
+
           {/* Cookie popup overlays (visual) */}
           {Array.from({ length: 5 }).map((_, i) => (
             <mesh
@@ -143,14 +157,14 @@ function AdminOfficeRoom() {
             </mesh>
           ))}
         </group>
-        
+
         {/* Keyboard */}
         <mesh position={[0, 0.52, 0.3]} castShadow>
           <boxGeometry args={[0.5, 0.02, 0.18]} />
           <meshStandardMaterial color="#2a2a2a" />
         </mesh>
       </group>
-      
+
       {/* Stacks of paper files */}
       {[[-4, -2], [-3.5, 1], [4, -1], [3, 2]].map(([x, z], i) => (
         <group key={i} position={[x, 0, z]}>
@@ -164,99 +178,75 @@ function AdminOfficeRoom() {
           ))}
         </group>
       ))}
-      
+
       {/* Document shredder */}
       <group position={[-4, 0, 3]}>
         <mesh position={[0, 0.4, 0]} castShadow>
           <boxGeometry args={[0.5, 0.8, 0.4]} />
           <meshStandardMaterial color="#3a3a3a" metalness={0.6} />
         </mesh>
-        
+
         {/* Shredder slot */}
         <mesh position={[0, 0.75, 0]}>
           <boxGeometry args={[0.35, 0.05, 0.02]} />
           <meshStandardMaterial color="#1a1a1a" />
         </mesh>
-        
+
         {/* Paper being shredded */}
         <mesh position={[0, 0.85, 0]}>
           <boxGeometry args={[0.25, 0.15, 0.01]} />
           <meshStandardMaterial color="#e8e0d0" />
         </mesh>
       </group>
-      
-      {/* HIDDEN TERMINAL - The Nexus / NIRD Form location */}
-      <group position={[5.5, 0, 4.5]}>
-        {/* Potted plant hiding the terminal */}
-        <group position={[0, 0, 0.4]}>
-          {/* Pot */}
-          <mesh position={[0, 0.2, 0]} castShadow>
-            <cylinderGeometry args={[0.2, 0.15, 0.4, 16]} />
-            <meshStandardMaterial color="#5a3a2a" roughness={0.9} />
-          </mesh>
-          
-          {/* Dirt */}
-          <mesh position={[0, 0.42, 0]}>
-            <cylinderGeometry args={[0.18, 0.18, 0.05, 16]} />
-            <meshStandardMaterial color="#2a1a0a" />
-          </mesh>
-          
-          {/* Plant leaves */}
-          {Array.from({ length: 5 }).map((_, i) => (
-            <mesh
-              key={i}
-              position={[
-                Math.sin(i * 1.2) * 0.15,
-                0.6 + Math.random() * 0.3,
-                Math.cos(i * 1.2) * 0.15
-              ]}
-              rotation={[
-                (Math.random() - 0.5) * 0.5,
-                i * 1.2,
-                (Math.random() - 0.5) * 0.5
-              ]}
-            >
-              <planeGeometry args={[0.15, 0.3]} />
-              <meshStandardMaterial
-                color="#2a5a2a"
-                side={2}
-              />
-            </mesh>
-          ))}
-        </group>
-        
-        {/* Hidden terminal (slightly visible behind plant) */}
-        <group position={[-0.3, 0.4, 0]}>
-          <mesh castShadow>
-            <boxGeometry args={[0.35, 0.3, 0.25]} />
+
+      {/* Blue Hologram Trigger - CENTERED */}
+      <group position={[0, 0, 0]}>
+        {/* Hologram Effect */}
+        <HologramEffect position={[0, 1.2, 0]} color="#0078d4">
+          <mesh
+            ref={hologramRef}
+            onClick={(e) => {
+              console.log('Blue Hologram Clicked!');
+              e.stopPropagation();
+              openNIRDForm();
+            }}
+            onPointerOver={() => document.body.style.cursor = 'pointer'}
+            onPointerOut={() => document.body.style.cursor = 'default'}
+          >
+            <icosahedronGeometry args={[0.4, 0]} />
             <meshStandardMaterial
-              color="#0a0a0a"
-              emissive="#00ff88"
-              emissiveIntensity={0.1}
-              metalness={0.8}
-            />
-          </mesh>
-          
-          {/* Screen */}
-          <mesh position={[0, 0.05, 0.13]}>
-            <planeGeometry args={[0.28, 0.18]} />
-            <meshBasicMaterial
-              color="#00ff88"
+              color="#0078d4"
+              emissive="#0078d4"
+              emissiveIntensity={0.8}
+              wireframe
               transparent
-              opacity={0.3}
+              opacity={0.9}
             />
           </mesh>
-          
-          {/* Subtle glow */}
-          <pointLight
-            position={[0, 0.1, 0.2]}
-            intensity={0.3}
-            color="#00ff88"
-            distance={1.5}
+        </HologramEffect>
+
+        {/* "LE NEXUS" label */}
+        <mesh position={[0, 0.6, 0]}>
+          <planeGeometry args={[1.2, 0.25]} />
+          <meshBasicMaterial color="#0078d4" transparent opacity={0.9} />
+        </mesh>
+
+        {/* Base pedestal */}
+        <mesh position={[0, 0.3, 0]} castShadow>
+          <cylinderGeometry args={[0.6, 0.8, 0.6, 32]} />
+          <meshStandardMaterial
+            color="#0a0a15"
+            metalness={0.95}
+            roughness={0.1}
+            emissive="#0078d4"
+            emissiveIntensity={0.2}
           />
-        </group>
+        </mesh>
+
+        {/* Hologram glow */}
+        <pointLight position={[0, 1.5, 0]} intensity={2} color="#0078d4" distance={4} />
       </group>
-      
+
       {/* Moody lighting */}
       <ambientLight intensity={0.2} color="#aa9988" />
       <pointLight position={[-3, 3, 2]} intensity={0.4} color="#ffcc88" distance={8} />

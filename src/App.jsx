@@ -9,6 +9,7 @@ import LoadingScreen from './ui/LoadingScreen';
 import HUD from './ui/HUD';
 import Chatbot from './components/Chatbot';
 import SnakeGame from './components/SnakeGame';
+import ResistanceUplinkForm from './ui/ResistanceUplinkForm';
 import useGameStore from './core/GameStateContext';
 
 /**
@@ -75,6 +76,9 @@ function App() {
           winScore={5} // Lower score for easier testing/demo
         />
       )}
+
+      {/* Resistance Uplink Form Overlay */}
+      <ResistanceUplinkForm />
 
       {/* Controls Instructions */}
       <div style={{
