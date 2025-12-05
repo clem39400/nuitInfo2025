@@ -57,7 +57,7 @@ function HallwayScene({ isChatbotOpen }) {
       />
 
       {/* ========== RUGS AND DOORMATS ========== */}
-      <RectangleRug position={[0, 0.01, 10]} rotation={[0, 0, 0]} scale={3} />
+
       <Doormat position={[-3.2, 0.01, -13]} scale={1.5} />
       <Doormat position={[0, 0.01, -13]} scale={1.5} />
       <Doormat position={[3.2, 0.01, -13]} scale={1.5} />
@@ -266,13 +266,7 @@ function HallwayScene({ isChatbotOpen }) {
         <meshStandardMaterial color={wallColor} roughness={0.65} />
       </mesh>
 
-      {/* ========== WAITING AREA ========== */}
-      <group position={[-3.5, 0, 6]}>
-        <Sofa position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
-        <CoffeeTable position={[1.5, 0, 0]} scale={1.5} />
-        <Books position={[1.5, 0.4, 0.2]} rotation={[0, 0.3, 0]} scale={1.2} />
-        <RectangleRug position={[0.8, 0.01, 0]} scale={2.5} />
-      </group>
+
 
       {/* ========== BENCHES ========== */}
       <Bench position={[-5.2, 0, -2]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
