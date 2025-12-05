@@ -4,8 +4,8 @@ import VideoRoom from './rooms/VideoRoom';
 import useGameStore from '../core/GameStateContext';
 import { FlickeringLight, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
-import { useThree } from '@react-three/fiber';
-import { useMemo } from 'react';
+import { useThree, useFrame } from '@react-three/fiber';
+import { useMemo, useRef } from 'react';
 import { tweenCamera } from '../components/CameraController';
 // Real 3D Models from Kenney Furniture Kit
 import Bench from '../components/models/Bench';
@@ -18,6 +18,60 @@ import { PottedPlant, Trashcan, Books } from '../components/models/Props';
 import { RectangleRug, Doormat } from '../components/models/Rug';
 import { Person, StudentGroup, Teacher } from '../components/models/Person';
 import NirdPanel from '../components/NirdPanel';
+
+/**
+ * Walking NPC - Walks back and forth in the hallway
+ */
+function WalkingNPC({
+  startZ = 10,
+  endZ = -10,
+  speed = 1.5,
+  xPos = 2,
+  skinColor,
+  shirtColor,
+  hairColor,
+  hasBackpack = true,
+  delay = 0
+}) {
+  const groupRef = useRef();
+  const directionRef = useRef(1);
+
+  useFrame((state, delta) => {
+    if (!groupRef.current) return;
+
+    const t = state.clock.elapsedTime + delay;
+
+    // Move along Z axis
+    groupRef.current.position.z += directionRef.current * speed * delta;
+
+    // Reverse direction at bounds
+    if (groupRef.current.position.z > startZ) {
+      directionRef.current = -1;
+      groupRef.current.rotation.y = 0;
+    } else if (groupRef.current.position.z < endZ) {
+      directionRef.current = 1;
+      groupRef.current.rotation.y = Math.PI;
+    }
+
+    // Walking bob animation
+    groupRef.current.position.y = Math.abs(Math.sin(t * 8)) * 0.03;
+  });
+
+  return (
+    <group ref={groupRef} position={[xPos, 0, startZ - delay * 3]}>
+      <Person
+        position={[0, 0, 0]}
+        rotation={Math.PI}
+        skinColor={skinColor}
+        shirtColor={shirtColor}
+        hairColor={hairColor}
+        hasBackpack={hasBackpack}
+        animated={false}
+        scale={0.9}
+      />
+    </group>
+  );
+}
 
 /**
  * Hallway Scene - Phase 2: The Hub
@@ -487,25 +541,6 @@ function HallwayScene({ isChatbotOpen }) {
       {/* Student group near lockers on left wall */}
       <StudentGroup position={[-4, 0, 0]} rotation={Math.PI / 2} />
 
-      {/* Students sitting on bench (right side) */}
-      <Person
-        position={[4, 0.4, -2]}
-        rotation={-Math.PI / 2}
-        shirtColor="#cc4466"
-        hairColor="#4a3a2a"
-        hasBackpack={false}
-        scale={0.85}
-      />
-      <Person
-        position={[4, 0.4, -2.5]}
-        rotation={-Math.PI / 2 - 0.3}
-        skinColor="#c49a6c"
-        shirtColor="#5577bb"
-        hairColor="#1a1a1a"
-        hasBackpack={true}
-        scale={0.85}
-      />
-
       {/* Teacher/Guide near the doors explaining something */}
       <Teacher
         position={[1.5, 0, -11]}
@@ -638,6 +673,42 @@ function HallwayScene({ isChatbotOpen }) {
           )}
         </group>
       ))}
+
+      {/* ========== WALKING NPCs ========== */}
+      {/* Students walking in the hallway */}
+      <WalkingNPC
+        xPos={2}
+        startZ={10}
+        endZ={-10}
+        speed={1.2}
+        skinColor="#e0b89d"
+        shirtColor="#4477aa"
+        hairColor="#3a2a1a"
+        hasBackpack={true}
+        delay={0}
+      />
+      <WalkingNPC
+        xPos={-2}
+        startZ={8}
+        endZ={-8}
+        speed={1.5}
+        skinColor="#c4956a"
+        shirtColor="#aa4455"
+        hairColor="#1a1a1a"
+        hasBackpack={true}
+        delay={3}
+      />
+      <WalkingNPC
+        xPos={0}
+        startZ={6}
+        endZ={-12}
+        speed={1.0}
+        skinColor="#f5d0b5"
+        shirtColor="#558844"
+        hairColor="#8a6a4a"
+        hasBackpack={false}
+        delay={5}
+      />
 
       {/* Subtle dust particles */}
       <DustParticles count={40} spread={12} color="#ffeecc" />
