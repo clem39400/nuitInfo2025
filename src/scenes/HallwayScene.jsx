@@ -5,7 +5,6 @@ import useGameStore from '../core/GameStateContext';
 import { FlickeringLight, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
 import { useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import { useMemo } from 'react';
 import { tweenCamera } from '../components/CameraController';
 // Real 3D Models from Kenney Furniture Kit
@@ -27,7 +26,7 @@ import NirdPanel from '../components/NirdPanel';
  * - Real door frames with decorations
  */
 function HallwayScene({ isChatbotOpen }) {
-  const { goToGate, setTransitioning } = useGameStore();
+  const { goToGate, setTransitioning, inVideoRoom } = useGameStore();
   const { camera } = useThree();
 
   const handleReturnToGate = () => {
@@ -112,23 +111,25 @@ function HallwayScene({ isChatbotOpen }) {
         label="Sortie vers le Portail"
         onCustomClick={handleReturnToGate}
       />
-      {/* Click Me Button for Return to Gate */}
-      <Html
-        position={[0, 2.8, 13.9]}
-        center
-        zIndexRange={[0, 0]}
-        distanceFactor={10}
-        style={{ pointerEvents: 'none' }}
-      >
-        <div style={getButtonStyles('#00ff88').container}>
-          <div style={getButtonStyles('#00ff88').button}>
-            💬 CLIQUEZ-MOI
+      {/* Click Me Button for Return to Gate - hide when in Video Room */}
+      {!inVideoRoom && (
+        <Html
+          position={[0, 2.8, 13.9]}
+          center
+          zIndexRange={[0, 0]}
+          distanceFactor={10}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div style={getButtonStyles('#00ff88').container}>
+            <div style={getButtonStyles('#00ff88').button}>
+              💬 CLIQUEZ-MOI
+            </div>
+            <div style={getButtonStyles('#00ff88').arrow}>
+              ▼
+            </div>
           </div>
-          <div style={getButtonStyles('#00ff88').arrow}>
-            ▼
-          </div>
-        </div>
-      </Html>
+        </Html>
+      )}
 
       {/* ========== LEFT WALL - SOLID ========== */}
       <group position={[-6, 0, 0]}>
@@ -320,7 +321,6 @@ function HallwayScene({ isChatbotOpen }) {
 
       {/* ========== RIGHT WALL - WITH VIDEO ROOM OPENING ========== */}
       <group position={[5.19, 0, 0]}>
-        <group position={[5.19, 0, 0]}>
           {/* Front section (before Video Room opening) - z = 1 to 15 */}
           <mesh position={[0, 2.5, 8]} receiveShadow>
             <boxGeometry args={[0.4, 5, 14]} />
@@ -356,15 +356,12 @@ function HallwayScene({ isChatbotOpen }) {
           {/* Wall Lamps on right side */}
           <WallLamp position={[-0.35, 2.5, 10]} rotation={[0, -Math.PI / 2, 0]} scale={1.8} lightColor="#ffeecc" lightIntensity={0.6} />
           <WallLamp position={[-0.35, 2.5, -10]} rotation={[0, -Math.PI / 2, 0]} scale={1.8} lightColor="#ffeecc" lightIntensity={0.6} />
-        </group>
 
         {/* ========== LIGHT WELL FROM VIDEO ROOM ========== */}
         {/* Bright light spilling from the Video Room opening */}
         <group position={[5.5, 0, 0]}>
           {/* Main light beam from projection room */}
           <spotLight
-            position={[2, 3, 0]}
-        <spotLight
             position={[2, 3, 0]}
             angle={0.8}
             penumbra={0.5}
@@ -376,14 +373,10 @@ function HallwayScene({ isChatbotOpen }) {
           <pointLight position={[1, 2, 0]} intensity={1.5} color="#8899ff" distance={8} />
           <pointLight position={[0, 1, 0]} intensity={1} color="#aabbff" distance={5} />
 
-
           {/* Glowing floor area from light */}
           <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
             <planeGeometry args={[3, 4]} />
             <meshStandardMaterial
-              color="#667788"
-              emissive="#4466aa"
-          <meshStandardMaterial
               color="#667788"
               emissive="#4466aa"
               emissiveIntensity={0.15}
@@ -392,144 +385,144 @@ function HallwayScene({ isChatbotOpen }) {
             />
           </mesh>
         </group>
+      </group>
 
-        {/* ========== CEILING ========== */}
-        <mesh position={[0, 5, 0]} receiveShadow>
-          <boxGeometry args={[12, 0.4, 30]} />
-          <meshStandardMaterial color={ceilingColor} roughness={0.75} />
-        </mesh>
+      {/* ========== CEILING ========== */}
+      <mesh position={[0, 5, 0]} receiveShadow>
+        <boxGeometry args={[12, 0.4, 30]} />
+        <meshStandardMaterial color={ceilingColor} roughness={0.75} />
+      </mesh>
 
-        {/* ========== BACK WALL WITH DOOR ALCOVES ========== */}
-        {/* Main back wall - with cutouts for doors */}
-        <mesh position={[0, 2.5, -14.2]} receiveShadow>
-          <boxGeometry args={[12, 5, 0.4]} />
-          <meshStandardMaterial color={wallColor} roughness={0.65} />
-        </mesh>
+      {/* ========== BACK WALL WITH DOOR ALCOVES ========== */}
+      {/* Main back wall - with cutouts for doors */}
+      <mesh position={[0, 2.5, -14.2]} receiveShadow>
+        <boxGeometry args={[12, 5, 0.4]} />
+        <meshStandardMaterial color={wallColor} roughness={0.65} />
+      </mesh>
 
-        {/* Door frames / alcoves - decorative surrounds */}
-        {[-3.2, 0, 3.2].map((x, i) => (
-          <group key={i} position={[x, 0, -14]}>
-            {/* Door frame - top */}
-            <mesh position={[0, 2.7, 0.1]}>
-              <boxGeometry args={[1.6, 0.15, 0.25]} />
-              <meshStandardMaterial color="#3a2a1a" roughness={0.4} />
-            </mesh>
-            {/* Door frame - left */}
-            <mesh position={[-0.75, 1.35, 0.1]}>
-              <boxGeometry args={[0.1, 2.7, 0.25]} />
-              <meshStandardMaterial color="#3a2a1a" roughness={0.4} />
-            </mesh>
-            {/* Door frame - right */}
-            <mesh position={[0.75, 1.35, 0.1]}>
-              <boxGeometry args={[0.1, 2.7, 0.25]} />
-              <meshStandardMaterial color="#3a2a1a" roughness={0.4} />
-            </mesh>
-            {/* Decorative plant next to each door */}
-            <PottedPlant position={[1.2, 0, 0.5]} scale={1.8} />
-          </group>
-        ))}
-
-        {/* NIRD Hero Banner REMOVED - Replaced by Reconditioning Poster */}
-
-        {/* Back wall trim */}
-        <mesh position={[0, 0.6, -14]}>
-          <boxGeometry args={[12, 1.2, 0.18]} />
-          <meshStandardMaterial color={trimColor} roughness={0.5} />
-        </mesh>
-
-        {/* ========== FRONT WALL ========== */}
-        <mesh position={[0, 2.5, 14.2]} receiveShadow>
-          <boxGeometry args={[12, 5, 0.4]} />
-          <meshStandardMaterial color={wallColor} roughness={0.65} />
-        </mesh>
-
-
-
-        {/* ========== BENCHES ========== */}
-        <Bench position={[-5.2, 0, -2]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
-        <Bench position={[-5.2, 0, -8]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
-
-        {/* ========== COAT RACKS ========== */}
-        <CoatRack position={[-5, 0, 12.5]} scale={1.8} />
-        <CoatRack position={[4.5, 0, 5]} scale={1.8} />
-
-        {/* ========== POTTED PLANTS ========== */}
-        <PottedPlant position={[-5.2, 0, 2]} scale={2.5} />
-        <PottedPlant position={[-5.2, 0, -5]} scale={2} />
-        <PottedPlant position={[5.2, 0, 8]} scale={2.5} />
-        <PottedPlant position={[-1, 0, 12.5]} scale={2} />
-        <PottedPlant position={[1, 0, 12.5]} scale={2} />
-
-        {/* ========== TRASH CANS ========== */}
-        <Trashcan position={[4.5, 0, -5]} scale={1.5} />
-        <Trashcan position={[-5, 0, 13.5]} scale={1.5} />
-
-        {/* ========== CEILING LIGHTS ========== */}
-        <FlickeringLight position={[0, 4.5, -8]} intensity={3} />
-        <FlickeringLight position={[0, 4.5, 0]} intensity={3} />
-        <FlickeringLight position={[0, 4.5, 8]} intensity={3} />
-
-        {/* ========== AMBIENT LIGHTING - BRIGHTER ========== */}
-        <ambientLight intensity={0.5} color="#fff8f0" />
-        <pointLight position={[-3, 3, 6]} intensity={1.2} distance={10} color="#ffeecc" />
-        <pointLight position={[3, 3, -4]} intensity={1.2} distance={10} color="#ffeecc" />
-        {/* Extra fill light */}
-        <pointLight position={[0, 4, 0]} intensity={0.8} distance={15} color="#ffffff" />
-
-        {/* ========== VIDEO ROOM ========== */}
-        <group position={[12, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
-          <VideoRoom />
+      {/* Door frames / alcoves - decorative surrounds */}
+      {[-3.2, 0, 3.2].map((x, i) => (
+        <group key={i} position={[x, 0, -14]}>
+          {/* Door frame - top */}
+          <mesh position={[0, 2.7, 0.1]}>
+            <boxGeometry args={[1.6, 0.15, 0.25]} />
+            <meshStandardMaterial color="#3a2a1a" roughness={0.4} />
+          </mesh>
+          {/* Door frame - left */}
+          <mesh position={[-0.75, 1.35, 0.1]}>
+            <boxGeometry args={[0.1, 2.7, 0.25]} />
+            <meshStandardMaterial color="#3a2a1a" roughness={0.4} />
+          </mesh>
+          {/* Door frame - right */}
+          <mesh position={[0.75, 1.35, 0.1]}>
+            <boxGeometry args={[0.1, 2.7, 0.25]} />
+            <meshStandardMaterial color="#3a2a1a" roughness={0.4} />
+          </mesh>
+          {/* Decorative plant next to each door */}
+          <PottedPlant position={[1.2, 0, 0.5]} scale={1.8} />
         </group>
+      ))}
 
-        {/* ========== DOORS - FLUSH AGAINST BACK WALL ========== */}
-        <Door
-          roomId="lab"
-          position={[-3.2, 0, -13.8]}
-          cameraTarget={{
-            position: { x: 0, y: 1.6, z: 5 },
-            lookAt: { x: 0, y: 1, z: 0 }
-          }}
-          label="Computer Lab"
-        />
-        <Door
-          roomId="server"
-          position={[0, 0, -13.8]}
-          cameraTarget={{
-            position: { x: 0, y: 1.6, z: 5 },
-            lookAt: { x: 0, y: 1, z: 0 }
-          }}
-          label="Server Room"
-        />
-        <Door
-          roomId="office"
-          position={[3.2, 0, -13.8]}
-          cameraTarget={{
-            position: { x: 0, y: 1.6, z: 5 },
-            lookAt: { x: 0, y: 1, z: 0 }
-          }}
-          label="Admin Office"
-        />
+      {/* NIRD Hero Banner REMOVED - Replaced by Reconditioning Poster */}
 
-        {/* ========== DOOR SIGNS ========== */}
-        {[
-          { pos: [-3.2, 2.9, -13.7], text: 'LAB', color: '#00aaff' },
-          { pos: [0, 2.9, -13.7], text: 'SERVER', color: '#ff4444' },
-          { pos: [3.2, 2.9, -13.7], text: 'OFFICE', color: '#ffaa00' },
-        ].map((sign, i) => (
-          <group key={i} position={sign.pos}>
-            <mesh>
-              <boxGeometry args={[1.4, 0.35, 0.1]} />
-              <meshStandardMaterial
-                color="#222222"
-                emissive={sign.color}
-                emissiveIntensity={0.5}
-              />
-            </mesh>
-            <pointLight intensity={0.5} distance={3} color={sign.color} />
+      {/* Back wall trim */}
+      <mesh position={[0, 0.6, -14]}>
+        <boxGeometry args={[12, 1.2, 0.18]} />
+        <meshStandardMaterial color={trimColor} roughness={0.5} />
+      </mesh>
 
-            {/* Click Me Button */}
+      {/* ========== FRONT WALL ========== */}
+      <mesh position={[0, 2.5, 14.2]} receiveShadow>
+        <boxGeometry args={[12, 5, 0.4]} />
+        <meshStandardMaterial color={wallColor} roughness={0.65} />
+      </mesh>
+
+      {/* ========== BENCHES ========== */}
+      <Bench position={[-5.2, 0, -2]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
+      <Bench position={[-5.2, 0, -8]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
+
+      {/* ========== COAT RACKS ========== */}
+      <CoatRack position={[-5, 0, 12.5]} scale={1.8} />
+      <CoatRack position={[4.5, 0, 5]} scale={1.8} />
+
+      {/* ========== POTTED PLANTS ========== */}
+      <PottedPlant position={[-5.2, 0, 2]} scale={2.5} />
+      <PottedPlant position={[-5.2, 0, -5]} scale={2} />
+      <PottedPlant position={[5.2, 0, 8]} scale={2.5} />
+      <PottedPlant position={[-1, 0, 12.5]} scale={2} />
+      <PottedPlant position={[1, 0, 12.5]} scale={2} />
+
+      {/* ========== TRASH CANS ========== */}
+      <Trashcan position={[4.5, 0, -5]} scale={1.5} />
+      <Trashcan position={[-5, 0, 13.5]} scale={1.5} />
+
+      {/* ========== CEILING LIGHTS ========== */}
+      <FlickeringLight position={[0, 4.5, -8]} intensity={3} />
+      <FlickeringLight position={[0, 4.5, 0]} intensity={3} />
+      <FlickeringLight position={[0, 4.5, 8]} intensity={3} />
+
+      {/* ========== AMBIENT LIGHTING - BRIGHTER ========== */}
+      <ambientLight intensity={0.5} color="#fff8f0" />
+      <pointLight position={[-3, 3, 6]} intensity={1.2} distance={10} color="#ffeecc" />
+      <pointLight position={[3, 3, -4]} intensity={1.2} distance={10} color="#ffeecc" />
+      {/* Extra fill light */}
+      <pointLight position={[0, 4, 0]} intensity={0.8} distance={15} color="#ffffff" />
+
+      {/* ========== VIDEO ROOM ========== */}
+      <group position={[12, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <VideoRoom />
+      </group>
+
+      {/* ========== DOORS - FLUSH AGAINST BACK WALL ========== */}
+      <Door
+        roomId="lab"
+        position={[-3.2, 0, -13.8]}
+        cameraTarget={{
+          position: { x: 0, y: 1.6, z: 5 },
+          lookAt: { x: 0, y: 1, z: 0 }
+        }}
+        label="Computer Lab"
+      />
+      <Door
+        roomId="server"
+        position={[0, 0, -13.8]}
+        cameraTarget={{
+          position: { x: 0, y: 1.6, z: 5 },
+          lookAt: { x: 0, y: 1, z: 0 }
+        }}
+        label="Server Room"
+      />
+      <Door
+        roomId="office"
+        position={[3.2, 0, -13.8]}
+        cameraTarget={{
+          position: { x: 0, y: 1.6, z: 5 },
+          lookAt: { x: 0, y: 1, z: 0 }
+        }}
+        label="Admin Office"
+      />
+
+      {/* ========== DOOR SIGNS ========== */}
+      {[
+        { pos: [-3.2, 2.9, -13.7], text: 'LAB', color: '#00aaff' },
+        { pos: [0, 2.9, -13.7], text: 'SERVER', color: '#ff4444' },
+        { pos: [3.2, 2.9, -13.7], text: 'OFFICE', color: '#ffaa00' },
+      ].map((sign, i) => (
+        <group key={i} position={sign.pos}>
+          <mesh>
+            <boxGeometry args={[1.4, 0.35, 0.1]} />
+            <meshStandardMaterial
+              color="#222222"
+              emissive={sign.color}
+              emissiveIntensity={0.5}
+            />
+          </mesh>
+          <pointLight intensity={0.5} distance={3} color={sign.color} />
+
+          {/* Click Me Button - hide when in Video Room */}
+          {!inVideoRoom && (
             <Html
-              position={[0, 0.8, 0]} // Relative to the sign group
+              position={[0, 0.8, 0]}
               center
               zIndexRange={[0, 0]}
               distanceFactor={10}
@@ -544,13 +537,14 @@ function HallwayScene({ isChatbotOpen }) {
                 </div>
               </div>
             </Html>
-          </group>
-        ))}
+          )}
+        </group>
+      ))}
 
-        {/* Subtle dust particles */}
-        <DustParticles count={40} spread={12} color="#ffeecc" />
-      </group>
-      );
+      {/* Subtle dust particles */}
+      <DustParticles count={40} spread={12} color="#ffeecc" />
+    </group>
+  );
 }
 
-      export default HallwayScene;
+export default HallwayScene;

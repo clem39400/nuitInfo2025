@@ -30,10 +30,14 @@ const SCENE_BOUNDARIES = {
     minX: -5,
     maxX: 5,
     minZ: -11,
-    maxZ: 8,
+    maxZ: 14,
     obstacles: [
+      // Left wall
       { minX: -5.2, maxX: -4.3, minZ: -14, maxZ: 14 },
-      { minX: 4.3, maxX: 5.2, minZ: -14, maxZ: 14 },
+      // Right wall - SPLIT for video room opening at z=-2 to z=2
+      { minX: 4.3, maxX: 5.2, minZ: -14, maxZ: -2 },  // Back section
+      { minX: 4.3, maxX: 5.2, minZ: 2, maxZ: 14 },    // Front section
+      // Back wall
       { minX: -6, maxX: 6, minZ: -13, maxZ: -11.5 },
     ]
   },
