@@ -4,8 +4,8 @@
  */
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-// Use local proxy to avoid CORS - Vite will forward to Google
-const API_URL = '/api/gemini/models/gemini-2.0-flash:generateContent';
+// Use direct Google API URL (CORS works for Gemini API from browsers)
+const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 console.log('🔧 ChatbotService loaded');
 console.log('🔑 API Key present:', !!GEMINI_API_KEY);
