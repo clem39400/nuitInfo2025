@@ -16,6 +16,7 @@ import TransitionOverlay from './ui/TransitionOverlay';
 import { RefurbishmentMiniGameOverlay } from './components/RefurbishmentMiniGames';
 import useGameStore from './core/GameStateContext';
 import useRefurbishmentStore from './core/RefurbishmentGameState';
+import BackgroundMusic from './components/BackgroundMusic';
 
 /**
  * Main App Component
@@ -101,6 +102,9 @@ function App() {
 
       {/* Scene Transition Effect */}
       <TransitionOverlay />
+
+      {/* Background Music Player */}
+      <BackgroundMusic />
 
       {/* Controls Instructions */}
       <div style={{
