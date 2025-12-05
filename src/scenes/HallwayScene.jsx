@@ -313,7 +313,6 @@ function HallwayScene({ isChatbotOpen }) {
         }}
         label="Computer Lab"
       />
-
       <Door
         roomId="server"
         position={[0, 0, -13.8]}
@@ -323,7 +322,6 @@ function HallwayScene({ isChatbotOpen }) {
         }}
         label="Server Room"
       />
-
       <Door
         roomId="office"
         position={[3.2, 0, -13.8]}

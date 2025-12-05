@@ -4,7 +4,7 @@ import { ReflectiveFloor } from '../components/Environment';
 import useGameStore from '../core/GameStateContext';
 import { Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 /**
@@ -18,13 +18,57 @@ import { useFrame } from '@react-three/fiber';
 function GateScene({ onOpenChatbot, isChatbotOpen }) {
   const { completePuzzle, goToHallway } = useGameStore();
   const hologramRef = useRef();
+  const hologramCoreRef = useRef();
 
-  // Animate hologram
+  // Animate hologram - both refs
   useFrame((state) => {
+    const rotationY = state.clock.elapsedTime * 0.5;
     if (hologramRef.current) {
-      hologramRef.current.rotation.y = state.clock.elapsedTime * 0.5;
+      hologramRef.current.rotation.y = rotationY;
+    }
+    if (hologramCoreRef.current) {
+      hologramCoreRef.current.rotation.y = rotationY;
     }
   });
+
+  // Static styles for HTML elements to prevent re-renders
+  const clickMeStyles = useMemo(() => ({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      animation: 'bounce 1.5s ease-in-out infinite',
+    },
+    button: {
+      background: 'linear-gradient(135deg, #0078d4 0%, #00a2ff 100%)',
+      padding: '8px 16px',
+      borderRadius: '20px',
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: '14px',
+      fontFamily: 'monospace',
+      boxShadow: '0 0 20px rgba(0, 120, 212, 0.6)',
+      border: '2px solid rgba(255,255,255,0.3)',
+    },
+    arrow: {
+      marginTop: '4px',
+      fontSize: '24px',
+      color: '#0078d4',
+      textShadow: '0 0 10px #0078d4',
+    },
+  }), []);
+
+  const professorStyles = useMemo(() => ({
+    background: 'rgba(0, 0, 0, 0.8)',
+    padding: '6px 12px',
+    borderRadius: '8px',
+    border: '1px solid #0078d4',
+    color: '#0078d4',
+    fontSize: '11px',
+    fontFamily: 'monospace',
+    whiteSpace: 'nowrap',
+    boxShadow: '0 0 15px rgba(0, 120, 212, 0.4)',
+  }), []);
 
   // Temporary: Skip to hallway for testing
   const handleDebugSkip = () => {
@@ -67,34 +111,45 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
 
       {/* Realistic grass ground with REAL texture */}
       {/* Base layer - darker grass */}
-      <mesh position={[0, -0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[100, 100]} />
         <meshStandardMaterial map={grassTexture} color="#5a9045" roughness={0.95} />
       </mesh>
-      
+
       {/* Main grass layer with texture */}
-      <mesh position={[0, -0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[80, 80]} />
         <meshStandardMaterial map={grassTexture} color="#6aaa55" roughness={0.9} />
       </mesh>
-      
-      {/* Grass texture patches for realism */}
-      {Array.from({ length: 20 }).map((_, i) => (
-        <mesh 
+
+      {/* Grass texture patches for realism - fixed positions to avoid flickering */}
+      {[
+        // Left side - well spaced
+        { x: -6, z: 5, r: 0.5, size: 1.8 },
+        { x: -9, z: -6, r: 1.2, size: 1.5 },
+        { x: -12, z: 2, r: 2.1, size: 2.0 },
+        { x: -7, z: -12, r: 1.5, size: 1.4 },
+        // Right side - well spaced
+        { x: 6, z: 5, r: 2.5, size: 1.8 },
+        { x: 9, z: -6, r: 0.3, size: 1.5 },
+        { x: 12, z: 2, r: 1.8, size: 2.0 },
+        { x: 7, z: -12, r: 0.7, size: 1.4 },
+      ].map((patch, i) => (
+        <mesh
           key={`grass-${i}`}
-          position={[(Math.random() - 0.5) * 40, 0.001, (Math.random() - 0.5) * 30]} 
-          rotation={[-Math.PI / 2, 0, Math.random() * Math.PI]}
+          position={[patch.x, 0.001, patch.z]}
+          rotation={[-Math.PI / 2, 0, patch.r]}
         >
-          <circleGeometry args={[1 + Math.random() * 2, 8]} />
-          <meshStandardMaterial 
-            color={i % 2 === 0 ? '#4a7a35' : '#62a550'} 
+          <circleGeometry args={[patch.size, 8]} />
+          <meshStandardMaterial
+            color={i % 2 === 0 ? '#4a7a35' : '#62a550'}
             roughness={0.95}
             transparent
             opacity={0.7}
           />
         </mesh>
       ))}
-      
+
       {/* Dirt/earth patches near path */}
       <mesh position={[-4, 0.002, -5]} rotation={[-Math.PI / 2, 0, 0.3]}>
         <circleGeometry args={[1.5, 8]} />
@@ -106,7 +161,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
       </mesh>
 
       {/* Stone pathway to gate with REAL cobblestone texture */}
-      <mesh position={[0, 0.01, -3]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[0, 0.04, -3]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[6, 14]} />
         <meshStandardMaterial
           map={stoneTexture}
@@ -117,7 +172,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
 
       {/* Decorative path tiles */}
       {Array.from({ length: 7 }).map((_, i) => (
-        <mesh key={i} position={[0, 0.02, 2 - i * 2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <mesh key={i} position={[0, 0.06, 2 - i * 2]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[5.5, 0.8]} />
           <meshStandardMaterial color="#8a7a6a" roughness={0.8} />
         </mesh>
@@ -223,27 +278,27 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <planeGeometry args={[100, 50]} />
         <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />
       </mesh>
-      
+
       {/* Left side wall - closes the left side */}
       <mesh position={[-30, 15, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[80, 50]} />
         <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />
       </mesh>
-      
+
       {/* Right side wall - closes the right side */}
       <mesh position={[30, 15, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[80, 50]} />
         <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />
       </mesh>
-      
+
       {/* Top sky - covers any gaps above */}
       <mesh position={[0, 40, -10]} rotation={[Math.PI / 2, 0, 0]}>
         <planeGeometry args={[100, 80]} />
-        <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />  
+        <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />
       </mesh>
-      
+
       {/* ========== NATURAL FOREST BACKDROP - Closes off the scene properly ========== */}
-      
+
       {/* Layer 1: Dense forest treeline (furthest back) */}
       <group position={[0, 0, -28]}>
         {/* Continuous hedge/forest base */}
@@ -251,7 +306,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           <boxGeometry args={[80, 6, 4]} />
           <meshStandardMaterial color="#1a4a1a" roughness={0.95} />
         </mesh>
-        
+
         {/* Individual trees in the back */}
         {Array.from({ length: 15 }).map((_, i) => (
           <group key={`back-tree-${i}`} position={[-35 + i * 5, 0, Math.random() * 2]}>
@@ -268,7 +323,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           </group>
         ))}
       </group>
-      
+
       {/* Layer 2: Mid-distance bushes and smaller trees */}
       <group position={[0, 0, -22]}>
         {/* Green bush line */}
@@ -276,7 +331,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           <boxGeometry args={[60, 3, 2]} />
           <meshStandardMaterial color="#2a5a25" roughness={0.95} />
         </mesh>
-        
+
         {/* Scattered bushes */}
         {Array.from({ length: 20 }).map((_, i) => (
           <mesh key={`bush-${i}`} position={[-28 + i * 3 + Math.random(), 1, Math.random() - 0.5]}>
@@ -285,7 +340,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           </mesh>
         ))}
       </group>
-      
+
       {/* Layer 3: Closest vegetation - decorative shrubs */}
       {[-18, -12, 12, 18].map((x, i) => (
         <group key={`shrub-${i}`} position={[x, 0, -18]}>
@@ -295,7 +350,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           </mesh>
         </group>
       ))}
-      
+
       {/* White fluffy clouds */}
       <group position={[0, 25, -45]}>
         <mesh position={[-20, 0, 0]}>
@@ -310,7 +365,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           <sphereGeometry args={[2, 16, 16]} />
           <meshBasicMaterial color="#ffffff" />
         </mesh>
-        
+
         <mesh position={[15, 2, 0]}>
           <sphereGeometry args={[2.5, 16, 16]} />
           <meshBasicMaterial color="#ffffff" />
@@ -621,7 +676,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
       </group>
 
       {/* Sidewalk/pavement leading to gate */}
-      <group position={[0, 0.01, -5]}>
+      <group position={[0, -1, -5]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[8, 10]} />
           <meshStandardMaterial
@@ -665,9 +720,9 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
               opacity={0.98}
             />
           </mesh>
-          
+
           {/* Inner solid core for more visibility */}
-          <mesh ref={hologramRef}>
+          <mesh ref={hologramCoreRef}>
             <icosahedronGeometry args={[0.35, 0]} />
             <meshStandardMaterial
               color="#00ddff"
@@ -678,7 +733,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
             />
           </mesh>
         </HologramEffect>
-        
+
         {/* Bright blue light around hologram */}
         <pointLight position={[0, 1.5, 0]} intensity={4} color="#00aaff" distance={8} />
         <pointLight position={[0, 2.5, 0]} intensity={2} color="#00ccff" distance={5} />
@@ -687,38 +742,17 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <Html
           position={[0, 2.2, 0]}
           center
-          occlude
           zIndexRange={[0, 0]}
           distanceFactor={8}
           style={{
             pointerEvents: 'none',
           }}
         >
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            animation: 'bounce 1.5s ease-in-out infinite',
-          }}>
-            <div style={{
-              background: 'linear-gradient(135deg, #0078d4 0%, #00a2ff 100%)',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              color: '#fff',
-              fontWeight: 'bold',
-              fontSize: '14px',
-              fontFamily: 'monospace',
-              boxShadow: '0 0 20px rgba(0, 120, 212, 0.6)',
-              border: '2px solid rgba(255,255,255,0.3)',
-            }}>
+          <div style={clickMeStyles.container}>
+            <div style={clickMeStyles.button}>
               💬 CLIQUEZ-MOI
             </div>
-            <div style={{
-              marginTop: '4px',
-              fontSize: '24px',
-              color: '#0078d4',
-              textShadow: '0 0 10px #0078d4',
-            }}>
+            <div style={clickMeStyles.arrow}>
               ▼
             </div>
           </div>
@@ -728,22 +762,11 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <Html
           position={[0, 0.5, 0]}
           center
-          occlude
           zIndexRange={[0, 0]}
           distanceFactor={8}
           style={{ pointerEvents: 'none' }}
         >
-          <div style={{
-            background: 'rgba(0, 0, 0, 0.8)',
-            padding: '6px 12px',
-            borderRadius: '8px',
-            border: '1px solid #0078d4',
-            color: '#0078d4',
-            fontSize: '11px',
-            fontFamily: 'monospace',
-            whiteSpace: 'nowrap',
-            boxShadow: '0 0 15px rgba(0, 120, 212, 0.4)',
-          }}>
+          <div style={professorStyles}>
             🎩 Prof. GAFAMius Windowsky III
           </div>
         </Html>

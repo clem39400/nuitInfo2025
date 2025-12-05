@@ -1,4 +1,5 @@
-import { Environment as DreiEnvironment, MeshReflectorMaterial } from '@react-three/drei';
+import { memo } from 'react';
+import { Environment as DreiEnvironment } from '@react-three/drei';
 import CityBackdrop from './CityBackdrop';
 
 /**
@@ -9,9 +10,9 @@ import CityBackdrop from './CityBackdrop';
 // Preset configurations for different scenes
 const PRESETS = {
   gate: {
-    preset: 'park',  // Bright outdoor environment
-    ambientIntensity: 0.4,  // Reduced ambient for more natural daytime
-    fogColor: '#c8e0f0',  // Light blue-gray fog
+    preset: 'park',
+    ambientIntensity: 0.4,
+    fogColor: '#c8e0f0',
     fogNear: 40,
     fogFar: 90,
   },
@@ -45,25 +46,26 @@ const PRESETS = {
   },
 };
 
-function Environment({ scene = 'hallway' }) {
+// Memoized Environment component
+const Environment = memo(function Environment({ scene = 'hallway' }) {
   const config = PRESETS[scene] || PRESETS.hallway;
 
   return (
     <>
-      {/* HDRI Environment for realistic reflections - use downloaded sky for gate */}
+      {/* HDRI Environment for realistic reflections */}
       {scene === 'gate' ? (
         <DreiEnvironment files="/assets/textures/sky.hdr" background={false} />
       ) : (
         <DreiEnvironment preset={config.preset} background={false} />
       )}
 
-      {/* Softer blue sky background color - not too bright */}
+      {/* Sky background color */}
       <color attach="background" args={['#8ab8d0']} />
 
-      {/* City backdrop - visible from all scenes - CLOSE so buildings are clear */}
+      {/* City backdrop */}
       <CityBackdrop position={[0, 0, -25]} />
 
-      {/* Ambient fill light - warm for daytime, MUCH reduced intensity */}
+      {/* Ambient fill light */}
       <ambientLight intensity={config.ambientIntensity * 0.5} color="#fff8f0" />
 
       {/* Rim light for depth */}
@@ -77,19 +79,17 @@ function Environment({ scene = 'hallway' }) {
       <fog attach="fog" args={[config.fogColor, config.fogNear, config.fogFar]} />
     </>
   );
-}
+});
 
 /**
- * Reflective Floor Component - Creates shiny surfaces
- * Using simple optimized material for consistent performance
+ * Simple Floor Component - No reflections for best performance
  */
-export function ReflectiveFloor({
-  position = [0, 0, 0],
-  size = [20, 20],
+export const ReflectiveFloor = memo(function ReflectiveFloor({
+  position,
+  size,
   color = "#080810",
   roughness = 0.1,
   metalness = 0.9,
-  mirror = 0.5,
 }) {
   return (
     <mesh
@@ -98,7 +98,6 @@ export function ReflectiveFloor({
       receiveShadow
     >
       <planeGeometry args={size} />
-      {/* Simple material for better performance - no expensive reflections */}
       <meshStandardMaterial
         color={color}
         roughness={roughness + 0.2}
@@ -107,7 +106,6 @@ export function ReflectiveFloor({
       />
     </mesh>
   );
-}
+});
 
 export default Environment;
-

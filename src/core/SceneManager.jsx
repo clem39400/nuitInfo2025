@@ -9,10 +9,10 @@ import VideoRoom from '../scenes/rooms/VideoRoom';
 
 /**
  * Scene Manager - Conditionally renders scenes based on game state
- * Follows Open/Closed Principle - easy to add new scenes without modifying existing code
  */
 function SceneManager({ onOpenChatbot, isChatbotOpen }) {
-  const { currentPhase, currentRoom } = useGameStore();
+  const currentPhase = useGameStore((state) => state.currentPhase);
+  const currentRoom = useGameStore((state) => state.currentRoom);
 
   return (
     <Suspense fallback={null}>
