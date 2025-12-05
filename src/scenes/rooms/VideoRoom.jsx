@@ -14,7 +14,7 @@ import { PottedPlant, Trashcan } from '../../components/models/Props';
 function VideoRoom(props) {
     const [currentVideo, setCurrentVideo] = useState(null);
     const projectorLightRef = useRef();
-    
+
     // Subtle projector flicker
     useFrame((state) => {
         if (projectorLightRef.current && currentVideo) {
@@ -49,11 +49,12 @@ function VideoRoom(props) {
             <FlickeringLight position={[-3, 4.2, -2]} intensity={2} />
             <FlickeringLight position={[3, 4.2, -2]} intensity={2} />
             <FlickeringLight position={[0, 4.2, 3]} intensity={2} />
-            
+
+            {/* ========== FLOOR - School linoleum ========== */}
             {/* ========== FLOOR - School linoleum ========== */}
             <ReflectiveFloor
                 position={[0, 0, 0]}
-                size={[14, 14]}
+                size={[16, 14]}
                 color={floorColor}
                 roughness={0.6}
                 metalness={0.1}
@@ -63,44 +64,44 @@ function VideoRoom(props) {
             {/* ========== WALLS - School style ========== */}
             {/* Back Wall with screen */}
             <mesh position={[0, 2.5, -6.9]}>
-                <boxGeometry args={[14, 5, 0.2]} />
+                <boxGeometry args={[16, 5, 0.2]} />
                 <meshStandardMaterial color={wallColor} roughness={0.8} />
             </mesh>
-            
+
             {/* Left Wall */}
-            <mesh position={[-6.9, 2.5, 0]}>
+            <mesh position={[-7.9, 2.5, 0]}>
                 <boxGeometry args={[0.2, 5, 14]} />
                 <meshStandardMaterial color={wallColor} roughness={0.8} />
             </mesh>
-            
+
             {/* Right Wall */}
-            <mesh position={[6.9, 2.5, 0]}>
+            <mesh position={[7.9, 2.5, 0]}>
                 <boxGeometry args={[0.2, 5, 14]} />
                 <meshStandardMaterial color={wallColor} roughness={0.8} />
             </mesh>
-            
-            {/* Floor trim / baseboard */}
-            <mesh position={[0, 0.15, -6.85]}>
-                <boxGeometry args={[14, 0.3, 0.1]} />
+
+            {/* Floor trim / baseboard - Moved slightly inward to prevent z-fighting */}
+            <mesh position={[0, 0.15, -6.84]}>
+                <boxGeometry args={[16, 0.3, 0.1]} />
                 <meshStandardMaterial color={trimColor} roughness={0.5} />
             </mesh>
-            <mesh position={[-6.85, 0.15, 0]}>
+            <mesh position={[-7.84, 0.15, 0]}>
                 <boxGeometry args={[0.1, 0.3, 14]} />
                 <meshStandardMaterial color={trimColor} roughness={0.5} />
             </mesh>
-            <mesh position={[6.85, 0.15, 0]}>
+            <mesh position={[7.84, 0.15, 0]}>
                 <boxGeometry args={[0.1, 0.3, 14]} />
                 <meshStandardMaterial color={trimColor} roughness={0.5} />
             </mesh>
 
             {/* ========== CEILING ========== */}
             <mesh position={[0, 4.8, 0]}>
-                <boxGeometry args={[14, 0.2, 14]} />
+                <boxGeometry args={[16, 0.2, 14]} />
                 <meshStandardMaterial color="#f0f0f0" />
             </mesh>
-            
+
             {/* Ceiling tiles pattern */}
-            {[-4, 0, 4].map((x) => 
+            {[-4, 0, 4].map((x) =>
                 [-4, 0, 4].map((z) => (
                     <mesh key={`tile-${x}-${z}`} position={[x, 4.69, z]}>
                         <boxGeometry args={[3.8, 0.02, 3.8]} />
@@ -116,24 +117,24 @@ function VideoRoom(props) {
                     <boxGeometry args={[0.5, 0.25, 0.7]} />
                     <meshStandardMaterial color="#d0d0d0" metalness={0.3} roughness={0.5} />
                 </mesh>
-                
+
                 {/* Projector lens */}
                 <mesh position={[0, -0.05, -0.4]}>
                     <cylinderGeometry args={[0.08, 0.1, 0.15, 16]} />
-                    <meshStandardMaterial 
-                        color="#3a3a4a" 
+                    <meshStandardMaterial
+                        color="#3a3a4a"
                         metalness={0.8}
                         emissive={currentVideo ? "#aabbff" : "#333344"}
                         emissiveIntensity={currentVideo ? 0.6 : 0.1}
                     />
                 </mesh>
-                
+
                 {/* Ceiling mount */}
                 <mesh position={[0, 0.2, 0]}>
                     <cylinderGeometry args={[0.08, 0.08, 0.2, 8]} />
                     <meshStandardMaterial color="#888888" />
                 </mesh>
-                
+
                 {/* Projector beam (only when playing) */}
                 {currentVideo && (
                     <spotLight
@@ -156,17 +157,17 @@ function VideoRoom(props) {
                     <boxGeometry args={[4.2, 0.15, 0.12]} />
                     <meshStandardMaterial color="#cccccc" />
                 </mesh>
-                
+
                 {/* Screen surface - white projection screen */}
                 <mesh position={[0, -0.1, 0.02]}>
                     <planeGeometry args={[3.8, 2.2]} />
-                    <meshStandardMaterial 
-                        color="#ffffff" 
+                    <meshStandardMaterial
+                        color="#ffffff"
                         emissive={currentVideo ? "#e8e8ff" : "#f0f0f0"}
                         emissiveIntensity={currentVideo ? 0.15 : 0.02}
                     />
                 </mesh>
-                
+
                 {/* Screen border */}
                 <mesh position={[0, -0.1, 0]}>
                     <boxGeometry args={[4, 2.4, 0.02]} />
@@ -192,9 +193,9 @@ function VideoRoom(props) {
                             boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
                             border: '2px solid #0066aa'
                         }}>
-                            <h2 style={{ 
-                                margin: '0 0 15px 0', 
-                                fontSize: '20px', 
+                            <h2 style={{
+                                margin: '0 0 15px 0',
+                                fontSize: '20px',
                                 color: '#0066aa'
                             }}>
                                 📽️ Sélection Vidéo
@@ -241,9 +242,9 @@ function VideoRoom(props) {
                         distanceFactor={2.5}
                     >
                         <div style={{ position: 'relative' }}>
-                            <div style={{ 
-                                width: '320px', 
-                                height: '180px', 
+                            <div style={{
+                                width: '320px',
+                                height: '180px',
                                 background: 'black',
                                 borderRadius: '3px',
                                 overflow: 'hidden'
@@ -335,7 +336,7 @@ function VideoRoom(props) {
                                 <boxGeometry args={[0.05, 0.4, 0.05]} />
                                 <meshStandardMaterial color="#444444" />
                             </mesh>
-                            
+
                             {/* School chair behind desk */}
                             <group position={[0, 0, 0.8]}>
                                 {/* Seat */}
@@ -385,7 +386,7 @@ function VideoRoom(props) {
 
             {/* ========== TRASH CAN ========== */}
             <Trashcan position={[5.5, 0, -5]} scale={1.5} />
-            
+
             {/* ========== POTTED PLANT ========== */}
             <PottedPlant position={[5.5, 0, 5]} scale={2} />
 

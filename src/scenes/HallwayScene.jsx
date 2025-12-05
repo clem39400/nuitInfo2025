@@ -49,7 +49,7 @@ function HallwayScene({ isChatbotOpen }) {
       {/* Return to Gate - styled as exit sign */}
       <group position={[4.5, 2.5, 13.5]}>
         <mesh
-          onClick={handleGoToGate}
+          onClick={goToGate}
           onPointerOver={(e) => {
             e.stopPropagation();
             document.body.style.cursor = 'pointer';
@@ -78,7 +78,7 @@ function HallwayScene({ isChatbotOpen }) {
         </mesh>
 
         {/* Wainscoting / Wall trim at bottom */}
-        <mesh position={[0.15, 0.6, 0]}>
+        <mesh position={[0.17, 0.6, 0]}>
           <boxGeometry args={[0.15, 1.2, 30]} />
           <meshStandardMaterial color={trimColor} roughness={0.5} />
         </mesh>
@@ -149,7 +149,7 @@ function HallwayScene({ isChatbotOpen }) {
           <boxGeometry args={[0.4, 5, 14]} />
           <meshStandardMaterial color={wallColor} roughness={0.7} />
         </mesh>
-        <mesh position={[-0.15, 0.6, 8]}>
+        <mesh position={[-0.17, 0.6, 8]}>
           <boxGeometry args={[0.15, 1.2, 14]} />
           <meshStandardMaterial color={trimColor} roughness={0.5} />
         </mesh>
@@ -159,7 +159,7 @@ function HallwayScene({ isChatbotOpen }) {
           <boxGeometry args={[0.4, 5, 14]} />
           <meshStandardMaterial color={wallColor} roughness={0.7} />
         </mesh>
-        <mesh position={[-0.15, 0.6, -8]}>
+        <mesh position={[-0.17, 0.6, -8]}>
           <boxGeometry args={[0.15, 1.2, 14]} />
           <meshStandardMaterial color={trimColor} roughness={0.5} />
         </mesh>
@@ -278,7 +278,7 @@ function HallwayScene({ isChatbotOpen }) {
       <Bench position={[-5.2, 0, -8]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
 
       {/* ========== COAT RACKS ========== */}
-      <CoatRack position={[-5, 0, 11]} scale={1.8} />
+      <CoatRack position={[-5, 0, 12.5]} scale={1.8} />
       <CoatRack position={[5, 0, 5]} scale={1.8} />
 
       {/* ========== POTTED PLANTS ========== */}
@@ -290,7 +290,7 @@ function HallwayScene({ isChatbotOpen }) {
 
       {/* ========== TRASH CANS ========== */}
       <Trashcan position={[5, 0, -5]} scale={1.5} />
-      <Trashcan position={[-5, 0, 12]} scale={1.5} />
+      <Trashcan position={[-5, 0, 13.5]} scale={1.5} />
 
       {/* ========== CEILING LIGHTS ========== */}
       <FlickeringLight position={[0, 4.5, -8]} intensity={3} />
