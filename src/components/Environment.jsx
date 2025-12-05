@@ -15,13 +15,17 @@ const PRESETS = {
     fogColor: '#c8e0f0',
     fogNear: 40,
     fogFar: 90,
+    backgroundColor: '#8ab8d0', // Light blue sky
+    showCityBackdrop: true,
   },
   hallway: {
     preset: 'warehouse',
-    ambientIntensity: 0.3,
-    fogColor: '#0a0a15',
+    ambientIntensity: 0.35,
+    fogColor: '#1a1a25',
     fogNear: 8,
     fogFar: 25,
+    backgroundColor: '#0a0a12', // Dark indoor
+    showCityBackdrop: false,
   },
   lab: {
     preset: 'warehouse',
@@ -29,6 +33,8 @@ const PRESETS = {
     fogColor: '#0a0a20',
     fogNear: 10,
     fogFar: 30,
+    backgroundColor: '#0a0a15', // Dark tech blue
+    showCityBackdrop: false,
   },
   server: {
     preset: 'night',
@@ -36,6 +42,8 @@ const PRESETS = {
     fogColor: '#100505',
     fogNear: 3,
     fogFar: 15,
+    backgroundColor: '#080505', // Dark red-tinted
+    showCityBackdrop: false,
   },
   office: {
     preset: 'apartment',
@@ -43,6 +51,8 @@ const PRESETS = {
     fogColor: '#0a0a12',
     fogNear: 8,
     fogFar: 25,
+    backgroundColor: '#0a0a10', // Dark blue-tinted
+    showCityBackdrop: false,
   },
 };
 
@@ -59,11 +69,11 @@ const Environment = memo(function Environment({ scene = 'hallway' }) {
         <DreiEnvironment preset={config.preset} background={false} />
       )}
 
-      {/* Sky background color */}
-      <color attach="background" args={['#8ab8d0']} />
+      {/* Scene-specific background color */}
+      <color attach="background" args={[config.backgroundColor]} />
 
-      {/* City backdrop */}
-      <CityBackdrop position={[0, 0, -25]} />
+      {/* City backdrop - only for outdoor scenes */}
+      {config.showCityBackdrop && <CityBackdrop position={[0, 0, -25]} />}
 
       {/* Ambient fill light */}
       <ambientLight intensity={config.ambientIntensity * 0.5} color="#fff8f0" />

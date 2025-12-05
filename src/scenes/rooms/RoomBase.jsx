@@ -12,19 +12,22 @@ import useGameStore from '../../core/GameStateContext';
  */
 function RoomBase({ children, lightingPreset = 'default' }) {
   const { camera } = useThree();
-  const { exitRoom } = useGameStore();
+  const { exitRoom, setTransitioning } = useGameStore();
 
   const handleBackToHallway = () => {
-    // Animate camera back to hallway
-    tweenCamera(
-      camera,
-      { x: 0, y: 1.6, z: 5 },
-      { x: 0, y: 1.6, z: 0 },
-      2,
-      () => {
-        exitRoom();
-      }
-    );
+    setTransitioning(true);
+    setTimeout(() => {
+      tweenCamera(
+        camera,
+        { x: 0, y: 1.6, z: 5 },
+        { x: 0, y: 1.6, z: 0 },
+        1,
+        () => {
+          exitRoom();
+          setTransitioning(false);
+        }
+      );
+    }, 80);
   };
 
   // Lighting presets

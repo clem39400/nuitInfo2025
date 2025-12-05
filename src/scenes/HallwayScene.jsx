@@ -21,7 +21,16 @@ import { RectangleRug, Doormat } from '../components/models/Rug';
  * - Real door frames with decorations
  */
 function HallwayScene({ isChatbotOpen }) {
-  const { goToGate } = useGameStore();
+  const { goToGate, setTransitioning } = useGameStore();
+  
+  // Smooth transition to gate
+  const handleGoToGate = () => {
+    setTransitioning(true);
+    setTimeout(() => {
+      goToGate();
+      setTimeout(() => setTransitioning(false), 100);
+    }, 100);
+  };
   
   // Light warm wall color
   const wallColor = "#6B5B4F";
@@ -49,7 +58,7 @@ function HallwayScene({ isChatbotOpen }) {
       {/* Return to Gate - styled as exit sign */}
       <group position={[4.5, 2.5, 13.5]}>
         <mesh
-          onClick={goToGate}
+          onClick={handleGoToGate}
           onPointerOver={(e) => {
             e.stopPropagation();
             document.body.style.cursor = 'pointer';

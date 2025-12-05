@@ -12,6 +12,7 @@ import Chatbot from './components/Chatbot';
 import SnakeGame from './components/SnakeGame';
 import ResistanceUplinkForm from './ui/ResistanceUplinkForm';
 import LinuxTerminalGame from './components/LinuxTerminalGame';
+import TransitionOverlay from './ui/TransitionOverlay';
 import { RefurbishmentMiniGameOverlay } from './components/RefurbishmentMiniGames';
 import useGameStore from './core/GameStateContext';
 import useRefurbishmentStore from './core/RefurbishmentGameState';
@@ -97,6 +98,9 @@ function App() {
 
       {/* Refurbishment Mini-Game Overlay */}
       <RefurbishmentMiniGameOverlay />
+
+      {/* Scene Transition Effect */}
+      <TransitionOverlay />
 
       {/* Controls Instructions */}
       <div style={{
