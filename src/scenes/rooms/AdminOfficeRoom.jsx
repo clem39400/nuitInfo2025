@@ -14,6 +14,8 @@ import FloorLamp from '../../components/models/FloorLamp';
 import { PottedPlant, Books, Trashcan } from '../../components/models/Props';
 import Door from '../../components/Door';
 import { useThree } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
+import { useMemo } from 'react';
 import { tweenCamera } from '../../components/CameraController';
 
 /**
@@ -43,6 +45,41 @@ function AdminOfficeRoom() {
     );
   };
 
+  // Styles for the "Click Me" buttons
+  const getButtonStyles = (color) => ({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      animation: 'bounce 1.5s ease-in-out infinite',
+    },
+    button: {
+      background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
+      padding: '6px 12px',
+      borderRadius: '20px',
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: '12px',
+      fontFamily: 'monospace',
+      boxShadow: `0 0 15px ${color}80`,
+      border: '2px solid rgba(255,255,255,0.3)',
+      whiteSpace: 'nowrap',
+    },
+    arrow: {
+      marginTop: '2px',
+      fontSize: '20px',
+      color: color,
+      textShadow: `0 0 10px ${color}`,
+    },
+  });
+
+  const keyframeStyles = `
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
+  `;
+
   // Animate hologram
   useFrame((state) => {
     if (hologramRef.current) {
@@ -53,6 +90,9 @@ function AdminOfficeRoom() {
 
   return (
     <RoomBase lightingPreset="office" showBackButton={false}>
+      <Html>
+        <style>{keyframeStyles}</style>
+      </Html>
       {/* Wooden-look floor with some reflection */}
       <ReflectiveFloor
         position={[0, 0, 0]}
@@ -95,6 +135,23 @@ function AdminOfficeRoom() {
         label="Retour au Couloir"
         onCustomClick={handleBackToHallway}
       />
+      {/* Click Me Button for Return Door */}
+      <Html
+        position={[0, 2.8, 6.9]}
+        center
+        zIndexRange={[0, 0]}
+        distanceFactor={10}
+        style={{ pointerEvents: 'none' }}
+      >
+        <div style={getButtonStyles('#ffaa00').container}>
+          <div style={getButtonStyles('#ffaa00').button}>
+            💬 CLIQUEZ-MOI
+          </div>
+          <div style={getButtonStyles('#ffaa00').arrow}>
+            ▼
+          </div>
+        </div>
+      </Html>
 
       {/* Ceiling */}
       <mesh position={[0, 5, 0]}>
@@ -302,6 +359,24 @@ function AdminOfficeRoom() {
 
         {/* Hologram glow */}
         <pointLight position={[0, 1.5, 0]} intensity={2} color="#0078d4" distance={4} />
+
+        {/* Click Me Button for Hologram */}
+        <Html
+          position={[0, 2.0, 0]}
+          center
+          zIndexRange={[0, 0]}
+          distanceFactor={10}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div style={getButtonStyles('#0078d4').container}>
+            <div style={getButtonStyles('#0078d4').button}>
+              💬 CLIQUEZ-MOI
+            </div>
+            <div style={getButtonStyles('#0078d4').arrow}>
+              ▼
+            </div>
+          </div>
+        </Html>
       </group>
 
       {/* Moody lighting */}
