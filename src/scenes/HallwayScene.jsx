@@ -280,7 +280,7 @@ function HallwayScene({ isChatbotOpen }) {
 
       {/* ========== COAT RACKS ========== */}
       <CoatRack position={[-5, 0, 12.5]} scale={1.8} />
-      <CoatRack position={[5, 0, 5]} scale={1.8} />
+      <CoatRack position={[4.5, 0, 5]} scale={1.8} />
 
       {/* ========== POTTED PLANTS ========== */}
       <PottedPlant position={[-5.2, 0, 2]} scale={2.5} />
@@ -290,7 +290,7 @@ function HallwayScene({ isChatbotOpen }) {
       <PottedPlant position={[1, 0, 12.5]} scale={2} />
 
       {/* ========== TRASH CANS ========== */}
-      <Trashcan position={[5, 0, -5]} scale={1.5} />
+      <Trashcan position={[4.5, 0, -5]} scale={1.5} />
       <Trashcan position={[-5, 0, 13.5]} scale={1.5} />
 
       {/* ========== CEILING LIGHTS ========== */}
