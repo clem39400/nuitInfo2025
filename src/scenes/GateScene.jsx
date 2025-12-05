@@ -122,14 +122,25 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <meshStandardMaterial map={grassTexture} color="#6aaa55" roughness={0.9} />
       </mesh>
 
-      {/* Grass texture patches for realism */}
-      {Array.from({ length: 20 }).map((_, i) => (
+      {/* Grass texture patches for realism - fixed positions to avoid flickering */}
+      {[
+        // Left side - well spaced
+        { x: -6, z: 5, r: 0.5, size: 1.8 },
+        { x: -9, z: -6, r: 1.2, size: 1.5 },
+        { x: -12, z: 2, r: 2.1, size: 2.0 },
+        { x: -7, z: -12, r: 1.5, size: 1.4 },
+        // Right side - well spaced
+        { x: 6, z: 5, r: 2.5, size: 1.8 },
+        { x: 9, z: -6, r: 0.3, size: 1.5 },
+        { x: 12, z: 2, r: 1.8, size: 2.0 },
+        { x: 7, z: -12, r: 0.7, size: 1.4 },
+      ].map((patch, i) => (
         <mesh
           key={`grass-${i}`}
-          position={[(Math.random() - 0.5) * 40, 0.001, (Math.random() - 0.5) * 30]}
-          rotation={[-Math.PI / 2, 0, Math.random() * Math.PI]}
+          position={[patch.x, 0.001, patch.z]}
+          rotation={[-Math.PI / 2, 0, patch.r]}
         >
-          <circleGeometry args={[1 + Math.random() * 2, 8]} />
+          <circleGeometry args={[patch.size, 8]} />
           <meshStandardMaterial
             color={i % 2 === 0 ? '#4a7a35' : '#62a550'}
             roughness={0.95}
