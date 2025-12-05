@@ -819,29 +819,7 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
       {/* Hologram glow */}
       <pointLight position={[0, 2, -2]} intensity={1} color="#00aaff" distance={6} />
 
-      {/* DEBUG: Click to launch Snake Game - Pink cube */}
-      <mesh
-        position={[6, 0.5, 0]}
-        onClick={() => {
-          completePuzzle('gate');
-          goToHallway();
-        }}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'pointer';
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'default';
-        }}
-      >
-        <boxGeometry args={[0.8, 0.8, 0.8]} />
-        <meshStandardMaterial
-          color="#ff0088"
-          emissive="#ff0088"
-          emissiveIntensity={0.8}
-        />
-      </mesh>
+
     </group>
   );
 }
