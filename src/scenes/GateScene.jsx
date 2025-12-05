@@ -4,10 +4,281 @@ import { ReflectiveFloor } from '../components/Environment';
 import useGameStore from '../core/GameStateContext';
 import { Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Person, StudentGroup } from '../components/models/Person';
 import { Bird, Dog, Cat, Snake, Butterfly, Squirrel, Flower, FlowerPatch } from '../components/models/Animals';
+
+/**
+ * ConversationBubble - Premium speech bubble for NPCs
+ * Only shows when isOpen is true, with beautiful animations
+ */
+function ConversationBubble({ position, dialogues, isOpen, onClose, accentColor = '#6366f1' }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Auto-cycle through dialogues when open
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const timer = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % dialogues.length);
+        setIsAnimating(false);
+      }, 200);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [isOpen, dialogues.length]);
+
+  // Auto-close after 10 seconds
+  useEffect(() => {
+    if (!isOpen) return;
+    const closeTimer = setTimeout(() => {
+      onClose?.();
+    }, 10000);
+    return () => clearTimeout(closeTimer);
+  }, [isOpen, onClose]);
+
+  // Reset index when opening
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentIndex(0);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <Html
+      position={position}
+      center
+      distanceFactor={5}
+      style={{ pointerEvents: 'auto' }}
+    >
+      <div 
+        onClick={(e) => { e.stopPropagation(); onClose?.(); }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          animation: 'bubblePopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+          cursor: 'pointer',
+        }}
+      >
+        {/* Main bubble with glassmorphism */}
+        <div style={{
+          background: `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)`,
+          backdropFilter: 'blur(10px)',
+          padding: '14px 18px',
+          borderRadius: '20px',
+          boxShadow: `
+            0 8px 32px rgba(0,0,0,0.15),
+            0 0 0 1px rgba(255,255,255,0.5),
+            inset 0 1px 0 rgba(255,255,255,0.8),
+            0 0 20px ${accentColor}40
+          `,
+          maxWidth: '200px',
+          minWidth: '150px',
+          position: 'relative',
+          borderLeft: `4px solid ${accentColor}`,
+          opacity: isAnimating ? 0.7 : 1,
+          transform: isAnimating ? 'scale(0.95)' : 'scale(1)',
+          transition: 'all 0.2s ease',
+        }}>
+          {/* Close hint */}
+          <div style={{
+            position: 'absolute',
+            top: '-8px',
+            right: '-8px',
+            background: accentColor,
+            borderRadius: '50%',
+            width: '20px',
+            height: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '10px',
+            color: 'white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          }}>✕</div>
+          
+          {/* Emoji */}
+          <div style={{
+            fontSize: '28px',
+            textAlign: 'center',
+            marginBottom: '8px',
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+          }}>
+            {dialogues[currentIndex].emoji || '💬'}
+          </div>
+          
+          {/* Text */}
+          <p style={{
+            color: '#1f2937',
+            fontSize: '13px',
+            fontFamily: "'Segoe UI', system-ui, sans-serif",
+            textAlign: 'center',
+            lineHeight: '1.5',
+            margin: 0,
+            fontWeight: '500',
+          }}>
+            {dialogues[currentIndex].text}
+          </p>
+          
+          {/* Dialogue indicator dots */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '4px',
+            marginTop: '10px',
+          }}>
+            {dialogues.map((_, i) => (
+              <div 
+                key={i}
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: i === currentIndex ? accentColor : '#d1d5db',
+                  transition: 'all 0.3s ease',
+                  transform: i === currentIndex ? 'scale(1.3)' : 'scale(1)',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+        
+        {/* Bubble tail */}
+        <div style={{
+          width: 0,
+          height: 0,
+          borderLeft: '12px solid transparent',
+          borderRight: '12px solid transparent',
+          borderTop: '14px solid rgba(255,255,255,0.95)',
+          marginTop: '-2px',
+          filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
+        }} />
+      </div>
+      
+      <style>{`
+        @keyframes bubblePopIn {
+          0% { opacity: 0; transform: scale(0.3) translateY(20px); }
+          50% { transform: scale(1.05) translateY(-5px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
+    </Html>
+  );
+}
+
+/**
+ * ClickableNPC - Wrapper that makes NPCs clickable with conversation bubbles
+ */
+function ClickableNPC({ position, dialogues, accentColor, children }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const groupRef = useRef();
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    setIsOpen(true);
+  };
+
+  return (
+    <group 
+      ref={groupRef}
+      onClick={handleClick}
+      onPointerOver={(e) => { 
+        e.stopPropagation(); 
+        setIsHovered(true);
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={(e) => { 
+        e.stopPropagation(); 
+        setIsHovered(false);
+        document.body.style.cursor = 'default';
+      }}
+    >
+      {children}
+      
+      {/* Hover indicator */}
+      {!isOpen && isHovered && (
+        <Html
+          position={[position[0], position[1] + 2.3, position[2]]}
+          center
+          distanceFactor={6}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div style={{
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            color: 'white',
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontSize: '11px',
+            fontFamily: "'Segoe UI', system-ui, sans-serif",
+            fontWeight: '600',
+            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
+            animation: 'pulse 1.5s ease-in-out infinite',
+            whiteSpace: 'nowrap',
+          }}>
+            💬 Cliquez pour parler
+          </div>
+          <style>{`
+            @keyframes pulse {
+              0%, 100% { transform: scale(1); opacity: 1; }
+              50% { transform: scale(1.05); opacity: 0.9; }
+            }
+          `}</style>
+        </Html>
+      )}
+      
+      {/* Conversation bubble */}
+      <ConversationBubble 
+        position={[position[0], position[1] + 2.6, position[2]]}
+        dialogues={dialogues}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        accentColor={accentColor}
+      />
+    </group>
+  );
+}
+
+// NPC Dialogue sets - each NPC has unique complaints about Prof. GAFAMius
+const npcDialogues = {
+  studentGroup: [
+    { emoji: '😤', text: "Prof. GAFAMius m'a encore refusé l'entrée..." },
+    { emoji: '🙄', text: "Il ne comprend rien aux vrais problèmes!" },
+    { emoji: '😩', text: "Toujours ses «conditions d'utilisation»..." },
+    { emoji: '🤦', text: "Il collecte TOUTES nos données pour nous laisser passer!" },
+  ],
+  walkingStudent: [
+    { emoji: '😠', text: "Encore 15 minutes de quiz pour entrer!" },
+    { emoji: '💢', text: "Prof. Windowsky est INSUPPORTABLE!" },
+    { emoji: '🏃', text: "Je vais être en retard à cause de lui!" },
+    { emoji: '😵', text: "Il parle que de Microsoft et Google..." },
+  ],
+  studentNearGate1: [
+    { emoji: '🤔', text: "Pourquoi il défend toujours les GAFAM?" },
+    { emoji: '😒', text: "Il dit que nos données sont «sécurisées»... Pfff!" },
+    { emoji: '🙃', text: "Son hologramme me donne mal aux yeux..." },
+    { emoji: '😑', text: "Heureusement que le NIRD existe!" },
+  ],
+  studentNearGate2: [
+    { emoji: '💭', text: "Tu as réussi son quiz toi?" },
+    { emoji: '😅', text: "Je préfère parler au serpent qu'à lui!" },
+    { emoji: '🤨', text: "GAFAMius Windowsky III... quel nom ridicule!" },
+    { emoji: '🌟', text: "Vivement qu'on entre dans l'école NIRD!" },
+  ],
+  studentByTree: [
+    { emoji: '📱', text: "Il a encore essayé de me vendre Windows 12..." },
+    { emoji: '🔒', text: "«Acceptez les cookies» qu'il dit..." },
+    { emoji: '😫', text: "3 heures d'attente hier!" },
+    { emoji: '🐍', text: "Pssst... t'as vu le serpent près de la haie?" },
+  ],
+}
 
 /**
  * Gate Scene - Phase 1: The Gatekeeper
@@ -249,50 +520,82 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <meshStandardMaterial color="#2a5a1a" />
       </mesh>
 
-      {/* ========== NPCs - STUDENTS OUTDOORS ========== */}
+      {/* ========== NPCs - STUDENTS OUTDOORS WITH CLICK-TO-TALK BUBBLES ========== */}
+      
       {/* Student group chatting near trees on left */}
-      <StudentGroup position={[-7, 0, 0]} rotation={Math.PI / 3} />
+      <ClickableNPC 
+        position={[-7, 0, 0]} 
+        dialogues={npcDialogues.studentGroup}
+        accentColor="#f59e0b"
+      >
+        <StudentGroup position={[-7, 0, 0]} rotation={Math.PI / 3} />
+      </ClickableNPC>
       
       {/* Student walking toward the gate */}
-      <Person 
-        position={[5, 0, 2]}
-        rotation={-Math.PI / 2 - 0.3}
-        shirtColor="#5588cc"
-        hairColor="#2a2a2a"
-        hasBackpack={true}
-        scale={0.95}
-      />
+      <ClickableNPC 
+        position={[5, 0, 2]} 
+        dialogues={npcDialogues.walkingStudent}
+        accentColor="#3b82f6"
+      >
+        <Person 
+          position={[5, 0, 2]}
+          rotation={-Math.PI / 2 - 0.3}
+          shirtColor="#5588cc"
+          hairColor="#2a2a2a"
+          hasBackpack={true}
+          scale={0.95}
+        />
+      </ClickableNPC>
       
       {/* Students near the school entrance */}
-      <Person 
-        position={[-6, 0, -8]}
-        rotation={Math.PI / 4}
-        skinColor="#d8a87a"
-        shirtColor="#ee6655"
-        hairColor="#5a4a3a"
-        hasBackpack={true}
-        scale={0.9}
-      />
-      <Person 
-        position={[-5, 0, -7.5]}
-        rotation={-Math.PI / 6}
-        skinColor="#f0c8a0"
-        shirtColor="#55aa77"
-        hairColor="#8a6a4a"
-        hasBackpack={false}
-        scale={0.88}
-      />
+      <ClickableNPC 
+        position={[-6, 0, -8]} 
+        dialogues={npcDialogues.studentNearGate1}
+        accentColor="#ef4444"
+      >
+        <Person 
+          position={[-6, 0, -8]}
+          rotation={Math.PI / 4}
+          skinColor="#d8a87a"
+          shirtColor="#ee6655"
+          hairColor="#5a4a3a"
+          hasBackpack={true}
+          scale={0.9}
+        />
+      </ClickableNPC>
+      
+      <ClickableNPC 
+        position={[-5, 0, -7.5]} 
+        dialogues={npcDialogues.studentNearGate2}
+        accentColor="#10b981"
+      >
+        <Person 
+          position={[-5, 0, -7.5]}
+          rotation={-Math.PI / 6}
+          skinColor="#f0c8a0"
+          shirtColor="#55aa77"
+          hairColor="#8a6a4a"
+          hasBackpack={false}
+          scale={0.88}
+        />
+      </ClickableNPC>
       
       {/* Student on right side near tree */}
-      <Person 
-        position={[7, 0, -3]}
-        rotation={-Math.PI / 4}
-        skinColor="#c4956a"
-        shirtColor="#aa5577"
-        hairColor="#1a1a1a"
-        hasBackpack={true}
-        scale={0.92}
-      />
+      <ClickableNPC 
+        position={[7, 0, -3]} 
+        dialogues={npcDialogues.studentByTree}
+        accentColor="#8b5cf6"
+      >
+        <Person 
+          position={[7, 0, -3]}
+          rotation={-Math.PI / 4}
+          skinColor="#c4956a"
+          shirtColor="#aa5577"
+          hairColor="#1a1a1a"
+          hasBackpack={true}
+          scale={0.92}
+        />
+      </ClickableNPC>
 
       {/* ========== ANIMALS - Lots of wildlife! ========== */}
       
