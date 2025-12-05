@@ -4,8 +4,281 @@ import { ReflectiveFloor } from '../components/Environment';
 import useGameStore from '../core/GameStateContext';
 import { Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Person, StudentGroup } from '../components/models/Person';
+import { Bird, Dog, Cat, Snake, Butterfly, Squirrel, Flower, FlowerPatch } from '../components/models/Animals';
+
+/**
+ * ConversationBubble - Premium speech bubble for NPCs
+ * Only shows when isOpen is true, with beautiful animations
+ */
+function ConversationBubble({ position, dialogues, isOpen, onClose, accentColor = '#6366f1' }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Auto-cycle through dialogues when open
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const timer = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % dialogues.length);
+        setIsAnimating(false);
+      }, 200);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [isOpen, dialogues.length]);
+
+  // Auto-close after 10 seconds
+  useEffect(() => {
+    if (!isOpen) return;
+    const closeTimer = setTimeout(() => {
+      onClose?.();
+    }, 10000);
+    return () => clearTimeout(closeTimer);
+  }, [isOpen, onClose]);
+
+  // Reset index when opening
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentIndex(0);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <Html
+      position={position}
+      center
+      distanceFactor={5}
+      style={{ pointerEvents: 'auto' }}
+    >
+      <div 
+        onClick={(e) => { e.stopPropagation(); onClose?.(); }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          animation: 'bubblePopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+          cursor: 'pointer',
+        }}
+      >
+        {/* Main bubble with glassmorphism */}
+        <div style={{
+          background: `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)`,
+          backdropFilter: 'blur(10px)',
+          padding: '14px 18px',
+          borderRadius: '20px',
+          boxShadow: `
+            0 8px 32px rgba(0,0,0,0.15),
+            0 0 0 1px rgba(255,255,255,0.5),
+            inset 0 1px 0 rgba(255,255,255,0.8),
+            0 0 20px ${accentColor}40
+          `,
+          maxWidth: '200px',
+          minWidth: '150px',
+          position: 'relative',
+          borderLeft: `4px solid ${accentColor}`,
+          opacity: isAnimating ? 0.7 : 1,
+          transform: isAnimating ? 'scale(0.95)' : 'scale(1)',
+          transition: 'all 0.2s ease',
+        }}>
+          {/* Close hint */}
+          <div style={{
+            position: 'absolute',
+            top: '-8px',
+            right: '-8px',
+            background: accentColor,
+            borderRadius: '50%',
+            width: '20px',
+            height: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '10px',
+            color: 'white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          }}>✕</div>
+          
+          {/* Emoji */}
+          <div style={{
+            fontSize: '28px',
+            textAlign: 'center',
+            marginBottom: '8px',
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+          }}>
+            {dialogues[currentIndex].emoji || '💬'}
+          </div>
+          
+          {/* Text */}
+          <p style={{
+            color: '#1f2937',
+            fontSize: '13px',
+            fontFamily: "'Segoe UI', system-ui, sans-serif",
+            textAlign: 'center',
+            lineHeight: '1.5',
+            margin: 0,
+            fontWeight: '500',
+          }}>
+            {dialogues[currentIndex].text}
+          </p>
+          
+          {/* Dialogue indicator dots */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '4px',
+            marginTop: '10px',
+          }}>
+            {dialogues.map((_, i) => (
+              <div 
+                key={i}
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: i === currentIndex ? accentColor : '#d1d5db',
+                  transition: 'all 0.3s ease',
+                  transform: i === currentIndex ? 'scale(1.3)' : 'scale(1)',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+        
+        {/* Bubble tail */}
+        <div style={{
+          width: 0,
+          height: 0,
+          borderLeft: '12px solid transparent',
+          borderRight: '12px solid transparent',
+          borderTop: '14px solid rgba(255,255,255,0.95)',
+          marginTop: '-2px',
+          filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
+        }} />
+      </div>
+      
+      <style>{`
+        @keyframes bubblePopIn {
+          0% { opacity: 0; transform: scale(0.3) translateY(20px); }
+          50% { transform: scale(1.05) translateY(-5px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
+    </Html>
+  );
+}
+
+/**
+ * ClickableNPC - Wrapper that makes NPCs clickable with conversation bubbles
+ */
+function ClickableNPC({ position, dialogues, accentColor, children }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const groupRef = useRef();
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    setIsOpen(true);
+  };
+
+  return (
+    <group 
+      ref={groupRef}
+      onClick={handleClick}
+      onPointerOver={(e) => { 
+        e.stopPropagation(); 
+        setIsHovered(true);
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={(e) => { 
+        e.stopPropagation(); 
+        setIsHovered(false);
+        document.body.style.cursor = 'default';
+      }}
+    >
+      {children}
+      
+      {/* Hover indicator */}
+      {!isOpen && isHovered && (
+        <Html
+          position={[position[0], position[1] + 2.3, position[2]]}
+          center
+          distanceFactor={6}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div style={{
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            color: 'white',
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontSize: '11px',
+            fontFamily: "'Segoe UI', system-ui, sans-serif",
+            fontWeight: '600',
+            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
+            animation: 'pulse 1.5s ease-in-out infinite',
+            whiteSpace: 'nowrap',
+          }}>
+            💬 Cliquez pour parler
+          </div>
+          <style>{`
+            @keyframes pulse {
+              0%, 100% { transform: scale(1); opacity: 1; }
+              50% { transform: scale(1.05); opacity: 0.9; }
+            }
+          `}</style>
+        </Html>
+      )}
+      
+      {/* Conversation bubble */}
+      <ConversationBubble 
+        position={[position[0], position[1] + 2.6, position[2]]}
+        dialogues={dialogues}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        accentColor={accentColor}
+      />
+    </group>
+  );
+}
+
+// NPC Dialogue sets - each NPC has unique complaints about Prof. GAFAMius
+const npcDialogues = {
+  studentGroup: [
+    { emoji: '😤', text: "Prof. GAFAMius m'a encore refusé l'entrée..." },
+    { emoji: '🙄', text: "Il ne comprend rien aux vrais problèmes!" },
+    { emoji: '😩', text: "Toujours ses «conditions d'utilisation»..." },
+    { emoji: '🤦', text: "Il collecte TOUTES nos données pour nous laisser passer!" },
+  ],
+  walkingStudent: [
+    { emoji: '😠', text: "Encore 15 minutes de quiz pour entrer!" },
+    { emoji: '💢', text: "Prof. Windowsky est INSUPPORTABLE!" },
+    { emoji: '🏃', text: "Je vais être en retard à cause de lui!" },
+    { emoji: '😵', text: "Il parle que de Microsoft et Google..." },
+  ],
+  studentNearGate1: [
+    { emoji: '🤔', text: "Pourquoi il défend toujours les GAFAM?" },
+    { emoji: '😒', text: "Il dit que nos données sont «sécurisées»... Pfff!" },
+    { emoji: '🙃', text: "Son hologramme me donne mal aux yeux..." },
+    { emoji: '😑', text: "Heureusement que le NIRD existe!" },
+  ],
+  studentNearGate2: [
+    { emoji: '💭', text: "Tu as réussi son quiz toi?" },
+    { emoji: '😅', text: "Je préfère parler au serpent qu'à lui!" },
+    { emoji: '🤨', text: "GAFAMius Windowsky III... quel nom ridicule!" },
+    { emoji: '🌟', text: "Vivement qu'on entre dans l'école NIRD!" },
+  ],
+  studentByTree: [
+    { emoji: '📱', text: "Il a encore essayé de me vendre Windows 12..." },
+    { emoji: '🔒', text: "«Acceptez les cookies» qu'il dit..." },
+    { emoji: '😫', text: "3 heures d'attente hier!" },
+    { emoji: '🐍', text: "Pssst... t'as vu le serpent près de la haie?" },
+  ],
+}
 
 /**
  * Gate Scene - Phase 1: The Gatekeeper
@@ -16,7 +289,7 @@ import { useFrame } from '@react-three/fiber';
  * - Snake game triggers via completePuzzle('gate')
  */
 function GateScene({ onOpenChatbot, isChatbotOpen }) {
-  const { completePuzzle, goToHallway } = useGameStore();
+  const { completePuzzle, goToHallway, setSnakeGameOpen } = useGameStore();
   const hologramRef = useRef();
   const hologramCoreRef = useRef();
 
@@ -246,6 +519,157 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <boxGeometry args={[0.8, 0.8, 10]} />
         <meshStandardMaterial color="#2a5a1a" />
       </mesh>
+
+      {/* ========== NPCs - STUDENTS OUTDOORS WITH CLICK-TO-TALK BUBBLES ========== */}
+      
+      {/* Student group chatting near trees on left */}
+      <ClickableNPC 
+        position={[-7, 0, 0]} 
+        dialogues={npcDialogues.studentGroup}
+        accentColor="#f59e0b"
+      >
+        <StudentGroup position={[-7, 0, 0]} rotation={Math.PI / 3} />
+      </ClickableNPC>
+      
+      {/* Student walking toward the gate */}
+      <ClickableNPC 
+        position={[5, 0, 2]} 
+        dialogues={npcDialogues.walkingStudent}
+        accentColor="#3b82f6"
+      >
+        <Person 
+          position={[5, 0, 2]}
+          rotation={-Math.PI / 2 - 0.3}
+          shirtColor="#5588cc"
+          hairColor="#2a2a2a"
+          hasBackpack={true}
+          scale={0.95}
+        />
+      </ClickableNPC>
+      
+      {/* Students near the school entrance */}
+      <ClickableNPC 
+        position={[-6, 0, -8]} 
+        dialogues={npcDialogues.studentNearGate1}
+        accentColor="#ef4444"
+      >
+        <Person 
+          position={[-6, 0, -8]}
+          rotation={Math.PI / 4}
+          skinColor="#d8a87a"
+          shirtColor="#ee6655"
+          hairColor="#5a4a3a"
+          hasBackpack={true}
+          scale={0.9}
+        />
+      </ClickableNPC>
+      
+      <ClickableNPC 
+        position={[-5, 0, -7.5]} 
+        dialogues={npcDialogues.studentNearGate2}
+        accentColor="#10b981"
+      >
+        <Person 
+          position={[-5, 0, -7.5]}
+          rotation={-Math.PI / 6}
+          skinColor="#f0c8a0"
+          shirtColor="#55aa77"
+          hairColor="#8a6a4a"
+          hasBackpack={false}
+          scale={0.88}
+        />
+      </ClickableNPC>
+      
+      {/* Student on right side near tree */}
+      <ClickableNPC 
+        position={[7, 0, -3]} 
+        dialogues={npcDialogues.studentByTree}
+        accentColor="#8b5cf6"
+      >
+        <Person 
+          position={[7, 0, -3]}
+          rotation={-Math.PI / 4}
+          skinColor="#c4956a"
+          shirtColor="#aa5577"
+          hairColor="#1a1a1a"
+          hasBackpack={true}
+          scale={0.92}
+        />
+      </ClickableNPC>
+
+      {/* ========== ANIMALS - Lots of wildlife! ========== */}
+      
+      {/* Birds flying/perched - flock in sky */}
+      <Bird position={[-9, 5, -4]} rotation={0.5} color="#5a6a7a" scale={1.2} />
+      <Bird position={[-7, 6, -6]} rotation={-0.3} color="#8a7a6a" scale={1} />
+      <Bird position={[8, 4.5, -5]} rotation={Math.PI} color="#4a5a6a" scale={1.1} />
+      <Bird position={[10, 3, 1]} rotation={-Math.PI / 2} color="#6a5a4a" scale={0.9} />
+      <Bird position={[-12, 7, -3]} rotation={0.8} color="#6a7a8a" scale={1.3} />
+      <Bird position={[5, 8, -8]} rotation={-0.5} color="#7a6a5a" scale={1} />
+      <Bird position={[-5, 4, 3]} rotation={Math.PI * 0.7} color="#5a5a6a" scale={0.85} />
+      <Bird position={[12, 5, -2]} rotation={-1.2} color="#8a8a7a" scale={1.15} />
+      <Bird position={[0, 9, -10]} rotation={0.2} color="#4a4a5a" scale={1.4} />
+      <Bird position={[-3, 6, -9]} rotation={-0.7} color="#6a5a5a" scale={0.95} />
+      
+      {/* Dogs - one near students, one wandering */}
+      <Dog position={[-8, 0, 1]} rotation={Math.PI / 4} color="#a0522d" scale={1.3} />
+      <Dog position={[6, 0, -6]} rotation={-Math.PI / 2} color="#8b4513" scale={1.1} />
+      <Dog position={[-3, 0, 5]} rotation={0.8} color="#deb887" scale={1.2} />
+      
+      {/* Cats lounging and exploring */}
+      <Cat position={[4, 0, -1]} rotation={-Math.PI / 3} color="#ff8c42" scale={1.4} />
+      <Cat position={[-4, 0, -7]} rotation={Math.PI / 6} color="#808080" scale={1.2} />
+      <Cat position={[-6, 0, 4]} rotation={Math.PI / 2} color="#2a2a2a" scale={1.3} />
+      <Cat position={[8, 0, -8]} rotation={-0.5} color="#f5f5dc" scale={1.1} />
+      <Cat position={[2, 0, 6]} rotation={Math.PI * 0.8} color="#8b4513" scale={1} />
+      
+      {/* Butterflies fluttering everywhere */}
+      <Butterfly position={[-5, 1.5, 2]} color="#ff6b9d" scale={1.5} />
+      <Butterfly position={[6, 2, -2]} color="#9b59b6" scale={1.2} />
+      <Butterfly position={[-2, 1.8, 4]} color="#f39c12" scale={1.3} />
+      <Butterfly position={[3, 2.2, -4]} color="#3498db" scale={1.1} />
+      <Butterfly position={[-8, 1.2, -2]} color="#e74c3c" scale={1.4} />
+      <Butterfly position={[9, 1.6, 2]} color="#2ecc71" scale={1} />
+      <Butterfly position={[-1, 2.5, -6]} color="#e91e63" scale={1.3} />
+      <Butterfly position={[5, 1.4, 5]} color="#ff9800" scale={1.2} />
+      <Butterfly position={[-7, 1.9, 6]} color="#673ab7" scale={1.1} />
+      <Butterfly position={[0, 2.8, 2]} color="#00bcd4" scale={1.5} />
+      
+      {/* Squirrels near the trees and around */}
+      <Squirrel position={[-9, 0, -3]} rotation={Math.PI / 2} scale={1.5} />
+      <Squirrel position={[9, 0, -4]} rotation={-Math.PI / 4} scale={1.3} />
+      <Squirrel position={[-11, 0, 2]} rotation={0.6} scale={1.4} />
+      <Squirrel position={[11, 0, 0]} rotation={-0.8} scale={1.2} />
+      <Squirrel position={[-6, 0, -10]} rotation={Math.PI / 3} scale={1.1} />
+      <Squirrel position={[7, 0, -10]} rotation={-Math.PI / 5} scale={1.35} />
+
+      {/* ========== FLOWERS - COLORFUL GARDEN ========== */}
+      {/* Patches near the path */}
+      <FlowerPatch position={[-4, 0, -2]} count={8} spread={1.5} />
+      <FlowerPatch position={[4, 0, -2]} count={8} spread={1.5} />
+      
+      {/* Patches near trees */}
+      <FlowerPatch position={[-8, 0, 2]} count={12} spread={2} colors={['#ff6b9d', '#e91e63', '#9c27b0']} />
+      <FlowerPatch position={[8, 0, 2]} count={12} spread={2} colors={['#ffeb3b', '#ff9800', '#f44336']} />
+      
+      {/* Wildflowers in the grass */}
+      <FlowerPatch position={[-12, 0, -5]} count={15} spread={3} />
+      <FlowerPatch position={[12, 0, -5]} count={15} spread={3} />
+      <FlowerPatch position={[-6, 0, 8]} count={10} spread={2} colors={['#ffffff', '#e6e6fa', '#dda0dd']} />
+      <FlowerPatch position={[6, 0, 8]} count={10} spread={2} colors={['#ffffff', '#e6e6fa', '#dda0dd']} />
+      
+      {/* Flowers near the school building */}
+      <FlowerPatch position={[-10, 0, -11]} count={8} spread={1.5} />
+      <FlowerPatch position={[10, 0, -11]} count={8} spread={1.5} />
+      
+      {/* ===== HIDDEN SNAKE - Easter egg! Triggers Snake Game ===== */}
+      {/* Hidden near the hedge - players can discover it */}
+      <Snake 
+        position={[-4, 0, 0.5]}
+        rotation={Math.PI / 6}
+        scale={1.2}
+        onClick={() => setSnakeGameOpen(true)}
+      />
 
       {/* Subtle stone marker with snake game clue - near left hedge, player's side */}
       <group position={[-4.2, 0, 1.5]}>

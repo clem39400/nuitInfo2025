@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { DustParticles, FlickeringLight } from '../../effects/AtmosphericEffects';
@@ -7,6 +7,27 @@ import Chair from '../../components/models/Chair';
 import Desk from '../../components/models/Desk';
 import { PottedPlant, Trashcan } from '../../components/models/Props';
 import NirdPanel from '../../components/NirdPanel';
+
+// Static component that never re-renders - with z-fighting fix
+const FloorBaseboards = memo(function FloorBaseboards() {
+    return (
+        <>
+            <mesh position={[0, 0.15, -6.75]}>
+                <boxGeometry args={[14, 0.3, 0.1]} />
+                <meshStandardMaterial color="#6a5d4d" roughness={0.5} polygonOffset polygonOffsetFactor={-1} />
+            </mesh>
+            <mesh position={[-7.74, 0.15, 0]}>
+                <boxGeometry args={[0.1, 0.3, 14]} />
+                <meshStandardMaterial color="#6a5d4d" roughness={0.5} polygonOffset polygonOffsetFactor={-1} />
+            </mesh>
+            <mesh position={[7.74, 0.15, 0]}>
+                <boxGeometry args={[0.1, 0.3, 14]} />
+                <meshStandardMaterial color="#6a5d4d" roughness={0.5} polygonOffset polygonOffsetFactor={-1} />
+            </mesh>
+        </>
+    );
+});
+
 
 /**
  * Video Room - School Lecture Hall / Auditorium
@@ -94,48 +115,50 @@ function VideoRoom(props) {
                     occlude
                     sprite={false}
                     position={[0, 0, 0.05]}
-                    scale={0.005}
+                    scale={0.45}
                     style={{ pointerEvents: 'none' }}
                 >
                     <div style={{
-                        width: '1000px',
-                        padding: '10px 20px',
+                        width: '600px',
+                        padding: '8px 15px',
                         background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                        border: '3px solid #00ff88',
-                        borderRadius: '10px',
+                        border: '2px solid #00ff88',
+                        borderRadius: '8px',
                         color: 'white',
                         fontFamily: 'Arial, sans-serif',
                         textAlign: 'center',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '20px'
+                        gap: '15px'
                     }}>
-                        <span style={{ fontSize: '60px' }}>🌍</span>
+                        <span style={{ fontSize: '35px' }}>🌍</span>
                         <div>
-                            <h1 style={{ color: '#00ff88', fontSize: '50px', margin: 0 }}>DÉMARCHE NIRD</h1>
-                            <p style={{ fontSize: '25px', margin: '5px 0 0 0', opacity: 0.9 }}>
-                                <strong>N</strong>umérique <strong>I</strong>nclusif <strong>R</strong>esponsable <strong>D</strong>urable • Pour une école libre et écologique
+                            <h1 style={{ color: '#00ff88', fontSize: '28px', margin: 0 }}>DÉMARCHE NIRD</h1>
+                            <p style={{ fontSize: '14px', margin: '3px 0 0 0', opacity: 0.9 }}>
+                                <strong>N</strong>umérique <strong>I</strong>nclusif <strong>R</strong>esponsable <strong>D</strong>urable
                             </p>
                         </div>
-                        <span style={{ fontSize: '60px' }}>🐧</span>
+                        <span style={{ fontSize: '35px' }}>🐧</span>
                     </div>
                 </Html>
                 <pointLight position={[0, 0, 0.3]} color="#00ff88" intensity={0.5} distance={3} />
             </group>
 
-            {/* Left of Screen: 3 Jalons */}
-            <group position={[-5.5, 2.2, -6.8]}>
-                <mesh>
-                    <boxGeometry args={[2, 2.5, 0.05]} />
-                    <meshStandardMaterial color="#1a1a2e" />
-                </mesh>
+            {/* Black board on back wall (left of screen) */}
+            <mesh position={[-5.5, 2.2, -6.8]}>
+                <boxGeometry args={[2, 2.5, 0.05]} />
+                <meshStandardMaterial color="#1a1a2e" />
+            </mesh>
+
+            {/* Left Wall: 3 Jalons - Text only */}
+            <group position={[-7.8, 2.2, -2]} rotation={[0, Math.PI / 2, 0]}>
                 <Html
                     transform
                     occlude
                     sprite={false}
                     position={[0, 0, 0.05]}
-                    scale={0.005}
+                    scale={0.25}
                     style={{ pointerEvents: 'none' }}
                 >
                     <div style={{
@@ -158,18 +181,14 @@ function VideoRoom(props) {
                 <pointLight position={[0, 0, 0.3]} color="#00aaff" intensity={0.4} distance={2} />
             </group>
 
-            {/* Right of Screen: Why Now? */}
-            <group position={[5.5, 2.2, -6.8]}>
-                <mesh>
-                    <boxGeometry args={[2, 2.5, 0.05]} />
-                    <meshStandardMaterial color="#1a1a2e" />
-                </mesh>
+            {/* Right Wall: Why Now? - Text only */}
+            <group position={[7.8, 2.2, -2]} rotation={[0, -Math.PI / 2, 0]}>
                 <Html
                     transform
                     occlude
                     sprite={false}
                     position={[0, 0, 0.05]}
-                    scale={0.005}
+                    scale={0.25}
                     style={{ pointerEvents: 'none' }}
                 >
                     <div style={{
@@ -195,19 +214,8 @@ function VideoRoom(props) {
                 <pointLight position={[0, 0, 0.3]} color="#ff4444" intensity={0.4} distance={2} />
             </group>
 
-            {/* Floor trim / baseboard */}
-            <mesh position={[0, 0.15, -6.85]}>
-                <boxGeometry args={[14, 0.3, 0.1]} />
-                <meshStandardMaterial color={trimColor} roughness={0.5} />
-            </mesh>
-            <mesh position={[-7.84, 0.15, 0]}>
-                <boxGeometry args={[0.1, 0.3, 14]} />
-                <meshStandardMaterial color={trimColor} roughness={0.5} />
-            </mesh>
-            <mesh position={[7.84, 0.15, 0]}>
-                <boxGeometry args={[0.1, 0.3, 14]} />
-                <meshStandardMaterial color={trimColor} roughness={0.5} />
-            </mesh>
+            {/* Floor trim / baseboard - Static memoized component */}
+            <FloorBaseboards />
 
             {/* ========== CEILING ========== */}
             <mesh position={[0, 4.8, 0]}>
@@ -398,7 +406,7 @@ function VideoRoom(props) {
             </group>
 
             {/* ========== WHITEBOARD (next to screen) ========== */}
-            <group position={[3.5, 2.2, -6.75]}>
+            <group position={[5.5, 2.2, -6.75]}>
                 <mesh>
                     <boxGeometry args={[2.5, 1.5, 0.05]} />
                     <meshStandardMaterial color="#ffffff" />

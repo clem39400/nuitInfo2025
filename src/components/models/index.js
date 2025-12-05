@@ -24,3 +24,19 @@ export {
   SmallPlant, 
   CardboardBox 
 } from './Props';
+export { 
+  Person, 
+  StudentGroup, 
+  WalkingStudent, 
+  Teacher 
+} from './Person';
+export { 
+  Bird, 
+  Dog, 
+  Cat, 
+  Snake, 
+  Butterfly, 
+  Squirrel,
+  Flower,
+  FlowerPatch
+} from './Animals';
