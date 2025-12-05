@@ -91,6 +91,7 @@ function VideoRoom(props) {
               </mesh>
               <Html
                 transform
+                occlude
                 sprite={false}
                 position={[0, 0, 0.05]}
                 scale={0.12}
@@ -131,6 +132,7 @@ function VideoRoom(props) {
               </mesh>
               <Html
                 transform
+                occlude
                 sprite={false}
                 position={[0, 0, 0.05]}
                 scale={0.12}
@@ -164,6 +166,7 @@ function VideoRoom(props) {
               </mesh>
               <Html
                 transform
+                occlude
                 sprite={false}
                 position={[0, 0, 0.05]}
                 scale={0.12}
