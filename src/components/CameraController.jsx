@@ -46,6 +46,7 @@ const SCENE_BOUNDARIES = {
 function CameraController({ disableMovement = false }) {
   const { camera, gl } = useThree();
   const currentPhase = useGameStore((state) => state.currentPhase);
+  const setInVideoRoom = useGameStore((state) => state.setInVideoRoom);
   const velocity = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
 
@@ -63,8 +64,19 @@ function CameraController({ disableMovement = false }) {
   });
 
   useEffect(() => {
-    camera.position.set(0, 1.6, 5);
+    // Set initial position based on phase
+    if (currentPhase === 'gate') {
+      camera.position.set(0, 1.6, 0); // Closer to gate (was 5)
+    } else if (currentPhase === 'hallway') {
+      camera.position.set(0, 1.6, 0);
+    } else {
+      camera.position.set(0, 1.6, 5);
+    }
+
     camera.rotation.order = 'YXZ';
+    // Reset rotation
+    rotation.current = { yaw: 0, pitch: 0 };
+    camera.rotation.set(0, 0, 0);
 
     const handleKeyDown = (event) => {
       switch (event.code) {
@@ -148,7 +160,7 @@ function CameraController({ disableMovement = false }) {
       gl.domElement.removeEventListener('mousemove', handleMouseMove);
       gl.domElement.removeEventListener('contextmenu', handleContextMenu);
     };
-  }, [camera, gl]);
+  }, [camera, gl, currentPhase]);
 
   const checkObstacleCollision = (pos, obstacles) => {
     const playerRadius = 0.4;
@@ -247,6 +259,18 @@ function CameraController({ disableMovement = false }) {
     }
 
     camera.position.y = 1.6;
+
+    // Check if in Video Room (x > 6)
+    const inVideoRoom = camera.position.x > 6;
+    // We can access the store directly to avoid re-renders or dependency loops if we were using the hook for reading
+    // But since we are inside a component, we can use the setter we got from the hook.
+    // However, to avoid calling setInVideoRoom every frame, we should check if it changed.
+    // Since we don't have the current value in a ref, we can just call it if we are sure it's cheap, 
+    // OR we can use useGameStore.getState().inVideoRoom to check.
+    const currentInVideoRoom = useGameStore.getState().inVideoRoom;
+    if (inVideoRoom !== currentInVideoRoom) {
+      setInVideoRoom(inVideoRoom);
+    }
   });
 
   return null;

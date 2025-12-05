@@ -7,6 +7,9 @@ import useGameStore from '../../core/GameStateContext';
 import Laptop from '../../components/models/Laptop';
 import Desk from '../../components/models/Desk';
 import { Trashcan, CardboardBox } from '../../components/models/Props';
+import Door from '../../components/Door';
+import { useThree } from '@react-three/fiber';
+import { tweenCamera } from '../../components/CameraController';
 
 /**
  * Server Room - Hardware & E-Waste theme
@@ -17,10 +20,24 @@ import { Trashcan, CardboardBox } from '../../components/models/Props';
  * - Call completePuzzle('server') when puzzle is solved
  */
 function ServerRoom() {
-  const { openLinuxGame } = useGameStore();
+  const { openLinuxGame, exitRoom, setTransitioning } = useGameStore();
+  const { camera } = useThree();
+
+  const handleBackToHallway = () => {
+    setTransitioning(true);
+    tweenCamera(
+      camera,
+      { x: 0, y: 1.6, z: 5 },
+      { x: 0, y: 1.6, z: 0 },
+      2,
+      () => {
+        exitRoom();
+      }
+    );
+  };
 
   return (
-    <RoomBase lightingPreset="server">
+    <RoomBase lightingPreset="server" showBackButton={false}>
       {/* Dark reflective floor */}
       <ReflectiveFloor
         position={[0, 0, 0]}
@@ -55,6 +72,14 @@ function ServerRoom() {
         <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#0a0808" roughness={0.9} />
       </mesh>
+
+      {/* Return Door - Behind the user */}
+      <Door
+        position={[0, 0, 6.9]}
+        rotation={[0, Math.PI, 0]}
+        label="Retour au Couloir"
+        onCustomClick={handleBackToHallway}
+      />
 
       {/* Ceiling with exposed pipes/cables */}
       <mesh position={[0, 5, 0]}>
@@ -114,18 +139,18 @@ function ServerRoom() {
       <group position={[4, 0, 3]}>
         {/* Real Trashcan - replaces procedural box */}
         <Trashcan position={[0, 0, 0]} scale={2.5} />
-        
+
         {/* "TRASH" label */}
         <mesh position={[0, 1.2, 0.5]}>
           <planeGeometry args={[1, 0.3]} />
           <meshBasicMaterial color="#ff4444" />
         </mesh>
-        
+
         {/* Discarded Real Laptops */}
         <Laptop position={[-0.3, 0.8, 0.2]} rotation={[0.2, 0.5, 0.1]} scale={2} glowing={false} />
         <Laptop position={[0.2, 1.0, -0.1]} rotation={[-0.1, -0.8, 0.15]} scale={2} glowing={false} />
         <Laptop position={[0, 1.2, 0.3]} rotation={[0.3, 1.2, -0.1]} scale={2} glowing={false} />
-        
+
         {/* Cardboard boxes with e-waste */}
         <CardboardBox position={[-1.2, 0, 0.5]} rotation={[0, 0.3, 0]} scale={2} />
         <CardboardBox position={[-1.5, 0, -0.3]} rotation={[0, -0.2, 0]} scale={2} />

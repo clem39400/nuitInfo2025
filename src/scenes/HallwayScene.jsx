@@ -4,6 +4,8 @@ import VideoRoom from './rooms/VideoRoom';
 import useGameStore from '../core/GameStateContext';
 import { FlickeringLight, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
+import { useThree } from '@react-three/fiber';
+import { tweenCamera } from '../components/CameraController';
 // Real 3D Models from Kenney Furniture Kit
 import Bench from '../components/models/Bench';
 import WallLamp from '../components/models/WallLamp';
@@ -24,21 +26,26 @@ import NirdPanel from '../components/NirdPanel';
  */
 function HallwayScene({ isChatbotOpen }) {
   const { goToGate, setTransitioning } = useGameStore();
-  
-  // Smooth transition to gate
-  const handleGoToGate = () => {
+  const { camera } = useThree();
+
+  const handleReturnToGate = () => {
     setTransitioning(true);
-    setTimeout(() => {
-      goToGate();
-      setTimeout(() => setTransitioning(false), 100);
-    }, 100);
+    tweenCamera(
+      camera,
+      { x: 0, y: 1.6, z: 12 },
+      { x: 0, y: 1.6, z: 20 },
+      1.5,
+      () => {
+        goToGate();
+      }
+    );
   };
-  
+
   // Light warm wall color
   const wallColor = "#6B5B4F";
   const trimColor = "#4A3F35";
   const ceilingColor = "#5A5045";
-  
+
   return (
     <group>
       {/* ========== FLOOR ========== */}
@@ -52,33 +59,18 @@ function HallwayScene({ isChatbotOpen }) {
       />
 
       {/* ========== RUGS AND DOORMATS ========== */}
-      <RectangleRug position={[0, 0.01, 10]} rotation={[0, 0, 0]} scale={3} />
+
       <Doormat position={[-3.2, 0.01, -13]} scale={1.5} />
       <Doormat position={[0, 0.01, -13]} scale={1.5} />
       <Doormat position={[3.2, 0.01, -13]} scale={1.5} />
 
-      {/* Return to Gate - styled as exit sign */}
-      <group position={[4.5, 2.5, 13.5]}>
-        <mesh
-          onClick={handleGoToGate}
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            document.body.style.cursor = 'pointer';
-          }}
-          onPointerOut={(e) => {
-            e.stopPropagation();
-            document.body.style.cursor = 'default';
-          }}
-        >
-          <boxGeometry args={[1, 0.4, 0.1]} />
-          <meshStandardMaterial
-            color="#22aa44"
-            emissive="#00ff44"
-            emissiveIntensity={0.5}
-          />
-        </mesh>
-        <pointLight position={[0, 0, 0.3]} intensity={0.6} color="#00ff44" distance={4} />
-      </group>
+      {/* Return to Gate - Real Door */}
+      <Door
+        position={[0, 0, 13.9]}
+        rotation={[0, Math.PI, 0]}
+        label="Sortie vers le Portail"
+        onCustomClick={handleReturnToGate}
+      />
 
       {/* ========== LEFT WALL - SOLID ========== */}
       <group position={[-6, 0, 0]}>
@@ -89,7 +81,7 @@ function HallwayScene({ isChatbotOpen }) {
         </mesh>
 
         {/* Wainscoting / Wall trim at bottom */}
-        <mesh position={[0.15, 0.6, 0]}>
+        <mesh position={[0.17, 0.6, 0]}>
           <boxGeometry args={[0.15, 1.2, 30]} />
           <meshStandardMaterial color={trimColor} roughness={0.5} />
         </mesh>
@@ -269,13 +261,13 @@ function HallwayScene({ isChatbotOpen }) {
       </group>
 
       {/* ========== RIGHT WALL - WITH VIDEO ROOM OPENING ========== */}
-      <group position={[6, 0, 0]}>
+      <group position={[5.19, 0, 0]}>
         {/* Front section (before Video Room opening) - z = 1 to 15 */}
         <mesh position={[0, 2.5, 8]} receiveShadow>
           <boxGeometry args={[0.4, 5, 14]} />
           <meshStandardMaterial color={wallColor} roughness={0.7} />
         </mesh>
-        <mesh position={[-0.15, 0.6, 8]}>
+        <mesh position={[-0.17, 0.6, 8]}>
           <boxGeometry args={[0.15, 1.2, 14]} />
           <meshStandardMaterial color={trimColor} roughness={0.5} />
         </mesh>
@@ -285,9 +277,15 @@ function HallwayScene({ isChatbotOpen }) {
           <boxGeometry args={[0.4, 5, 14]} />
           <meshStandardMaterial color={wallColor} roughness={0.7} />
         </mesh>
-        <mesh position={[-0.15, 0.6, -8]}>
+        <mesh position={[-0.17, 0.6, -8]}>
           <boxGeometry args={[0.15, 1.2, 14]} />
           <meshStandardMaterial color={trimColor} roughness={0.5} />
+        </mesh>
+
+        {/* Header above Video Room opening - Closes the gap */}
+        <mesh position={[0, 4.25, 0]} receiveShadow>
+          <boxGeometry args={[0.4, 1.5, 2]} />
+          <meshStandardMaterial color={wallColor} roughness={0.7} />
         </mesh>
 
         {/* Wall Lamps on right side */}
@@ -299,8 +297,8 @@ function HallwayScene({ isChatbotOpen }) {
       {/* Bright light spilling from the Video Room opening */}
       <group position={[5.5, 0, 0]}>
         {/* Main light beam from projection room */}
-        <spotLight 
-          position={[2, 3, 0]} 
+        <spotLight
+          position={[2, 3, 0]}
           angle={0.8}
           penumbra={0.5}
           intensity={3}
@@ -310,13 +308,13 @@ function HallwayScene({ isChatbotOpen }) {
         />
         <pointLight position={[1, 2, 0]} intensity={1.5} color="#8899ff" distance={8} />
         <pointLight position={[0, 1, 0]} intensity={1} color="#aabbff" distance={5} />
-        
+
         {/* Glowing floor area from light */}
         <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[3, 4]} />
-          <meshStandardMaterial 
-            color="#667788" 
-            emissive="#4466aa" 
+          <meshStandardMaterial
+            color="#667788"
+            emissive="#4466aa"
             emissiveIntensity={0.15}
             transparent
             opacity={0.5}
@@ -374,21 +372,15 @@ function HallwayScene({ isChatbotOpen }) {
         <meshStandardMaterial color={wallColor} roughness={0.65} />
       </mesh>
 
-      {/* ========== WAITING AREA ========== */}
-      <group position={[-3.5, 0, 6]}>
-        <Sofa position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
-        <CoffeeTable position={[1.5, 0, 0]} scale={1.5} />
-        <Books position={[1.5, 0.4, 0.2]} rotation={[0, 0.3, 0]} scale={1.2} />
-        <RectangleRug position={[0.8, 0.01, 0]} scale={2.5} />
-      </group>
+
 
       {/* ========== BENCHES ========== */}
       <Bench position={[-5.2, 0, -2]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
       <Bench position={[-5.2, 0, -8]} rotation={[0, Math.PI / 2, 0]} scale={1.5} withCushion={true} />
 
       {/* ========== COAT RACKS ========== */}
-      <CoatRack position={[-5, 0, 11]} scale={1.8} />
-      <CoatRack position={[5, 0, 5]} scale={1.8} />
+      <CoatRack position={[-5, 0, 12.5]} scale={1.8} />
+      <CoatRack position={[4.5, 0, 5]} scale={1.8} />
 
       {/* ========== POTTED PLANTS ========== */}
       <PottedPlant position={[-5.2, 0, 2]} scale={2.5} />
@@ -398,8 +390,8 @@ function HallwayScene({ isChatbotOpen }) {
       <PottedPlant position={[1, 0, 12.5]} scale={2} />
 
       {/* ========== TRASH CANS ========== */}
-      <Trashcan position={[5, 0, -5]} scale={1.5} />
-      <Trashcan position={[-5, 0, 12]} scale={1.5} />
+      <Trashcan position={[4.5, 0, -5]} scale={1.5} />
+      <Trashcan position={[-5, 0, 13.5]} scale={1.5} />
 
       {/* ========== CEILING LIGHTS ========== */}
       <FlickeringLight position={[0, 4.5, -8]} intensity={3} />

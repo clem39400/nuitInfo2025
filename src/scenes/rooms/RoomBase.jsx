@@ -10,7 +10,7 @@ import useGameStore from '../../core/GameStateContext';
  * @param {JSX.Element} props.children - Room-specific content
  * @param {string} props.lightingPreset - Lighting configuration
  */
-function RoomBase({ children, lightingPreset = 'default' }) {
+function RoomBase({ children, lightingPreset = 'default', showBackButton = true }) {
   const { camera } = useThree();
   const { exitRoom, setTransitioning } = useGameStore();
 
@@ -52,28 +52,30 @@ function RoomBase({ children, lightingPreset = 'default' }) {
     <group>
       {/* Room content */}
       {children}
-      
+
       {/* Back button (floating cube) */}
-      <mesh
-        position={[-4, 1.5, 4]}
-        onClick={handleBackToHallway}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'pointer';
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'default';
-        }}
-      >
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
-        <meshStandardMaterial
-          color="#ff0088"
-          emissive="#ff0088"
-          emissiveIntensity={0.5}
-        />
-      </mesh>
-      
+      {showBackButton && (
+        <mesh
+          position={[-4, 1.5, 4]}
+          onClick={handleBackToHallway}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            document.body.style.cursor = 'pointer';
+          }}
+          onPointerOut={(e) => {
+            e.stopPropagation();
+            document.body.style.cursor = 'default';
+          }}
+        >
+          <boxGeometry args={[0.5, 0.5, 0.5]} />
+          <meshStandardMaterial
+            color="#ff0088"
+            emissive="#ff0088"
+            emissiveIntensity={0.5}
+          />
+        </mesh>
+      )}
+
       {/* Room lighting */}
       <ambientLight intensity={lighting.ambient} />
       <pointLight
