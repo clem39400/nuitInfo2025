@@ -121,6 +121,28 @@ function App() {
         <strong>Right-click + Drag</strong> to look around | <strong>WASD/Arrows</strong> to move | <strong>Left-click</strong> objects normally
       </div>
 
+      {/* Footer link to legal page */}
+      <a
+        href="/mentions-legales.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: 'fixed',
+          bottom: '8px',
+          right: '12px',
+          color: 'rgba(255, 255, 255, 0.4)',
+          fontSize: '11px',
+          fontFamily: 'monospace',
+          textDecoration: 'none',
+          zIndex: 999,
+          transition: 'color 0.2s',
+        }}
+        onMouseEnter={(e) => e.target.style.color = '#00ff88'}
+        onMouseLeave={(e) => e.target.style.color = 'rgba(255, 255, 255, 0.4)'}
+      >
+        Mentions légales
+      </a>
+
       {/* 3D Canvas */}
       <Canvas
         shadows

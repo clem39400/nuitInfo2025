@@ -6,6 +6,7 @@ import { ReflectiveFloor } from '../../components/Environment';
 import Chair from '../../components/models/Chair';
 import Desk from '../../components/models/Desk';
 import { PottedPlant, Trashcan } from '../../components/models/Props';
+import NirdPanel from '../../components/NirdPanel';
 
 /**
  * Video Room - School Lecture Hall / Auditorium
@@ -78,6 +79,117 @@ function VideoRoom(props) {
                 <boxGeometry args={[0.2, 5, 14]} />
                 <meshStandardMaterial color={wallColor} roughness={0.8} />
             </mesh>
+
+            {/* ===== NIRD EDUCATIONAL POSTERS - VideoRoom ===== */}
+            
+            {/* Large Banner: What is NIRD? - Above Screen */}
+            <group position={[0, 4, -6.8]}>
+              <mesh>
+                <boxGeometry args={[5, 0.8, 0.05]} />
+                <meshStandardMaterial color="#1a1a2e" />
+              </mesh>
+              <Html
+                transform
+                sprite={false}
+                position={[0, 0, 0.05]}
+                scale={0.12}
+                style={{ pointerEvents: 'none' }}
+              >
+                <div style={{
+                  width: '3000px',
+                  padding: '25px 50px',
+                  background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                  border: '3px solid #00ff88',
+                  borderRadius: '10px',
+                  color: 'white',
+                  fontFamily: 'Arial, sans-serif',
+                  textAlign: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '40px'
+                }}>
+                  <span style={{ fontSize: '80px' }}>🌍</span>
+                  <div>
+                    <h1 style={{ color: '#00ff88', fontSize: '60px', margin: 0 }}>DÉMARCHE NIRD</h1>
+                    <p style={{ fontSize: '35px', margin: '10px 0 0 0', opacity: 0.9 }}>
+                      <strong>N</strong>umérique <strong>I</strong>nclusif <strong>R</strong>esponsable <strong>D</strong>urable • Pour une école libre et écologique
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '80px' }}>🐧</span>
+                </div>
+              </Html>
+              <pointLight position={[0, 0, 0.3]} color="#00ff88" intensity={0.5} distance={3} />
+            </group>
+
+            {/* Left of Screen: 3 Jalons */}
+            <group position={[-5.5, 2.2, -6.8]}>
+              <mesh>
+                <boxGeometry args={[2, 2.5, 0.05]} />
+                <meshStandardMaterial color="#1a1a2e" />
+              </mesh>
+              <Html
+                transform
+                sprite={false}
+                position={[0, 0, 0.05]}
+                scale={0.12}
+                style={{ pointerEvents: 'none' }}
+              >
+                <div style={{
+                  width: '1200px',
+                  padding: '30px',
+                  background: 'linear-gradient(135deg, #1a2e3e 0%, #0a1a2e 100%)',
+                  border: '3px solid #00aaff',
+                  borderRadius: '15px',
+                  color: 'white',
+                  fontFamily: 'Arial, sans-serif'
+                }}>
+                  <h2 style={{ color: '#00aaff', fontSize: '45px', margin: '0 0 20px 0', textAlign: 'center' }}>🚩 LES 3 JALONS</h2>
+                  <div style={{ fontSize: '28px', lineHeight: '1.5' }}>
+                    <p><strong style={{ color: '#ff4444' }}>1. MOBILISATION</strong><br/>Un enseignant volontaire + sensibilisation de l'équipe</p>
+                    <p><strong style={{ color: '#ffaa00' }}>2. EXPÉRIMENTATION</strong><br/>Installation de postes Linux + club reconditionnement</p>
+                    <p><strong style={{ color: '#00ff88' }}>3. INTÉGRATION</strong><br/>Inscription dans le projet d'établissement</p>
+                  </div>
+                </div>
+              </Html>
+              <pointLight position={[0, 0, 0.3]} color="#00aaff" intensity={0.4} distance={2} />
+            </group>
+
+            {/* Right of Screen: Why Now? */}
+            <group position={[5.5, 2.2, -6.8]}>
+              <mesh>
+                <boxGeometry args={[2, 2.5, 0.05]} />
+                <meshStandardMaterial color="#1a1a2e" />
+              </mesh>
+              <Html
+                transform
+                sprite={false}
+                position={[0, 0, 0.05]}
+                scale={0.12}
+                style={{ pointerEvents: 'none' }}
+              >
+                <div style={{
+                  width: '1200px',
+                  padding: '30px',
+                  background: 'linear-gradient(135deg, #2e1a1a 0%, #3e1a0a 100%)',
+                  border: '3px solid #ff4444',
+                  borderRadius: '15px',
+                  color: 'white',
+                  fontFamily: 'Arial, sans-serif'
+                }}>
+                  <h2 style={{ color: '#ff4444', fontSize: '45px', margin: '0 0 20px 0', textAlign: 'center' }}>⏳ POURQUOI MAINTENANT ?</h2>
+                  <ul style={{ fontSize: '26px', lineHeight: '1.6', paddingLeft: '25px' }}>
+                    <li><strong>Fin de Windows 10</strong> = opération commune</li>
+                    <li>La <strong>Forge des Communs</strong> éducatifs existe</li>
+                    <li>Urgence <strong>écologique</strong> et <strong>souveraine</strong></li>
+                    <li>Des établissements <strong>pilotes</strong> montrent la voie</li>
+                  </ul>
+                  <p style={{ fontSize: '24px', textAlign: 'center', marginTop: '15px', fontStyle: 'italic', opacity: 0.9 }}>
+                    "C'est maintenant ou jamais !"</p>
+                </div>
+              </Html>
+              <pointLight position={[0, 0, 0.3]} color="#ff4444" intensity={0.4} distance={2} />
+            </group>
             
             {/* Floor trim / baseboard */}
             <mesh position={[0, 0.15, -6.85]}>

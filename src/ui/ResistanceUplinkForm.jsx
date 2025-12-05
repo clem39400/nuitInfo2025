@@ -88,7 +88,8 @@ function ResistanceUplinkForm() {
     recurrence: 'once',
     skills: '',
     availability: '',
-    topic: ''
+    topic: '',
+    honeypot: '' // Anti-spam field
   });
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -109,7 +110,8 @@ function ResistanceUplinkForm() {
         recurrence: 'once',
         skills: '',
         availability: '',
-        topic: ''
+        topic: '',
+        honeypot: ''
       });
       setErrors({});
       setIsClosing(false);
@@ -177,6 +179,11 @@ function ResistanceUplinkForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Anti-spam: silently reject if honeypot field is filled
+    if (formData.honeypot) {
+      setIsSubmitted(true); // Pretend success to not alert bots
+      return;
+    }
     if (validate()) {
       setIsSubmitted(true);
     }
@@ -318,7 +325,21 @@ function ResistanceUplinkForm() {
             </div>
 
             {/* Dynamic Form */}
-            <form onSubmit={handleSubmit} className="nird-form">
+            <form onSubmit={handleSubmit} className="nird-form" aria-label="Formulaire de contact NIRD" noValidate>
+              {/* Honeypot anti-spam field - hidden */}
+              <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true">
+                <label htmlFor="website">Ne pas remplir</label>
+                <input
+                  type="text"
+                  id="website"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.honeypot || ''}
+                  onChange={(e) => handleInputChange('honeypot', e.target.value)}
+                />
+              </div>
+
               {/* Common fields */}
               <div className="form-group">
                 <label htmlFor="name">Nom d'Utilisateur *</label>
@@ -329,8 +350,11 @@ function ResistanceUplinkForm() {
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="Ton identifiant dans le Nexus"
                   className={errors.name ? 'error' : ''}
+                  aria-required="true"
+                  aria-invalid={errors.name ? 'true' : 'false'}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
                 />
-                {errors.name && <span className="error-msg">{errors.name}</span>}
+                {errors.name && <span id="name-error" className="error-msg" role="alert" aria-live="polite">{errors.name}</span>}
               </div>
 
               <div className="form-group">
@@ -342,8 +366,12 @@ function ResistanceUplinkForm() {
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="ton.email@nexus.com"
                   className={errors.email ? 'error' : ''}
+                  aria-required="true"
+                  aria-invalid={errors.email ? 'true' : 'false'}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                  autoComplete="email"
                 />
-                {errors.email && <span className="error-msg">{errors.email}</span>}
+                {errors.email && <span id="email-error" className="error-msg" role="alert" aria-live="polite">{errors.email}</span>}
               </div>
 
               {/* Mission-specific fields */}
@@ -360,8 +388,11 @@ function ResistanceUplinkForm() {
                         onChange={(e) => handleInputChange('amount', e.target.value)}
                         placeholder="10"
                         className={errors.amount ? 'error' : ''}
+                        aria-required="true"
+                        aria-invalid={errors.amount ? 'true' : 'false'}
+                        aria-describedby={errors.amount ? 'amount-error' : undefined}
                       />
-                      {errors.amount && <span className="error-msg">{errors.amount}</span>}
+                      {errors.amount && <span id="amount-error" className="error-msg" role="alert" aria-live="polite">{errors.amount}</span>}
                     </div>
                     <div className="form-group">
                       <label htmlFor="recurrence">Récurrence</label>
@@ -369,6 +400,7 @@ function ResistanceUplinkForm() {
                         id="recurrence"
                         value={formData.recurrence}
                         onChange={(e) => handleInputChange('recurrence', e.target.value)}
+                        aria-label="Fréquence du don"
                       >
                         <option value="once">Unique 🎁</option>
                         <option value="monthly">Mensuel 🔄</option>
@@ -390,8 +422,11 @@ function ResistanceUplinkForm() {
                       onChange={(e) => handleInputChange('skills', e.target.value)}
                       placeholder="Ex: Développement, Design, Communication..."
                       className={errors.skills ? 'error' : ''}
+                      aria-required="true"
+                      aria-invalid={errors.skills ? 'true' : 'false'}
+                      aria-describedby={errors.skills ? 'skills-error' : undefined}
                     />
-                    {errors.skills && <span className="error-msg">{errors.skills}</span>}
+                    {errors.skills && <span id="skills-error" className="error-msg" role="alert" aria-live="polite">{errors.skills}</span>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="availability">Disponibilité</label>
@@ -399,6 +434,7 @@ function ResistanceUplinkForm() {
                       id="availability"
                       value={formData.availability}
                       onChange={(e) => handleInputChange('availability', e.target.value)}
+                      aria-label="Votre disponibilité pour le bénévolat"
                     >
                       <option value="">Sélectionner...</option>
                       <option value="few-hours">Quelques heures/mois</option>
@@ -438,8 +474,11 @@ function ResistanceUplinkForm() {
                     placeholder="Transmets ton message à travers le Nexus..."
                     rows={4}
                     className={errors.message ? 'error' : ''}
+                    aria-required="true"
+                    aria-invalid={errors.message ? 'true' : 'false'}
+                    aria-describedby={errors.message ? 'message-error' : undefined}
                   />
-                  {errors.message && <span className="error-msg">{errors.message}</span>}
+                  {errors.message && <span id="message-error" className="error-msg" role="alert" aria-live="polite">{errors.message}</span>}
                 </div>
               )}
 

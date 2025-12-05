@@ -1,3 +1,4 @@
+import { Html, Text } from '@react-three/drei';
 import Door from '../components/Door';
 import VideoRoom from './rooms/VideoRoom';
 import useGameStore from '../core/GameStateContext';
@@ -11,6 +12,7 @@ import CoffeeTable from '../components/models/CoffeeTable';
 import Sofa from '../components/models/Sofa';
 import { PottedPlant, Trashcan, Books } from '../components/models/Props';
 import { RectangleRug, Doormat } from '../components/models/Rug';
+import NirdPanel from '../components/NirdPanel';
 
 /**
  * Hallway Scene - Phase 2: The Hub
@@ -92,56 +94,171 @@ function HallwayScene({ isChatbotOpen }) {
           <meshStandardMaterial color={trimColor} roughness={0.5} />
         </mesh>
 
-        {/* ===== WALL PAINTINGS / POSTERS ===== */}
-        {/* NIRD Value Poster 1 - "REPAIR" */}
-        <group position={[0.25, 2.8, -6]}>
-          <mesh>
-            <boxGeometry args={[0.08, 1.4, 1.1]} />
-            <meshStandardMaterial color="#2a2a2a" />
+        {/* ===== NIRD EDUCATIONAL POSTERS - Pure 3D on Left Wall ===== */}
+        
+        {/* Poster 1: What is NIRD? */}
+        <group position={[0.25, 2.5, 10]}>
+          {/* Border */}
+          <mesh rotation={[0, Math.PI / 2, 0]} position={[-0.005, 0, 0]}>
+            <planeGeometry args={[1.7, 2.1]} />
+            <meshBasicMaterial color="#00cc66" />
           </mesh>
-          <mesh position={[0.05, 0, 0]}>
-            <planeGeometry args={[1, 1.3]} />
-            <meshStandardMaterial 
-              color="#2a5a4a" 
-              emissive="#00ff88" 
-              emissiveIntensity={0.15}
-            />
+          {/* Background */}
+          <mesh rotation={[0, Math.PI / 2, 0]}>
+            <planeGeometry args={[1.5, 1.9]} />
+            <meshBasicMaterial color="#1a2a3a" />
           </mesh>
-          <pointLight position={[0.3, 0, 0]} intensity={0.2} color="#00ff88" distance={2} />
+          {/* Text */}
+          <Text position={[0.01, 0.6, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.14} color="#00ff88" anchorX="center">
+            C'EST QUOI NIRD ?
+          </Text>
+          <Text position={[0.01, 0.3, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.07} color="#ffffff" anchorX="center">
+            Numérique Inclusif
+          </Text>
+          <Text position={[0.01, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.07} color="#ffffff" anchorX="center">
+            Responsable Durable
+          </Text>
+          <Text position={[0.01, -0.1, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.05} color="#aaaaaa" anchorX="center" maxWidth={1.3} textAlign="center">
+            Une démarche pour transformer
+          </Text>
+          <Text position={[0.01, -0.25, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.05} color="#aaaaaa" anchorX="center" maxWidth={1.3} textAlign="center">
+            le numérique scolaire
+          </Text>
         </group>
 
-        {/* NIRD Value Poster 2 - "REUSE" */}
-        <group position={[0.25, 2.8, 0]}>
-          <mesh>
-            <boxGeometry args={[0.08, 1.4, 1.1]} />
-            <meshStandardMaterial color="#2a2a2a" />
+        {/* Poster 2: INCLUSIF */}
+        <group position={[0.25, 2.5, 6]}>
+          <mesh rotation={[0, Math.PI / 2, 0]} position={[-0.005, 0, 0]}>
+            <planeGeometry args={[1.7, 2.1]} />
+            <meshBasicMaterial color="#cc4444" />
           </mesh>
-          <mesh position={[0.05, 0, 0]}>
-            <planeGeometry args={[1, 1.3]} />
-            <meshStandardMaterial 
-              color="#4a5a2a" 
-              emissive="#88ff00" 
-              emissiveIntensity={0.15}
-            />
+          <mesh rotation={[0, Math.PI / 2, 0]}>
+            <planeGeometry args={[1.5, 1.9]} />
+            <meshBasicMaterial color="#2a1a1a" />
           </mesh>
-          <pointLight position={[0.3, 0, 0]} intensity={0.2} color="#88ff00" distance={2} />
+          <Text position={[0.01, 0.65, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.16} color="#ff6666" anchorX="center">
+            INCLUSIF
+          </Text>
+          <Text position={[0.01, 0.35, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Linux GRATUIT = accès pour tous
+          </Text>
+          <Text position={[0.01, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Interfaces adaptées (DYS)
+          </Text>
+          <Text position={[0.01, -0.05, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • PC pour les familles
+          </Text>
+          <Text position={[0.01, -0.25, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Fracture numérique réduite
+          </Text>
         </group>
 
-        {/* NIRD Value Poster 3 - "REDUCE" */}
-        <group position={[0.25, 2.8, 6]}>
-          <mesh>
-            <boxGeometry args={[0.08, 1.4, 1.1]} />
-            <meshStandardMaterial color="#2a2a2a" />
+        {/* Poster 3: RESPONSABLE */}
+        <group position={[0.25, 2.5, 2]}>
+          <mesh rotation={[0, Math.PI / 2, 0]} position={[-0.005, 0, 0]}>
+            <planeGeometry args={[1.7, 2.1]} />
+            <meshBasicMaterial color="#ccaa00" />
           </mesh>
-          <mesh position={[0.05, 0, 0]}>
-            <planeGeometry args={[1, 1.3]} />
-            <meshStandardMaterial 
-              color="#5a4a2a" 
-              emissive="#ffaa00" 
-              emissiveIntensity={0.15}
-            />
+          <mesh rotation={[0, Math.PI / 2, 0]}>
+            <planeGeometry args={[1.5, 1.9]} />
+            <meshBasicMaterial color="#2a2a1a" />
           </mesh>
-          <pointLight position={[0.3, 0, 0]} intensity={0.2} color="#ffaa00" distance={2} />
+          <Text position={[0.01, 0.65, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.14} color="#ffcc00" anchorX="center">
+            RESPONSABLE
+          </Text>
+          <Text position={[0.01, 0.35, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • RGPD: données protégées
+          </Text>
+          <Text position={[0.01, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • L'école maîtrise ses outils
+          </Text>
+          <Text position={[0.01, -0.05, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Esprit critique numérique
+          </Text>
+          <Text position={[0.01, -0.25, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Pas de dépendance GAFAM
+          </Text>
+        </group>
+
+        {/* Poster 4: DURABLE */}
+        <group position={[0.25, 2.5, -2]}>
+          <mesh rotation={[0, Math.PI / 2, 0]} position={[-0.005, 0, 0]}>
+            <planeGeometry args={[1.7, 2.1]} />
+            <meshBasicMaterial color="#00cc66" />
+          </mesh>
+          <mesh rotation={[0, Math.PI / 2, 0]}>
+            <planeGeometry args={[1.5, 1.9]} />
+            <meshBasicMaterial color="#1a2a2a" />
+          </mesh>
+          <Text position={[0.01, 0.65, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.16} color="#00ff88" anchorX="center">
+            DURABLE
+          </Text>
+          <Text position={[0.01, 0.35, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Linux sur PC de 10+ ans
+          </Text>
+          <Text position={[0.01, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Moins de déchets électro
+          </Text>
+          <Text position={[0.01, -0.05, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Sobriété numérique
+          </Text>
+          <Text position={[0.01, -0.25, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Économies pour l'école
+          </Text>
+        </group>
+
+        {/* Poster 5: LINUX */}
+        <group position={[0.25, 2.5, -6]}>
+          <mesh rotation={[0, Math.PI / 2, 0]} position={[-0.005, 0, 0]}>
+            <planeGeometry args={[1.7, 2.1]} />
+            <meshBasicMaterial color="#0088cc" />
+          </mesh>
+          <mesh rotation={[0, Math.PI / 2, 0]}>
+            <planeGeometry args={[1.5, 1.9]} />
+            <meshBasicMaterial color="#1a1a2a" />
+          </mesh>
+          <Text position={[0.01, 0.65, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.18} color="#00ccff" anchorX="center">
+            LINUX
+          </Text>
+          <Text position={[0.01, 0.35, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Système libre et GRATUIT
+          </Text>
+          <Text position={[0.01, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Distribution NIRD prête
+          </Text>
+          <Text position={[0.01, -0.05, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Simple, stable, sécurisé
+          </Text>
+          <Text position={[0.01, -0.25, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Vieux PC performants !
+          </Text>
+        </group>
+
+        {/* Poster 6: RECONDITIONNEMENT */}
+        <group position={[0.25, 2.5, -10]}>
+          <mesh rotation={[0, Math.PI / 2, 0]} position={[-0.005, 0, 0]}>
+            <planeGeometry args={[1.7, 2.1]} />
+            <meshBasicMaterial color="#aa44cc" />
+          </mesh>
+          <mesh rotation={[0, Math.PI / 2, 0]}>
+            <planeGeometry args={[1.5, 1.9]} />
+            <meshBasicMaterial color="#2a1a2a" />
+          </mesh>
+          <Text position={[0.01, 0.65, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.09} color="#cc66ff" anchorX="center">
+            RECONDITIONNEMENT
+          </Text>
+          <Text position={[0.01, 0.35, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Élèves réparent les PC
+          </Text>
+          <Text position={[0.01, 0.15, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Effacement des données
+          </Text>
+          <Text position={[0.01, -0.05, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Redistribution familles
+          </Text>
+          <Text position={[0.01, -0.25, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.055} color="#ffffff" anchorX="center">
+            • Apprendre en faisant
+          </Text>
         </group>
 
         {/* Wall Lamps */}
@@ -243,18 +360,7 @@ function HallwayScene({ isChatbotOpen }) {
         </group>
       ))}
 
-      {/* NIRD Hero Banner on back wall */}
-      <group position={[0, 4.2, -13.95]}>
-        <mesh>
-          <planeGeometry args={[8, 0.8]} />
-          <meshStandardMaterial
-            color="#1a3a5a"
-            emissive="#00aaff"
-            emissiveIntensity={0.3}
-          />
-        </mesh>
-        <pointLight position={[0, 0, 0.5]} intensity={0.5} color="#00aaff" distance={4} />
-      </group>
+        {/* NIRD Hero Banner REMOVED - Replaced by Reconditioning Poster */}
 
       {/* Back wall trim */}
       <mesh position={[0, 0.6, -14]}>

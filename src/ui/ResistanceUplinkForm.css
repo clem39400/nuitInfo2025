@@ -458,3 +458,50 @@
     grid-template-columns: 1fr;
   }
 }
+/* ========== ACCESSIBILITY IMPROVEMENTS ========== */
+
+/* Focus visible styles for keyboard navigation */
+.nird-form input:focus-visible,
+.nird-form select:focus-visible,
+.nird-form textarea:focus-visible,
+.mission-btn:focus-visible,
+.submit-btn:focus-visible,
+.close-btn:focus-visible,
+.close-confirmation-btn:focus-visible {
+  outline: 3px solid #00ff88;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(0, 255, 136, 0.2);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .nird-container {
+    border-width: 2px;
+    border-color: #00ff88;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    border-width: 2px;
+  }
+  
+  .error-msg {
+    font-weight: bold;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .nird-overlay,
+  .nird-container,
+  .logo-icon,
+  .confirmation-icon {
+    animation: none;
+  }
+  
+  .submit-btn:hover,
+  .close-btn:hover {
+    transform: none;
+  }
+}
