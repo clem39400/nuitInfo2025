@@ -233,34 +233,9 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         </mesh>
       </group>
 
-      {/* Flower beds - left side */}
-      <group position={[-5, 0.1, -2]}>
-        {[0, 0.6, 1.2, 1.8].map((x, i) => (
-          <mesh key={i} position={[x, 0.15, 0]}>
-            <sphereGeometry args={[0.15, 8, 8]} />
-            <meshStandardMaterial color={['#ff6b6b', '#feca57', '#ff9ff3', '#54a0ff'][i]} />
-          </mesh>
-        ))}
-        {/* Flower bed base */}
-        <mesh position={[0.9, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[2.5, 0.8]} />
-          <meshStandardMaterial color="#3a5f2a" />
-        </mesh>
-      </group>
 
-      {/* Flower beds - right side */}
-      <group position={[4, 0.1, -2]}>
-        {[0, 0.6, 1.2, 1.8].map((x, i) => (
-          <mesh key={i} position={[x, 0.15, 0]}>
-            <sphereGeometry args={[0.15, 8, 8]} />
-            <meshStandardMaterial color={['#54a0ff', '#ff6b6b', '#feca57', '#ff9ff3'][i]} />
-          </mesh>
-        ))}
-        <mesh position={[0.9, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[2.5, 0.8]} />
-          <meshStandardMaterial color="#3a5f2a" />
-        </mesh>
-      </group>
+
+
 
       {/* Decorative hedges along path */}
       <mesh position={[-3.5, 0.4, -3]} rotation={[0, 0, 0]}>

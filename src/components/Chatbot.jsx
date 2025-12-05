@@ -157,9 +157,8 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart, onSkipGate }) {
 
         {/* Quick Hints Bar */}
         <div style={styles.hintsBar}>
-          <span style={styles.hint}>💡 Tapez <strong>SNAKE</strong> pour un défi</span>
-          <span style={styles.hintDivider}>•</span>
-          <span style={styles.hint}>🔑 Mot secret: ???</span>
+
+          <span style={styles.hint}> Indice : Si vous êtes bloqué, utilisez le mot NIRD pour passer :)</span>
         </div>
 
         {/* Messages Container */}
