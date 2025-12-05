@@ -10,6 +10,7 @@ import { tweenCamera } from '../components/CameraController';
 // Real 3D Models from Kenney Furniture Kit
 import Bench from '../components/models/Bench';
 import WallLamp from '../components/models/WallLamp';
+import { Locker } from '../components/models';
 import CoatRack from '../components/models/CoatRack';
 import CoffeeTable from '../components/models/CoffeeTable';
 import Sofa from '../components/models/Sofa';
@@ -103,6 +104,12 @@ function HallwayScene({ isChatbotOpen }) {
       <Doormat position={[-3.2, 0.01, -13]} scale={1.5} />
       <Doormat position={[0, 0.01, -13]} scale={1.5} />
       <Doormat position={[3.2, 0.01, -13]} scale={1.5} />
+
+      {/* ========== RED CARPET ========== */}
+      <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[2, 27]} />
+        <meshStandardMaterial color="#cc0000" roughness={0.8} />
+      </mesh>
 
       {/* Return to Gate - Real Door */}
       <Door
@@ -443,7 +450,18 @@ function HallwayScene({ isChatbotOpen }) {
 
       {/* ========== COAT RACKS ========== */}
       <CoatRack position={[-5, 0, 12.5]} scale={1.8} />
-      <CoatRack position={[4.5, 0, 5]} scale={1.8} />
+      <CoatRack position={[-5, 0, 12.5]} scale={1.8} />
+
+      {/* ========== LOCKERS ========== */}
+      {/* Row of lockers on the right wall, after the video room */}
+      {Array.from({ length: 12 }).map((_, i) => (
+        <Locker
+          key={i}
+          position={[5.6, 0, -2 - (i * 0.4)]}
+          rotation={[0, -Math.PI / 2, 0]}
+          color={i % 3 === 0 ? '#445566' : '#556677'}
+        />
+      ))}
 
       {/* ========== POTTED PLANTS ========== */}
       <PottedPlant position={[-5.2, 0, 2]} scale={2.5} />

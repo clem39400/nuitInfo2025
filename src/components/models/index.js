@@ -15,6 +15,7 @@ export { default as CoatRack } from './CoatRack';
 export { default as CoffeeTable } from './CoffeeTable';
 export { default as Sofa } from './Sofa';
 export { default as DoorFrame } from './DoorFrame';
+export { default as Locker } from './Locker';
 export { RectangleRug, Doormat } from './Rug';
 export { 
   Trashcan, 
