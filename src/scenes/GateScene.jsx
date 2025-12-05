@@ -6,6 +6,7 @@ import { Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Person, StudentGroup } from '../components/models/Person';
 
 /**
  * Gate Scene - Phase 1: The Gatekeeper
@@ -246,6 +247,51 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <boxGeometry args={[0.8, 0.8, 10]} />
         <meshStandardMaterial color="#2a5a1a" />
       </mesh>
+
+      {/* ========== NPCs - STUDENTS OUTDOORS ========== */}
+      {/* Student group chatting near trees on left */}
+      <StudentGroup position={[-7, 0, 0]} rotation={Math.PI / 3} />
+      
+      {/* Student walking toward the gate */}
+      <Person 
+        position={[5, 0, 2]}
+        rotation={-Math.PI / 2 - 0.3}
+        shirtColor="#5588cc"
+        hairColor="#2a2a2a"
+        hasBackpack={true}
+        scale={0.95}
+      />
+      
+      {/* Students near the school entrance */}
+      <Person 
+        position={[-6, 0, -8]}
+        rotation={Math.PI / 4}
+        skinColor="#d8a87a"
+        shirtColor="#ee6655"
+        hairColor="#5a4a3a"
+        hasBackpack={true}
+        scale={0.9}
+      />
+      <Person 
+        position={[-5, 0, -7.5]}
+        rotation={-Math.PI / 6}
+        skinColor="#f0c8a0"
+        shirtColor="#55aa77"
+        hairColor="#8a6a4a"
+        hasBackpack={false}
+        scale={0.88}
+      />
+      
+      {/* Student on right side near tree */}
+      <Person 
+        position={[7, 0, -3]}
+        rotation={-Math.PI / 4}
+        skinColor="#c4956a"
+        shirtColor="#aa5577"
+        hairColor="#1a1a1a"
+        hasBackpack={true}
+        scale={0.92}
+      />
 
       {/* Subtle stone marker with snake game clue - near left hedge, player's side */}
       <group position={[-4.2, 0, 1.5]}>

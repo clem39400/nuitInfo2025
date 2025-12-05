@@ -16,6 +16,7 @@ import CoffeeTable from '../components/models/CoffeeTable';
 import Sofa from '../components/models/Sofa';
 import { PottedPlant, Trashcan, Books } from '../components/models/Props';
 import { RectangleRug, Doormat } from '../components/models/Rug';
+import { Person, StudentGroup, Teacher } from '../components/models/Person';
 import NirdPanel from '../components/NirdPanel';
 
 /**
@@ -481,6 +482,77 @@ function HallwayScene({ isChatbotOpen }) {
       {/* ========== TRASH CANS ========== */}
       <Trashcan position={[4.5, 0, -5]} scale={1.5} />
       <Trashcan position={[-5, 0, 13.5]} scale={1.5} />
+
+      {/* ========== NPCs - STUDENTS AND GUIDES ========== */}
+      {/* Student group near lockers on left wall */}
+      <StudentGroup position={[-4, 0, 0]} rotation={Math.PI / 2} />
+      
+      {/* Students sitting on bench (right side) */}
+      <Person 
+        position={[4, 0.4, -2]} 
+        rotation={-Math.PI / 2}
+        shirtColor="#cc4466"
+        hairColor="#4a3a2a"
+        hasBackpack={false}
+        scale={0.85}
+      />
+      <Person 
+        position={[4, 0.4, -2.5]} 
+        rotation={-Math.PI / 2 - 0.3}
+        skinColor="#c49a6c"
+        shirtColor="#5577bb"
+        hairColor="#1a1a1a"
+        hasBackpack={true}
+        scale={0.85}
+      />
+      
+      {/* Teacher/Guide near the doors explaining something */}
+      <Teacher 
+        position={[1.5, 0, -11]}
+        rotation={Math.PI * 0.9}
+        shirtColor="#2a4455"
+        pantsColor="#1a1a25"
+      />
+      
+      {/* Students listening to teacher */}
+      <Person 
+        position={[0.5, 0, -10]}
+        rotation={0}
+        shirtColor="#66aa55"
+        hairColor="#5a4a3a"
+        hasBackpack={true}
+        scale={0.9}
+      />
+      <Person 
+        position={[2.5, 0, -10]}
+        rotation={-0.2}
+        skinColor="#f0c8a0"
+        shirtColor="#aa5566"
+        hairColor="#8a5a3a"
+        hasBackpack={true}
+        scale={0.88}
+      />
+      
+      {/* Student walking down hallway */}
+      <Person 
+        position={[2, 0, 5]}
+        rotation={Math.PI}
+        shirtColor="#4488aa"
+        hairColor="#2a2a2a"
+        hasBackpack={true}
+        scale={0.92}
+      />
+      
+      {/* Student at coat rack */}
+      <Person 
+        position={[-4.2, 0, 11]}
+        rotation={Math.PI / 4}
+        skinColor="#d0a080"
+        shirtColor="#885544"
+        hairColor="#3a2a1a"
+        hasBackpack={false}
+        scale={0.88}
+      />
 
       {/* ========== CEILING LIGHTS ========== */}
       <FlickeringLight position={[0, 4.5, -8]} intensity={3} />

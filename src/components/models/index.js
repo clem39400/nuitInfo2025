@@ -24,3 +24,9 @@ export {
   SmallPlant, 
   CardboardBox 
 } from './Props';
+export { 
+  Person, 
+  StudentGroup, 
+  WalkingStudent, 
+  Teacher 
+} from './Person';
