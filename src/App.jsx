@@ -23,19 +23,18 @@ import useRefurbishmentStore from './core/RefurbishmentGameState';
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-  const {
-    currentPhase,
-    currentRoom,
-    isSnakeGameOpen,
-    setSnakeGameOpen,
-    completePuzzle,
-    goToHallway,
-    showNIRDForm,
-    showLinuxGame
-  } = useGameStore();
+
+  const currentPhase = useGameStore((state) => state.currentPhase);
+  const currentRoom = useGameStore((state) => state.currentRoom);
+  const isSnakeGameOpen = useGameStore((state) => state.isSnakeGameOpen);
+  const setSnakeGameOpen = useGameStore((state) => state.setSnakeGameOpen);
+  const completePuzzle = useGameStore((state) => state.completePuzzle);
+  const goToHallway = useGameStore((state) => state.goToHallway);
+  const showNIRDForm = useGameStore((state) => state.showNIRDForm);
+  const showLinuxGame = useGameStore((state) => state.showLinuxGame);
 
   // Refurbishment game state
-  const { activeMiniGame } = useRefurbishmentStore();
+  const activeMiniGame = useRefurbishmentStore((state) => state.activeMiniGame);
 
   // Simulate asset loading
   useEffect(() => {
@@ -118,7 +117,7 @@ function App() {
         <strong>Right-click + Drag</strong> to look around | <strong>WASD/Arrows</strong> to move | <strong>Left-click</strong> objects normally
       </div>
 
-      {/* 3D Canvas - Static optimized settings */}
+      {/* 3D Canvas */}
       <Canvas
         shadows
         camera={{ position: [0, 1.6, 5], fov: 75, near: 0.1, far: 100 }}
@@ -126,7 +125,6 @@ function App() {
           antialias: false,
           alpha: false,
           powerPreference: 'high-performance',
-          stencil: false,
         }}
         dpr={1}
       >
@@ -144,7 +142,7 @@ function App() {
           />
         </Suspense>
 
-        {/* Post-Processing - Disabled during overlays */}
+        {/* Post-Processing */}
         {(!isSnakeGameOpen && !isChatbotOpen) && <PostProcessing bloomIntensity={0.5} />}
 
         {/* Preload assets */}

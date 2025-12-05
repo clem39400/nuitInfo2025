@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Html } from '@react-three/drei';
 import { ScreenGlow, DustParticles } from '../../effects/AtmosphericEffects';
-import { ReflectiveFloor } from '../../components/Environment';
 
 /**
  * Video Room - Educational media center
@@ -34,15 +33,7 @@ function VideoRoom(props) {
             <pointLight position={[0, 3, 0]} intensity={1} distance={10} color="#ffffff" />
             <ambientLight intensity={0.2} />
 
-            {/* Wooden floor */}
-            <ReflectiveFloor
-                position={[0, 0, 0]}
-                size={[14, 14]}
-                color="#5d4037"
-                roughness={0.5}
-                metalness={0.1}
-                mirror={0.1}
-            />
+            {/* Floor removed - using hallway floor instead */}
 
 
             {/* Walls - Open front (z-positive is entrance) */}
