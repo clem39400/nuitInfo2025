@@ -95,7 +95,6 @@ function App() {
 
       {/* Linux Terminal Game Overlay */}
       {showLinuxGame && <LinuxTerminalGame />}
-      <ResistanceUplinkForm />
 
       {/* Refurbishment Mini-Game Overlay */}
       <RefurbishmentMiniGameOverlay />

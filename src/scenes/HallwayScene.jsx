@@ -11,15 +11,25 @@ function HallwayScene({ isChatbotOpen }) {
   const { goToGate } = useGameStore();
   return (
     <group>
-      {/* Highly reflective floor */}
+      {/* Highly reflective floor with slight blue tint */}
       <ReflectiveFloor
         position={[0, 0, 0]}
         size={[12, 30]}
-        color="#0a0a12"
-        roughness={0.08}
-        metalness={0.95}
-        mirror={0.75}
+        color="#0c0c16"
+        roughness={0.06}
+        metalness={0.92}
+        mirror={0.7}
       />
+      
+      {/* Floor edge trim strips for polished look */}
+      <mesh position={[-5.3, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.3, 30]} />
+        <meshStandardMaterial color="#1a1a25" metalness={0.8} roughness={0.3} />
+      </mesh>
+      <mesh position={[5.3, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.3, 30]} />
+        <meshStandardMaterial color="#1a1a25" metalness={0.8} roughness={0.3} />
+      </mesh>
 
       {/* Floating dust in the air - Disabled when chatbot is open for performance */}
       {!isChatbotOpen && <DustParticles count={80} spread={8} color="#aabbcc" />}
@@ -105,9 +115,19 @@ function HallwayScene({ isChatbotOpen }) {
       <mesh position={[0, 2.5, -14]} receiveShadow>
         <boxGeometry args={[12, 5, 0.3]} />
         <meshStandardMaterial
-          color="#1a1a25"
-          roughness={0.7}
-          metalness={0.3}
+          color="#1c1c28"
+          roughness={0.65}
+          metalness={0.35}
+        />
+      </mesh>
+      
+      {/* NIRD poster on back wall */}
+      <mesh position={[0, 3.5, -13.85]}>
+        <planeGeometry args={[3, 1.5]} />
+        <meshStandardMaterial 
+          color="#1a2a3a"
+          emissive="#00ff88" 
+          emissiveIntensity={0.15}
         />
       </mesh>
       
@@ -251,11 +271,11 @@ function HallwayScene({ isChatbotOpen }) {
         </group>
       ))}
 
-      {/* Ambient light */}
-      <ambientLight intensity={0.15} color="#8888cc" />
+      {/* Ambient light - slightly warmer */}
+      <ambientLight intensity={0.12} color="#99aacc" />
 
-      {/* Emergency exit sign glow at the end */}
-      <pointLight position={[0, 4, -13]} intensity={0.4} color="#00ff44" distance={6} />
+      {/* Emergency exit sign glow at the end - subtle */}
+      <pointLight position={[0, 4, -13]} intensity={0.3} color="#00ff44" distance={6} />
     </group>
   );
 }

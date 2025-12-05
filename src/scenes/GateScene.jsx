@@ -2,9 +2,9 @@ import MatrixRain, { RainEffect } from '../effects/MatrixRain';
 import { HologramEffect, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
 import useGameStore from '../core/GameStateContext';
-import { Html } from '@react-three/drei';
+import { Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 /**
@@ -37,22 +37,45 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
     e.stopPropagation();
     if (onOpenChatbot) onOpenChatbot();
   };
+  // Load real textures from PolyHaven
+  const grassTexture = useTexture('/assets/textures/grass/grass_diff.jpg');
+  const stoneTexture = useTexture('/assets/textures/stone/stone_diff.jpg');
+  const woodTexture = useTexture('/assets/textures/wood/wood_diff.jpg');
+
+  // Configure texture tiling
+  useMemo(() => {
+    [grassTexture, stoneTexture, woodTexture].forEach((tex) => {
+      if (tex) {
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      }
+    });
+    if (grassTexture) {
+      grassTexture.repeat.set(20, 20);
+    }
+    if (stoneTexture) {
+      stoneTexture.repeat.set(4, 8);
+    }
+    if (woodTexture) {
+      woodTexture.repeat.set(2, 2);
+    }
+  }, [grassTexture, stoneTexture, woodTexture]);
+
   return (
     <group>
       {/* Gentle floating particles - like pollen/leaves */}
       <DustParticles count={30} spread={20} color="#ffdd88" />
 
-      {/* Realistic grass ground with texture variation */}
+      {/* Realistic grass ground with REAL texture */}
       {/* Base layer - darker grass */}
       <mesh position={[0, -0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="#3d6b2a" roughness={0.95} />
+        <meshStandardMaterial map={grassTexture} color="#5a9045" roughness={0.95} />
       </mesh>
       
-      {/* Main grass layer */}
+      {/* Main grass layer with texture */}
       <mesh position={[0, -0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[80, 80]} />
-        <meshStandardMaterial color="#5a9045" roughness={0.9} />
+        <meshStandardMaterial map={grassTexture} color="#6aaa55" roughness={0.9} />
       </mesh>
       
       {/* Grass texture patches for realism */}
@@ -82,11 +105,12 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <meshStandardMaterial color="#7a6a5a" roughness={0.95} />
       </mesh>
 
-      {/* Stone pathway to gate */}
+      {/* Stone pathway to gate with REAL cobblestone texture */}
       <mesh position={[0, 0.01, -3]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[6, 14]} />
         <meshStandardMaterial
-          color="#9a9080"
+          map={stoneTexture}
+          color="#c0b8a8"
           roughness={0.85}
         />
       </mesh>
@@ -194,29 +218,83 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
       </mesh>
 
       {/* ========== SKY ENCLOSURE - Complete backdrop ========== */}
-      {/* Back sky wall - main backdrop behind the school */}
+      {/* Back sky wall - main backdrop behind the school - MATCHES BACKGROUND */}
       <mesh position={[0, 15, -35]} rotation={[0, 0, 0]}>
         <planeGeometry args={[100, 50]} />
-        <meshBasicMaterial color="#87ceeb" />
+        <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />
       </mesh>
       
       {/* Left side wall - closes the left side */}
-      <mesh position={[-15, 15, -10]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[60, 50]} />
-        <meshBasicMaterial color="#87ceeb" />
+      <mesh position={[-30, 15, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[80, 50]} />
+        <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />
       </mesh>
       
       {/* Right side wall - closes the right side */}
-      <mesh position={[15, 15, -10]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[60, 50]} />
-        <meshBasicMaterial color="#87ceeb" />
+      <mesh position={[30, 15, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[80, 50]} />
+        <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />
       </mesh>
       
       {/* Top sky - covers any gaps above */}
       <mesh position={[0, 40, -10]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[100, 60]} />
-        <meshBasicMaterial color="#87ceeb" />  
+        <planeGeometry args={[100, 80]} />
+        <meshBasicMaterial color="#8ab8d0" side={THREE.DoubleSide} />  
       </mesh>
+      
+      {/* ========== NATURAL FOREST BACKDROP - Closes off the scene properly ========== */}
+      
+      {/* Layer 1: Dense forest treeline (furthest back) */}
+      <group position={[0, 0, -28]}>
+        {/* Continuous hedge/forest base */}
+        <mesh position={[0, 3, 0]}>
+          <boxGeometry args={[80, 6, 4]} />
+          <meshStandardMaterial color="#1a4a1a" roughness={0.95} />
+        </mesh>
+        
+        {/* Individual trees in the back */}
+        {Array.from({ length: 15 }).map((_, i) => (
+          <group key={`back-tree-${i}`} position={[-35 + i * 5, 0, Math.random() * 2]}>
+            {/* Tree trunk */}
+            <mesh position={[0, 3, 0]}>
+              <cylinderGeometry args={[0.3, 0.4, 6, 8]} />
+              <meshStandardMaterial color="#4a3020" roughness={0.9} />
+            </mesh>
+            {/* Tree crown - large */}
+            <mesh position={[0, 7 + Math.random() * 2, 0]}>
+              <sphereGeometry args={[2.5 + Math.random(), 12, 12]} />
+              <meshStandardMaterial color={`hsl(${110 + Math.random() * 20}, 50%, ${20 + Math.random() * 10}%)`} roughness={0.95} />
+            </mesh>
+          </group>
+        ))}
+      </group>
+      
+      {/* Layer 2: Mid-distance bushes and smaller trees */}
+      <group position={[0, 0, -22]}>
+        {/* Green bush line */}
+        <mesh position={[0, 1.5, 0]}>
+          <boxGeometry args={[60, 3, 2]} />
+          <meshStandardMaterial color="#2a5a25" roughness={0.95} />
+        </mesh>
+        
+        {/* Scattered bushes */}
+        {Array.from({ length: 20 }).map((_, i) => (
+          <mesh key={`bush-${i}`} position={[-28 + i * 3 + Math.random(), 1, Math.random() - 0.5]}>
+            <sphereGeometry args={[0.8 + Math.random() * 0.5, 8, 8]} />
+            <meshStandardMaterial color={`hsl(${115 + Math.random() * 15}, 45%, ${25 + Math.random() * 10}%)`} roughness={0.95} />
+          </mesh>
+        ))}
+      </group>
+      
+      {/* Layer 3: Closest vegetation - decorative shrubs */}
+      {[-18, -12, 12, 18].map((x, i) => (
+        <group key={`shrub-${i}`} position={[x, 0, -18]}>
+          <mesh position={[0, 1, 0]}>
+            <sphereGeometry args={[1.2, 8, 8]} />
+            <meshStandardMaterial color="#3a6a30" roughness={0.95} />
+          </mesh>
+        </group>
+      ))}
       
       {/* White fluffy clouds */}
       <group position={[0, 25, -45]}>
@@ -243,26 +321,26 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         </mesh>
       </group>
 
-      {/* ========== SURROUNDING BUILDINGS - LEFT SIDE ========== */}
+      {/* ========== SURROUNDING BUILDINGS - LEFT SIDE - DARKER ========== */}
       <group position={[-20, 0, -12]}>
         {/* Apartment building 1 */}
         <mesh position={[0, 5, 0]}>
           <boxGeometry args={[8, 10, 6]} />
-          <meshStandardMaterial color="#d4c4a8" />
+          <meshStandardMaterial color="#a89888" roughness={0.9} />
         </mesh>
-        {/* Windows */}
+        {/* Windows - minimal glow */}
         {[0, 1, 2, 3].map((row) =>
           [0, 1, 2].map((col) => (
             <mesh key={`l1-${row}-${col}`} position={[-2.5 + col * 2.5, 2 + row * 2, 3.1]}>
               <planeGeometry args={[1.2, 1.5]} />
-              <meshStandardMaterial color="#6ba3d6" emissive="#aaccff" emissiveIntensity={0.1} />
+              <meshStandardMaterial color="#4a7b9a" emissive="#5588aa" emissiveIntensity={0.02} />
             </mesh>
           ))
         )}
         {/* Roof */}
         <mesh position={[0, 10.3, 0]}>
           <boxGeometry args={[8.5, 0.6, 6.5]} />
-          <meshStandardMaterial color="#8b6b4a" />
+          <meshStandardMaterial color="#6a5a4a" roughness={0.95} />
         </mesh>
       </group>
 
@@ -346,31 +424,31 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         </mesh>
       </group>
 
-      {/* School building facade - ÉCOLE NIRD */}
+      {/* School building facade - ÉCOLE NIRD - DARKER colors */}
       <group position={[0, 0, -15]}>
-        {/* Main school building wall - warm cream color */}
+        {/* Main school building wall - warmer, darker cream color */}
         <mesh position={[0, 4, 0]} receiveShadow>
           <boxGeometry args={[25, 8, 0.5]} />
           <meshStandardMaterial
-            color="#e8dcc8"
-            roughness={0.75}
+            color="#c8b8a0"
+            roughness={0.85}
           />
         </mesh>
 
-        {/* Building windows */}
+        {/* Building windows - darker, less glow */}
         {Array.from({ length: 8 }).map((_, i) => (
           <group key={i} position={[-10 + i * 2.8, 4.5, 0.3]}>
             {/* Window */}
             <mesh>
               <planeGeometry args={[1.2, 1.8]} />
               <meshStandardMaterial
-                color="#1a1a2a"
-                emissive="#ffcc66"
-                emissiveIntensity={0.1}
+                color="#2a2a3a"
+                emissive="#886633"
+                emissiveIntensity={0.03}
               />
             </mesh>
-            {/* Window glow */}
-            <pointLight position={[0, 0, 0.5]} intensity={0.2} color="#ffcc66" distance={3} />
+            {/* Very subtle window glow */}
+            <pointLight position={[0, 0, 0.5]} intensity={0.05} color="#ffcc66" distance={2} />
           </group>
         ))}
 
@@ -381,23 +459,26 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
             <meshStandardMaterial
               color="#1a1a2e"
               emissive="#00ff88"
-              emissiveIntensity={0.4}
+              emissiveIntensity={0.25}
             />
           </mesh>
-          {/* ÉCOLE NIRD HTML Text */}
+          {/* ÉCOLE NIRD HTML Text - STATIC, not affected by camera */}
           <Html
             position={[0, 0, 0.1]}
             center
-            transform
-            occlude
+            sprite={false}
+            distanceFactor={10}
+            zIndexRange={[0, 100]}
             style={{
-              fontSize: '24px',
+              fontSize: '28px',
               fontWeight: 'bold',
-              fontFamily: 'monospace',
+              fontFamily: 'Arial, sans-serif',
               color: '#00ff88',
-              textShadow: '0 0 10px #00ff88',
-              letterSpacing: '4px',
+              textShadow: '0 0 15px #00ff88, 0 0 30px #00ff88',
+              letterSpacing: '6px',
               whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              userSelect: 'none',
             }}
           >
             ÉCOLE NIRD
@@ -557,11 +638,11 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           </mesh>
         ))}
       </group>
-      {/* CLICKABLE Chatbot Hologram - THE GATEKEEPER */}
+      {/* CLICKABLE Chatbot Hologram - THE GATEKEEPER - MUCH MORE VISIBLE */}
       <group position={[0, 0, -2]}>
         {/* Hologram pedestal for chatbot - CLICKABLE */}
-        <HologramEffect position={[0, 1.2, 0]} color="#0078d4">
-          {/* Chatbot avatar - rotating Windows-style shape */}
+        <HologramEffect position={[0, 1.5, 0]} color="#00aaff">
+          {/* Chatbot avatar - rotating Windows-style shape - BIGGER & BRIGHTER */}
           <mesh
             ref={hologramRef}
             onClick={handleChatbotClick}
@@ -574,17 +655,33 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
               document.body.style.cursor = 'default';
             }}
           >
-            <icosahedronGeometry args={[0.5, 0]} />
+            <icosahedronGeometry args={[0.7, 0]} />
             <meshStandardMaterial
-              color="#0078d4"
-              emissive="#0078d4"
-              emissiveIntensity={1}
+              color="#00ccff"
+              emissive="#00aaff"
+              emissiveIntensity={2.5}
               wireframe
               transparent
-              opacity={0.95}
+              opacity={0.98}
+            />
+          </mesh>
+          
+          {/* Inner solid core for more visibility */}
+          <mesh ref={hologramRef}>
+            <icosahedronGeometry args={[0.35, 0]} />
+            <meshStandardMaterial
+              color="#00ddff"
+              emissive="#00ccff"
+              emissiveIntensity={3}
+              transparent
+              opacity={0.7}
             />
           </mesh>
         </HologramEffect>
+        
+        {/* Bright blue light around hologram */}
+        <pointLight position={[0, 1.5, 0]} intensity={4} color="#00aaff" distance={8} />
+        <pointLight position={[0, 2.5, 0]} intensity={2} color="#00ccff" distance={5} />
 
         {/* CLICK ME indicator - bouncing arrow and text */}
         <Html
@@ -669,29 +766,34 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
           <meshBasicMaterial color="#0078d4" transparent opacity={0.8} />
         </mesh>
       </group>
-      {/* BRIGHT SUNNY LIGHTING */}
-      <ambientLight intensity={0.6} color="#fffaf0" />
+      {/* NATURAL BALANCED LIGHTING - DARKER for hologram visibility */}
+      <ambientLight intensity={0.25} color="#fffaf0" />
 
-      {/* Sun light from above-right */}
+      {/* Sun light from above-right - LOWER intensity */}
       <directionalLight
-        position={[10, 20, 10]}
-        intensity={1.2}
-        color="#fff8e0"
+        position={[15, 25, 12]}
+        intensity={0.5}
+        color="#fff5e0"
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
+        shadow-camera-far={60}
+        shadow-camera-left={-25}
+        shadow-camera-right={25}
+        shadow-camera-top={25}
+        shadow-camera-bottom={-25}
       />
 
-      {/* Sky blue fill light */}
+      {/* Sky blue fill light - much softer */}
       <hemisphereLight
-        skyColor="#87ceeb"
-        groundColor="#4a8c3a"
-        intensity={0.5}
+        skyColor="#90b0c0"
+        groundColor="#4a7a3a"
+        intensity={0.25}
       />
 
-      {/* Warm accent lights near school */}
-      <pointLight position={[-4, 4, -8]} intensity={0.4} color="#ffcc66" distance={12} />
-      <pointLight position={[4, 4, -8]} intensity={0.4} color="#ffcc66" distance={12} />
+      {/* Warm accent lights near school - reduced */}
+      <pointLight position={[-4, 4, -8]} intensity={0.25} color="#ffcc66" distance={12} />
+      <pointLight position={[4, 4, -8]} intensity={0.25} color="#ffcc66" distance={12} />
 
       {/* Hologram glow */}
       <pointLight position={[0, 2, -2]} intensity={1} color="#00aaff" distance={6} />

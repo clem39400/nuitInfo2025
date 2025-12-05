@@ -149,3 +149,68 @@ body {
 .click-indicator {
   animation: bounce 1.5s ease-in-out infinite;
 }
+
+/* ========== ACCESSIBILITY IMPROVEMENTS ========== */
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .click-indicator,
+  .pulse-hint,
+  .loading-spinner {
+    animation: none;
+  }
+}
+
+/* High contrast focus indicators */
+:focus-visible {
+  outline: 3px solid var(--nird-green);
+  outline-offset: 2px;
+}
+
+/* Improved button/interactive element visibility */
+button,
+[role="button"],
+.interactive {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover,
+[role="button"]:hover,
+.interactive:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+}
+
+/* Better text readability */
+.hud,
+.tooltip,
+.phase-indicator {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  font-weight: 500;
+}
+
+/* Skip to main content link (hidden until focused) */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--nird-dark);
+  color: var(--nird-green);
+  padding: 12px 24px;
+  border-radius: 8px;
+  z-index: 10000;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 20px;
+}

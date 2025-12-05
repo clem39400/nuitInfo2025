@@ -10,10 +10,10 @@ import CityBackdrop from './CityBackdrop';
 const PRESETS = {
   gate: {
     preset: 'park',  // Bright outdoor environment
-    ambientIntensity: 0.8,  // High ambient for daytime
-    fogColor: '#a8d4f0',  // Light blue sky fog
-    fogNear: 30,
-    fogFar: 80,
+    ambientIntensity: 0.4,  // Reduced ambient for more natural daytime
+    fogColor: '#c8e0f0',  // Light blue-gray fog
+    fogNear: 40,
+    fogFar: 90,
   },
   hallway: {
     preset: 'warehouse',
@@ -50,20 +50,21 @@ function Environment({ scene = 'hallway' }) {
 
   return (
     <>
-      {/* HDRI Environment for realistic reflections */}
-      <DreiEnvironment
-        preset={config.preset}
-        background={true}  
-      />
+      {/* HDRI Environment for realistic reflections - use downloaded sky for gate */}
+      {scene === 'gate' ? (
+        <DreiEnvironment files="/assets/textures/sky.hdr" background={false} />
+      ) : (
+        <DreiEnvironment preset={config.preset} background={false} />
+      )}
       
-      {/* Blue sky background color override */}
-      <color attach="background" args={['#87ceeb']} />
+      {/* Softer blue sky background color - not too bright */}
+      <color attach="background" args={['#8ab8d0']} />
       
       {/* City backdrop - visible from all scenes - CLOSE so buildings are clear */}
       <CityBackdrop position={[0, 0, -25]} />
       
-      {/* Ambient fill light - warm for daytime */}
-      <ambientLight intensity={config.ambientIntensity} color="#fffaf0" />
+      {/* Ambient fill light - warm for daytime, MUCH reduced intensity */}
+      <ambientLight intensity={config.ambientIntensity * 0.5} color="#fff8f0" />
       
       {/* Main directional light with shadows */}
       <directionalLight
