@@ -1,4 +1,5 @@
 import Door from '../components/Door';
+import VideoRoom from './rooms/VideoRoom';
 import useGameStore from '../core/GameStateContext';
 import { FlickeringLight, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
@@ -11,28 +12,16 @@ function HallwayScene({ isChatbotOpen }) {
   const { goToGate } = useGameStore();
   return (
     <group>
-      {/* Highly reflective floor with slight blue tint */}
+      {/* Wooden floor */}
       <ReflectiveFloor
         position={[0, 0, 0]}
         size={[12, 30]}
-        color="#0c0c16"
-        roughness={0.06}
-        metalness={0.92}
-        mirror={0.7}
+        color="#5d4037"
+        roughness={0.5}
+        metalness={0.1}
+        mirror={0.1}
       />
-      
-      {/* Floor edge trim strips for polished look */}
-      <mesh position={[-5.3, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.3, 30]} />
-        <meshStandardMaterial color="#1a1a25" metalness={0.8} roughness={0.3} />
-      </mesh>
-      <mesh position={[5.3, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.3, 30]} />
-        <meshStandardMaterial color="#1a1a25" metalness={0.8} roughness={0.3} />
-      </mesh>
 
-      {/* Floating dust in the air - Disabled when chatbot is open for performance */}
-      {!isChatbotOpen && <DustParticles count={80} spread={8} color="#aabbcc" />}
 
       {/* Return to Gate Button - "Exit" block - Placed to the right for visibility */}
       <group position={[3, 1, 3]}>
@@ -61,7 +50,7 @@ function HallwayScene({ isChatbotOpen }) {
         </mesh>
       </group>
 
-      {/* Left wall with panel details */}
+      {/* Left wall */}
       <group position={[-5.5, 0, 0]}>
         {/* Main wall */}
         <mesh position={[0, 2.5, 0]} receiveShadow>
@@ -84,19 +73,37 @@ function HallwayScene({ isChatbotOpen }) {
         </mesh>
       </group>
 
-      {/* Right wall */}
+      {/* Right wall - Split to create opening for Video Room */}
       <group position={[5.5, 0, 0]}>
-        <mesh position={[0, 2.5, 0]} receiveShadow>
-          <boxGeometry args={[0.3, 5, 30]} />
+        {/* Front section (before door) */}
+        <mesh position={[0, 2.5, 8]} receiveShadow>
+          <boxGeometry args={[0.3, 5, 14]} />
           <meshStandardMaterial
             color="#1a1a25"
             roughness={0.7}
             metalness={0.3}
           />
         </mesh>
+        <mesh position={[-0.1, 0.3, 8]}>
+          <boxGeometry args={[0.1, 0.6, 14]} />
+          <meshStandardMaterial
+            color="#0a0a12"
+            roughness={0.5}
+            metalness={0.6}
+          />
+        </mesh>
 
-        <mesh position={[-0.1, 0.3, 0]}>
-          <boxGeometry args={[0.1, 0.6, 30]} />
+        {/* Back section (after door) */}
+        <mesh position={[0, 2.5, -8]} receiveShadow>
+          <boxGeometry args={[0.3, 5, 14]} />
+          <meshStandardMaterial
+            color="#1a1a25"
+            roughness={0.7}
+            metalness={0.3}
+          />
+        </mesh>
+        <mesh position={[-0.1, 0.3, -8]}>
+          <boxGeometry args={[0.1, 0.6, 14]} />
           <meshStandardMaterial
             color="#0a0a12"
             roughness={0.5}
@@ -130,7 +137,7 @@ function HallwayScene({ isChatbotOpen }) {
           emissiveIntensity={0.15}
         />
       </mesh>
-      
+
       {/* Back wall trim at bottom */}
       <mesh position={[0, 0.3, -13.9]}>
         <boxGeometry args={[12, 0.6, 0.1]} />
@@ -155,71 +162,21 @@ function HallwayScene({ isChatbotOpen }) {
       <FlickeringLight position={[0, 4.5, -8]} intensity={2.5} />
       <FlickeringLight position={[0, 4.5, 0]} intensity={2.5} />
       <FlickeringLight position={[0, 4.5, 8]} intensity={2.5} />
+      {/* Flickering fluorescent lights - Brighter */}
+      <FlickeringLight position={[0, 4.5, -8]} intensity={4} />
+      <FlickeringLight position={[0, 4.5, 0]} intensity={4} />
+      <FlickeringLight position={[0, 4.5, 8]} intensity={4} />
 
-      {/* Modern lockers - LEFT side */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <group key={`locker-left-${i}`} position={[-4.8, 0, -12 + i * 3]}>
-          {/* Locker body */}
-          <mesh position={[0, 1.2, 0]} castShadow>
-            <boxGeometry args={[0.5, 2.4, 0.9]} />
-            <meshStandardMaterial
-              color="#2a3040"
-              metalness={0.85}
-              roughness={0.2}
-            />
-          </mesh>
+      {/* Additional ambient and point lights */}
+      <ambientLight intensity={0.4} color="#ffffff" />
+      <pointLight position={[-3, 3, -4]} intensity={1.5} distance={10} color="#ffffff" />
+      <pointLight position={[3, 3, 4]} intensity={1.5} distance={10} color="#ffffff" />
 
-          {/* Locker door line */}
-          <mesh position={[0.26, 1.2, 0]}>
-            <boxGeometry args={[0.01, 2.3, 0.85]} />
-            <meshStandardMaterial color="#1a1a25" />
-          </mesh>
+      {/* Video Room Integration */}
+      <group position={[12, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <VideoRoom />
+      </group>
 
-          {/* Handle */}
-          <mesh position={[0.27, 1.2, 0.25]}>
-            <boxGeometry args={[0.02, 0.15, 0.05]} />
-            <meshStandardMaterial
-              color="#888888"
-              metalness={0.9}
-              roughness={0.1}
-            />
-          </mesh>
-
-          {/* Number plate glow */}
-          <mesh position={[0.26, 2, 0]}>
-            <planeGeometry args={[0.15, 0.1]} />
-            <meshBasicMaterial color="#00ff88" transparent opacity={0.3} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* Modern lockers - RIGHT side */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <group key={`locker-right-${i}`} position={[4.8, 0, -12 + i * 3]}>
-          <mesh position={[0, 1.2, 0]} castShadow>
-            <boxGeometry args={[0.5, 2.4, 0.9]} />
-            <meshStandardMaterial
-              color="#2a3040"
-              metalness={0.85}
-              roughness={0.2}
-            />
-          </mesh>
-
-          <mesh position={[-0.26, 1.2, 0]}>
-            <boxGeometry args={[0.01, 2.3, 0.85]} />
-            <meshStandardMaterial color="#1a1a25" />
-          </mesh>
-
-          <mesh position={[-0.27, 1.2, 0.25]}>
-            <boxGeometry args={[0.02, 0.15, 0.05]} />
-            <meshStandardMaterial
-              color="#888888"
-              metalness={0.9}
-              roughness={0.1}
-            />
-          </mesh>
-        </group>
-      ))}
 
       {/* Three interactive doors at the end */}
       <Door
@@ -251,6 +208,8 @@ function HallwayScene({ isChatbotOpen }) {
         }}
         label="Admin Office"
       />
+
+
 
       {/* Door labels - glowing signs above doors */}
       {[
