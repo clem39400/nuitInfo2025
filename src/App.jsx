@@ -132,17 +132,20 @@ function App() {
         rel="noopener noreferrer"
         style={{
           position: 'fixed',
-          bottom: '8px',
-          right: '12px',
-          color: 'rgba(255, 255, 255, 0.4)',
-          fontSize: '11px',
+          bottom: '12px',
+          right: '16px',
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '14px',
           fontFamily: 'monospace',
           textDecoration: 'none',
           zIndex: 999,
           transition: 'color 0.2s',
+          padding: '4px 8px',
+          background: 'rgba(0, 0, 0, 0.3)',
+          borderRadius: '4px',
         }}
         onMouseEnter={(e) => e.target.style.color = '#00ff88'}
-        onMouseLeave={(e) => e.target.style.color = 'rgba(255, 255, 255, 0.4)'}
+        onMouseLeave={(e) => e.target.style.color = 'rgba(255, 255, 255, 0.6)'}
       >
         Mentions légales
       </a>

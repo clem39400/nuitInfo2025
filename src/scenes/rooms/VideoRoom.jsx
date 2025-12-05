@@ -73,15 +73,21 @@ function VideoRoom(props) {
             <FlickeringLight position={[0, 4.2, 3]} intensity={2} />
 
             {/* ========== FLOOR - School linoleum ========== */}
-            {/* ========== FLOOR - School linoleum ========== */}
-            <ReflectiveFloor
-                position={[0, 0, 0]}
-                size={[16, 14]}
-                color={floorColor}
-                roughness={0.6}
-                metalness={0.1}
-                mirror={0.1}
-            />
+            {/* Slightly lower than hallway floor to avoid z-fighting */}
+            <mesh
+                rotation={[-Math.PI / 2, 0, 0]}
+                position={[0, -0.01, 0]}
+                receiveShadow
+            >
+                <planeGeometry args={[16, 14]} />
+                <meshStandardMaterial
+                    color={floorColor}
+                    roughness={0.6}
+                    metalness={0.1}
+                    polygonOffset
+                    polygonOffsetFactor={1}
+                />
+            </mesh>
 
             {/* ========== WALLS - School style ========== */}
             {/* Back Wall with screen */}
