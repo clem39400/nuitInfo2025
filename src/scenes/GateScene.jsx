@@ -506,8 +506,6 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
             <pointLight position={[0, 0, 0.5]} intensity={0.05} color="#ffcc66" distance={2} />
           </group>
         ))}
-
-        {/* School name sign - "ÉCOLE NIRD" */}
         <group position={[0, 7.5, 0.3]}>
           <mesh>
             <boxGeometry args={[10, 1.2, 0.15]} />

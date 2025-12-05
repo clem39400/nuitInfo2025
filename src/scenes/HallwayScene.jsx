@@ -21,22 +21,13 @@ import { RectangleRug, Doormat } from '../components/models/Rug';
  * - Real door frames with decorations
  */
 function HallwayScene({ isChatbotOpen }) {
-  const { goToGate, setTransitioning } = useGameStore();
-  
-  // Smooth transition to gate
-  const handleGoToGate = () => {
-    setTransitioning(true);
-    setTimeout(() => {
-      goToGate();
-      setTimeout(() => setTransitioning(false), 100);
-    }, 100);
-  };
-  
+  const { goToGate } = useGameStore();
+
   // Light warm wall color
   const wallColor = "#6B5B4F";
   const trimColor = "#4A3F35";
   const ceilingColor = "#5A5045";
-  
+
   return (
     <group>
       {/* ========== FLOOR ========== */}
@@ -101,9 +92,9 @@ function HallwayScene({ isChatbotOpen }) {
           </mesh>
           <mesh position={[0.05, 0, 0]}>
             <planeGeometry args={[1, 1.3]} />
-            <meshStandardMaterial 
-              color="#2a5a4a" 
-              emissive="#00ff88" 
+            <meshStandardMaterial
+              color="#2a5a4a"
+              emissive="#00ff88"
               emissiveIntensity={0.15}
             />
           </mesh>
@@ -118,9 +109,9 @@ function HallwayScene({ isChatbotOpen }) {
           </mesh>
           <mesh position={[0.05, 0, 0]}>
             <planeGeometry args={[1, 1.3]} />
-            <meshStandardMaterial 
-              color="#4a5a2a" 
-              emissive="#88ff00" 
+            <meshStandardMaterial
+              color="#4a5a2a"
+              emissive="#88ff00"
               emissiveIntensity={0.15}
             />
           </mesh>
@@ -135,9 +126,9 @@ function HallwayScene({ isChatbotOpen }) {
           </mesh>
           <mesh position={[0.05, 0, 0]}>
             <planeGeometry args={[1, 1.3]} />
-            <meshStandardMaterial 
-              color="#5a4a2a" 
-              emissive="#ffaa00" 
+            <meshStandardMaterial
+              color="#5a4a2a"
+              emissive="#ffaa00"
               emissiveIntensity={0.15}
             />
           </mesh>
@@ -152,7 +143,7 @@ function HallwayScene({ isChatbotOpen }) {
       </group>
 
       {/* ========== RIGHT WALL - WITH VIDEO ROOM OPENING ========== */}
-      <group position={[6, 0, 0]}>
+      <group position={[5.19, 0, 0]}>
         {/* Front section (before Video Room opening) - z = 1 to 15 */}
         <mesh position={[0, 2.5, 8]} receiveShadow>
           <boxGeometry args={[0.4, 5, 14]} />
@@ -173,6 +164,12 @@ function HallwayScene({ isChatbotOpen }) {
           <meshStandardMaterial color={trimColor} roughness={0.5} />
         </mesh>
 
+        {/* Header above Video Room opening - Closes the gap */}
+        <mesh position={[0, 4.25, 0]} receiveShadow>
+          <boxGeometry args={[0.4, 1.5, 2]} />
+          <meshStandardMaterial color={wallColor} roughness={0.7} />
+        </mesh>
+
         {/* Wall Lamps on right side */}
         <WallLamp position={[-0.35, 2.5, 10]} rotation={[0, -Math.PI / 2, 0]} scale={1.8} lightColor="#ffeecc" lightIntensity={0.6} />
         <WallLamp position={[-0.35, 2.5, -10]} rotation={[0, -Math.PI / 2, 0]} scale={1.8} lightColor="#ffeecc" lightIntensity={0.6} />
@@ -182,8 +179,8 @@ function HallwayScene({ isChatbotOpen }) {
       {/* Bright light spilling from the Video Room opening */}
       <group position={[5.5, 0, 0]}>
         {/* Main light beam from projection room */}
-        <spotLight 
-          position={[2, 3, 0]} 
+        <spotLight
+          position={[2, 3, 0]}
           angle={0.8}
           penumbra={0.5}
           intensity={3}
@@ -193,13 +190,13 @@ function HallwayScene({ isChatbotOpen }) {
         />
         <pointLight position={[1, 2, 0]} intensity={1.5} color="#8899ff" distance={8} />
         <pointLight position={[0, 1, 0]} intensity={1} color="#aabbff" distance={5} />
-        
+
         {/* Glowing floor area from light */}
         <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[3, 4]} />
-          <meshStandardMaterial 
-            color="#667788" 
-            emissive="#4466aa" 
+          <meshStandardMaterial
+            color="#667788"
+            emissive="#4466aa"
             emissiveIntensity={0.15}
             transparent
             opacity={0.5}
