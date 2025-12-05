@@ -28,6 +28,9 @@ const useGameStore = create((set) => ({
   // Track if player is in the video room area
   inVideoRoom: false,
 
+  // Performance optimization: track if camera is moving
+  isMoving: false,
+
   // Actions
   goToHallway: () => set({
     currentPhase: 'hallway',
@@ -57,6 +60,8 @@ const useGameStore = create((set) => ({
   setTransitioning: (value) => set({ isTransitioning: value }),
 
   setInVideoRoom: (value) => set({ inVideoRoom: value }),
+
+  setIsMoving: (value) => set({ isMoving: value }),
 
   setSnakeGameOpen: (isOpen) => set({ isSnakeGameOpen: isOpen }),
 

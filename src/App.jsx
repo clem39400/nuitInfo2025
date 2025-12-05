@@ -33,7 +33,7 @@ function App() {
     showNIRDForm,
     showLinuxGame
   } = useGameStore();
-  
+
   // Refurbishment game state
   const { activeMiniGame } = useRefurbishmentStore();
 
@@ -86,7 +86,7 @@ function App() {
         <SnakeGame
           onClose={() => setSnakeGameOpen(false)}
           onWin={handleSnakeWin}
-          winScore={5} // Lower score for easier testing/demo
+          winScore={5}
         />
       )}
 
@@ -118,24 +118,25 @@ function App() {
         <strong>Right-click + Drag</strong> to look around | <strong>WASD/Arrows</strong> to move | <strong>Left-click</strong> objects normally
       </div>
 
-      {/* 3D Canvas */}
+      {/* 3D Canvas - Static optimized settings */}
       <Canvas
         shadows
         camera={{ position: [0, 1.6, 5], fov: 75, near: 0.1, far: 100 }}
         gl={{
-          antialias: true,
+          antialias: false,
           alpha: false,
           powerPreference: 'high-performance',
+          stencil: false,
         }}
-        dpr={[1, 2]}
+        dpr={1}
       >
-        {/* Camera Controller - Disable movement when overlays are open */}
+        {/* Camera Controller */}
         <CameraController disableMovement={isChatbotOpen || isSnakeGameOpen || !!activeMiniGame} />
 
         {/* Environment & Lighting */}
         <Environment scene={getEnvironmentScene()} />
 
-        {/* Scene Content - Pass chatbot handler */}
+        {/* Scene Content */}
         <Suspense fallback={null}>
           <SceneManager
             onOpenChatbot={() => setIsChatbotOpen(true)}
@@ -143,8 +144,8 @@ function App() {
           />
         </Suspense>
 
-        {/* Post-Processing Effects - Disabled during Snake Game or Chatbot for performance */}
-        {(!isSnakeGameOpen && !isChatbotOpen) && <PostProcessing bloomIntensity={0.6} />}
+        {/* Post-Processing - Disabled during overlays */}
+        {(!isSnakeGameOpen && !isChatbotOpen) && <PostProcessing bloomIntensity={0.5} />}
 
         {/* Preload assets */}
         <Preload all />

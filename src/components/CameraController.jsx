@@ -289,6 +289,7 @@ function CameraController({ disableMovement = false }) {
         setInVideoRoom(inVideoRoomArea);
       }
     }
+
     camera.position.y = 1.6;
   });
 

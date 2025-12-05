@@ -127,13 +127,13 @@ function HallwayScene({ isChatbotOpen }) {
           metalness={0.35}
         />
       </mesh>
-      
+
       {/* NIRD poster on back wall */}
       <mesh position={[0, 3.5, -13.85]}>
         <planeGeometry args={[3, 1.5]} />
-        <meshStandardMaterial 
+        <meshStandardMaterial
           color="#1a2a3a"
-          emissive="#00ff88" 
+          emissive="#00ff88"
           emissiveIntensity={0.15}
         />
       </mesh>
@@ -159,13 +159,9 @@ function HallwayScene({ isChatbotOpen }) {
       </mesh>
 
       {/* Flickering fluorescent lights */}
-      <FlickeringLight position={[0, 4.5, -8]} intensity={2.5} />
-      <FlickeringLight position={[0, 4.5, 0]} intensity={2.5} />
-      <FlickeringLight position={[0, 4.5, 8]} intensity={2.5} />
-      {/* Flickering fluorescent lights - Brighter */}
-      <FlickeringLight position={[0, 4.5, -8]} intensity={4} />
-      <FlickeringLight position={[0, 4.5, 0]} intensity={4} />
-      <FlickeringLight position={[0, 4.5, 8]} intensity={4} />
+      <FlickeringLight position={[0, 4.5, -8]} intensity={3.5} />
+      <FlickeringLight position={[0, 4.5, 0]} intensity={3.5} />
+      <FlickeringLight position={[0, 4.5, 8]} intensity={3.5} />
 
       {/* Additional ambient and point lights */}
       <ambientLight intensity={0.4} color="#ffffff" />

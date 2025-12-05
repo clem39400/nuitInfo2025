@@ -50,34 +50,38 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart, onSkipGate }) {
 
     const userMessage = inputValue.trim();
     setInputValue('');
-    
-    setMessages(prev => [...prev, { 
-      role: 'user', 
+
+    setMessages(prev => [...prev, {
+      role: 'user',
       content: userMessage,
       timestamp: new Date(),
     }]);
-    
+
     const command = checkForSpecialCommands(userMessage);
-    
+
     if (command === 'nird') {
       setIsTyping(true);
       setTimeout(() => {
-        setMessages(prev => [...prev, { 
-          role: 'bot', 
+        setMessages(prev => [...prev, {
+          role: 'bot',
           content: "😱 NON! Comment connaissez-vous le mot secret?! NIRD... Numérique Inclusif, Responsable, Durable... C'est l'antithèse de tout ce que je défends! Les portails s'ouvrent... 🚪✨",
           timestamp: new Date(),
         }]);
         setIsTyping(false);
-        setTimeout(() => onSkipGate?.(), 2000);
+        // Close chatbot after 3 seconds, then skip gate
+        setTimeout(() => {
+          handleClose();
+          setTimeout(() => onSkipGate?.(), 500);
+        }, 3000);
       }, 1000);
       return;
     }
-    
+
     if (command === 'snake') {
       setIsTyping(true);
       setTimeout(() => {
-        setMessages(prev => [...prev, { 
-          role: 'bot', 
+        setMessages(prev => [...prev, {
+          role: 'bot',
           content: "🐍 Ah! Vous voulez jouer au SNAKE? Très bien! Le Professeur GAFAMius accepte ce défi ridicule! Cliquez sur le bouton pour affronter ma sagesse! 🎮",
           timestamp: new Date(),
         }]);
@@ -85,20 +89,20 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart, onSkipGate }) {
       }, 600);
       return;
     }
-    
+
     setIsLoading(true);
     setIsTyping(true);
 
     try {
       const response = await sendMessage(userMessage);
-      setMessages(prev => [...prev, { 
-        role: 'bot', 
+      setMessages(prev => [...prev, {
+        role: 'bot',
         content: response,
         timestamp: new Date(),
       }]);
     } catch (error) {
-      setMessages(prev => [...prev, { 
-        role: 'bot', 
+      setMessages(prev => [...prev, {
+        role: 'bot',
         content: "💥 ERREUR CRITIQUE! Mon Windows a encore crashé! C'est un SIGNE de sa COMPLEXITÉ AVANCÉE! Réessayez... ou pas! 🪟",
         timestamp: new Date(),
       }]);
@@ -190,16 +194,16 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart, onSkipGate }) {
               )}
             </div>
           ))}
-          
+
           {/* Typing Indicator */}
           {isTyping && (
             <div style={styles.messageWrapper}>
               <div style={styles.botAvatarSmall}>🎩</div>
               <div style={styles.typingBubble}>
                 <div style={styles.typingDots}>
-                  <span style={{...styles.dot, animationDelay: '0s'}}></span>
-                  <span style={{...styles.dot, animationDelay: '0.2s'}}></span>
-                  <span style={{...styles.dot, animationDelay: '0.4s'}}></span>
+                  <span style={{ ...styles.dot, animationDelay: '0s' }}></span>
+                  <span style={{ ...styles.dot, animationDelay: '0.2s' }}></span>
+                  <span style={{ ...styles.dot, animationDelay: '0.4s' }}></span>
                 </div>
                 <span style={styles.typingText}>Le Professeur médite...</span>
               </div>
@@ -214,10 +218,10 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart, onSkipGate }) {
                 <span style={styles.challengeTitle}>DÉFI DU PROFESSEUR</span>
               </div>
               <p style={styles.challengeText}>
-                "Vous osez défier la sagesse de Windows au jeu du SERPENT? 
+                "Vous osez défier la sagesse de Windows au jeu du SERPENT?
                 Prouvez votre valeur, petit rebelle du logiciel libre!"
               </p>
-              <button 
+              <button
                 style={styles.challengeButton}
                 onClick={() => onSnakeGameStart?.()}
                 onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
@@ -243,11 +247,11 @@ function Chatbot({ isOpen, onClose, onSnakeGameStart, onSkipGate }) {
               style={styles.input}
               disabled={isLoading}
             />
-            <button 
+            <button
               style={{
                 ...styles.sendButton,
                 opacity: !inputValue.trim() || isLoading ? 0.5 : 1,
-              }} 
+              }}
               onClick={handleSend}
               disabled={isLoading || !inputValue.trim()}
             >
@@ -293,8 +297,8 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(10,20,40,0.98) 100%)',
-    backdropFilter: 'blur(12px)',
+    background: 'rgba(0, 10, 20, 0.6)',
+    backdropFilter: 'blur(4px)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

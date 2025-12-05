@@ -1,4 +1,4 @@
-import { Environment as DreiEnvironment, useTexture, MeshReflectorMaterial } from '@react-three/drei';
+import { Environment as DreiEnvironment, MeshReflectorMaterial } from '@react-three/drei';
 import CityBackdrop from './CityBackdrop';
 
 /**
@@ -56,39 +56,23 @@ function Environment({ scene = 'hallway' }) {
       ) : (
         <DreiEnvironment preset={config.preset} background={false} />
       )}
-      
+
       {/* Softer blue sky background color - not too bright */}
       <color attach="background" args={['#8ab8d0']} />
-      
+
       {/* City backdrop - visible from all scenes - CLOSE so buildings are clear */}
       <CityBackdrop position={[0, 0, -25]} />
-      
+
       {/* Ambient fill light - warm for daytime, MUCH reduced intensity */}
       <ambientLight intensity={config.ambientIntensity * 0.5} color="#fff8f0" />
-      
-      {/* Main directional light with shadows */}
-      <directionalLight
-        position={[5, 10, 5]}
-        intensity={0.5}
-        color="#ffffff"
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={50}
-        shadow-camera-left={-20}
-        shadow-camera-right={20}
-        shadow-camera-top={20}
-        shadow-camera-bottom={-20}
-        shadow-bias={-0.0001}
-      />
-      
+
       {/* Rim light for depth */}
       <directionalLight
         position={[-5, 5, -5]}
         intensity={0.3}
         color="#4466ff"
       />
-      
+
       {/* Atmospheric fog */}
       <fog attach="fog" args={[config.fogColor, config.fogNear, config.fogFar]} />
     </>
@@ -97,6 +81,7 @@ function Environment({ scene = 'hallway' }) {
 
 /**
  * Reflective Floor Component - Creates shiny surfaces
+ * Using simple optimized material for consistent performance
  */
 export function ReflectiveFloor({
   position = [0, 0, 0],
@@ -113,21 +98,16 @@ export function ReflectiveFloor({
       receiveShadow
     >
       <planeGeometry args={size} />
-      <MeshReflectorMaterial
-        blur={[400, 100]}
-        resolution={1024}
-        mixBlur={1}
-        mixStrength={mirror}
-        roughness={roughness}
-        depthScale={1}
-        minDepthThreshold={0.4}
-        maxDepthThreshold={1.4}
+      {/* Simple material for better performance - no expensive reflections */}
+      <meshStandardMaterial
         color={color}
-        metalness={metalness}
-        mirror={mirror}
+        roughness={roughness + 0.2}
+        metalness={metalness * 0.7}
+        envMapIntensity={0.5}
       />
     </mesh>
   );
 }
 
 export default Environment;
+
