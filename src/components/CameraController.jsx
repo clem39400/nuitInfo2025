@@ -9,15 +9,21 @@ import useGameStore from '../core/GameStateContext';
  */
 const SCENE_BOUNDARIES = {
   gate: {
-    minX: -3.0,
-    maxX: 3.0,
-    minZ: -9,
+    minX: -3.5,
+    maxX: 3.5,
+    minZ: -8,
     maxZ: 8,
     obstacles: [
-      { minX: -3.5, maxX: 3.5, minZ: -10.5, maxZ: -9.5 },
-      { minX: -4, maxX: -3, minZ: -10.8, maxZ: -9.2 },
-      { minX: 3, maxX: 4, minZ: -10.8, maxZ: -9.2 },
+      // Gate barrier - cannot cross the iron gate
+      { minX: -3.5, maxX: 3.5, minZ: -10.5, maxZ: -8.5 },
+      // Gate pillars
+      { minX: -4.2, maxX: -3, minZ: -11, maxZ: -9 },
+      { minX: 3, maxX: 4.2, minZ: -11, maxZ: -9 },
+      // Chatbot pedestal
       { minX: -1.2, maxX: 1.2, minZ: -3, maxZ: -1 },
+      // Hedges along path
+      { minX: -4.2, maxX: -3.2, minZ: -8, maxZ: 3 },
+      { minX: 3.2, maxX: 4.2, minZ: -8, maxZ: 3 },
     ]
   },
   hallway: {
@@ -229,30 +235,32 @@ function CameraController({ disableMovement = false }) {
     // Calculate new position
     const newPosition = camera.position.clone().add(velocity.current);
 
-    // Collision detection
-    const boundaries = {
-      minX: -3.5,
-      maxX: 3.5,
-      minZ: -18,
-      maxZ: 8,
-      buildingZ: -14,
-    };
+    // Get scene-specific boundaries
+    const sceneKey = currentPhase === 'gate' ? 'gate' : (currentPhase === 'hallway' ? 'hallway' : 'room');
+    const sceneBounds = SCENE_BOUNDARIES[sceneKey];
 
     let canMove = true;
 
-    if (newPosition.x < boundaries.minX) canMove = false;
-
-    // Video Room Exception
-    const isEnteringVideoRoom = newPosition.z > -2 && newPosition.z < 2;
-    if (!isEnteringVideoRoom && newPosition.x > boundaries.maxX) canMove = false;
-    if (isEnteringVideoRoom && newPosition.x > 18) canMove = false;
-
-    if (newPosition.z < boundaries.minZ || newPosition.z > boundaries.maxZ) canMove = false;
-
-    if (canMove && boundaries.obstacles) {
-      canMove = !checkObstacleCollision(newPosition, boundaries.obstacles);
+    // Check scene boundaries
+    if (newPosition.x < sceneBounds.minX || newPosition.x > sceneBounds.maxX) {
+      canMove = false;
     }
-    if (newPosition.z < boundaries.buildingZ) canMove = false;
+    if (newPosition.z < sceneBounds.minZ || newPosition.z > sceneBounds.maxZ) {
+      canMove = false;
+    }
+
+    // Check obstacles
+    if (canMove && sceneBounds.obstacles && sceneBounds.obstacles.length > 0) {
+      canMove = !checkObstacleCollision(newPosition, sceneBounds.obstacles);
+    }
+
+    // Video Room Exception for hallway scene
+    if (currentPhase === 'hallway') {
+      const isEnteringVideoRoom = newPosition.z > -2 && newPosition.z < 2;
+      if (isEnteringVideoRoom && newPosition.x > sceneBounds.maxX && newPosition.x < 18) {
+        canMove = true;
+      }
+    }
 
     if (canMove) {
       camera.position.copy(newPosition);

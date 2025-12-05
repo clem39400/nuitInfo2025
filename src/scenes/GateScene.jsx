@@ -272,6 +272,33 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         <meshStandardMaterial color="#2a5a1a" />
       </mesh>
 
+      {/* Subtle stone marker with snake game clue - near left hedge, player's side */}
+      <group position={[-4.2, 0, 1.5]}>
+        {/* Small weathered stone */}
+        <mesh position={[0, 0.15, 0]} rotation={[0, 0.3, 0]}>
+          <boxGeometry args={[0.5, 0.3, 0.3]} />
+          <meshStandardMaterial color="#7a7a7a" roughness={0.95} />
+        </mesh>
+        {/* Carved text on stone - visible clue */}
+        <Html
+          position={[0, 0.38, 0]}
+          center
+          distanceFactor={4}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div style={{
+            color: '#3a3a3a',
+            fontSize: '10px',
+            fontFamily: 'Georgia, serif',
+            fontStyle: 'italic',
+            whiteSpace: 'nowrap',
+            textShadow: '0 0 2px rgba(255,255,255,0.5)',
+          }}>
+            <span style={{ fontSize: '14px' }}>🐍</span> → Prof. GAFAMius
+          </div>
+        </Html>
+      </group>
+
       {/* ========== SKY ENCLOSURE - Complete backdrop ========== */}
       {/* Back sky wall - main backdrop behind the school - MATCHES BACKGROUND */}
       <mesh position={[0, 15, -35]} rotation={[0, 0, 0]}>
@@ -625,6 +652,8 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
               </mesh>
               <pointLight position={[0, -0.1, 0]} intensity={0.5} color="#ffcc66" distance={4} />
             </group>
+
+
           </group>
         ))}
 
