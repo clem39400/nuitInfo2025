@@ -4,6 +4,14 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { ReflectiveFloor } from '../../components/Environment';
 import useGameStore from '../../core/GameStateContext';
+// Real 3D Models from Kenney Furniture Kit
+import Desk from '../../components/models/Desk';
+import Chair from '../../components/models/Chair';
+import LoungeChair from '../../components/models/LoungeChair';
+import Bookcase from '../../components/models/Bookcase';
+import SideTable from '../../components/models/SideTable';
+import FloorLamp from '../../components/models/FloorLamp';
+import { PottedPlant, Books, Trashcan } from '../../components/models/Props';
 
 /**
  * Admin Office Room - Data Privacy & The Nexus theme
@@ -173,19 +181,35 @@ function AdminOfficeRoom() {
         </mesh>
       </group>
 
-      {/* Stacks of paper files */}
-      {[[-4, -2], [-3.5, 1], [4, -1], [3, 2]].map(([x, z], i) => (
-        <group key={i} position={[x, 0, z]}>
-          {Array.from({ length: 3 + Math.floor(Math.random() * 4) }).map((_, j) => (
-            <mesh key={j} position={[0, 0.1 + j * 0.08, 0]} castShadow>
-              <boxGeometry args={[0.3, 0.06, 0.4]} />
-              <meshStandardMaterial
-                color={`hsl(40, 20%, ${70 + Math.random() * 20}%)`}
-              />
-            </mesh>
-          ))}
-        </group>
-      ))}
+      {/* ========== REAL 3D OFFICE FURNITURE ========== */}
+      
+      {/* Bookcases along left wall */}
+      <Bookcase position={[-6, 0, -4]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
+      <Bookcase position={[-6, 0, -1]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
+      <Bookcase position={[-6, 0, 2]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
+      
+      {/* Lounge seating area */}
+      <LoungeChair position={[4, 0, -4]} rotation={[0, -Math.PI / 4, 0]} scale={1.5} />
+      <LoungeChair position={[5.5, 0, -2]} rotation={[0, -Math.PI / 2, 0]} scale={1.5} />
+      <SideTable position={[5, 0, -3]} scale={1.5} />
+      
+      {/* Floor lamps for ambiance */}
+      <FloorLamp position={[-5.5, 0, 5]} scale={1.5} lightColor="#ffaa66" lightIntensity={0.4} />
+      <FloorLamp position={[5.5, 0, 5]} scale={1.5} lightColor="#ffaa66" lightIntensity={0.4} />
+      
+      {/* Decorative plants */}
+      <PottedPlant position={[-6.2, 0, -6]} scale={2.5} />
+      <PottedPlant position={[6.2, 0, -6]} scale={2.5} />
+      <PottedPlant position={[-6.2, 0, 5]} scale={2} />
+      
+      {/* Books on side table */}
+      <Books position={[5, 0.55, -3]} rotation={[0, 0.5, 0]} scale={1.2} />
+      
+      {/* Trashcan near desk */}
+      <Trashcan position={[1.8, 0, -2.5]} scale={1.5} />
+      
+      {/* Executive desk chair */}
+      <Chair position={[0, 0, -1.8]} rotation={[0, Math.PI, 0]} scale={1.5} variant="desk" />
 
       {/* Document shredder */}
       <group position={[-4, 0, 3]}>

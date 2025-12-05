@@ -3,6 +3,10 @@ import { DustParticles } from '../../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../../components/Environment';
 import { Float, Text } from '@react-three/drei';
 import useGameStore from '../../core/GameStateContext';
+// Real 3D Models from Kenney Furniture Kit
+import Laptop from '../../components/models/Laptop';
+import Desk from '../../components/models/Desk';
+import { Trashcan, CardboardBox } from '../../components/models/Props';
 
 /**
  * Server Room - Hardware & E-Waste theme
@@ -106,47 +110,25 @@ function ServerRoom() {
         </group>
       ))}
 
-      {/* E-Waste pile with "good" computers marked TRASH */}
+      {/* E-Waste pile with Real 3D Models */}
       <group position={[4, 0, 3]}>
-        {/* Trash bin */}
-        <mesh position={[0, 0.5, 0]} castShadow>
-          <boxGeometry args={[1.5, 1, 1.2]} />
-          <meshStandardMaterial
-            color="#333333"
-            metalness={0.6}
-            roughness={0.5}
-          />
-        </mesh>
-
+        {/* Real Trashcan - replaces procedural box */}
+        <Trashcan position={[0, 0, 0]} scale={2.5} />
+        
         {/* "TRASH" label */}
-        <mesh position={[0, 0.8, 0.61]}>
+        <mesh position={[0, 1.2, 0.5]}>
           <planeGeometry args={[1, 0.3]} />
           <meshBasicMaterial color="#ff4444" />
         </mesh>
-
-        {/* Discarded laptops/computers */}
-        {Array.from({ length: 4 }).map((_, i) => (
-          <mesh
-            key={i}
-            position={[
-              (Math.random() - 0.5) * 0.8,
-              1 + i * 0.15,
-              (Math.random() - 0.5) * 0.6
-            ]}
-            rotation={[
-              (Math.random() - 0.5) * 0.5,
-              Math.random() * Math.PI,
-              (Math.random() - 0.5) * 0.5
-            ]}
-            castShadow
-          >
-            <boxGeometry args={[0.35, 0.03, 0.25]} />
-            <meshStandardMaterial
-              color="#2a2a2a"
-              metalness={0.5}
-            />
-          </mesh>
-        ))}
+        
+        {/* Discarded Real Laptops */}
+        <Laptop position={[-0.3, 0.8, 0.2]} rotation={[0.2, 0.5, 0.1]} scale={2} glowing={false} />
+        <Laptop position={[0.2, 1.0, -0.1]} rotation={[-0.1, -0.8, 0.15]} scale={2} glowing={false} />
+        <Laptop position={[0, 1.2, 0.3]} rotation={[0.3, 1.2, -0.1]} scale={2} glowing={false} />
+        
+        {/* Cardboard boxes with e-waste */}
+        <CardboardBox position={[-1.2, 0, 0.5]} rotation={[0, 0.3, 0]} scale={2} />
+        <CardboardBox position={[-1.5, 0, -0.3]} rotation={[0, -0.2, 0]} scale={2} />
       </group>
 
       {/* Repair bench - puzzle location */}

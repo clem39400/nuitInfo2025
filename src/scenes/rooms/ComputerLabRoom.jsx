@@ -4,6 +4,10 @@ import { ReflectiveFloor } from '../../components/Environment';
 import RefurbishmentWorkstation from '../../components/RefurbishmentWorkstation';
 import MasterGuidePC from '../../components/MasterGuidePC';
 import useRefurbishmentStore, { REFURBISHMENT_STATIONS } from '../../core/RefurbishmentGameState';
+// Real 3D Models from Kenney Furniture Kit
+import Desk from '../../components/models/Desk';
+import Chair from '../../components/models/Chair';
+import { Trashcan, Books, PottedPlant } from '../../components/models/Props';
 
 /**
  * Computer Lab Room - PC Refurbishment Treasure Hunt
@@ -102,6 +106,25 @@ function ComputerLabRoom() {
           onInteract={(stationId) => openMiniGame(stationId)}
         />
       ))}
+      
+      {/* ========== REAL 3D FURNITURE - Kenney Assets ========== */}
+      {/* Teacher's desk area */}
+      <Desk position={[-5.5, 0, -5]} rotation={[0, Math.PI / 4, 0]} scale={1.5} />
+      <Chair position={[-4.8, 0, -4.3]} rotation={[0, Math.PI / 4 + Math.PI, 0]} scale={1.5} variant="desk" />
+      
+      {/* Side desks along walls */}
+      <Desk position={[6, 0, 0]} rotation={[0, -Math.PI / 2, 0]} scale={1.2} />
+      <Desk position={[6, 0, -3]} rotation={[0, -Math.PI / 2, 0]} scale={1.2} />
+      <Chair position={[5.2, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={1.2} variant="desk" />
+      <Chair position={[5.2, 0, -3]} rotation={[0, Math.PI / 2, 0]} scale={1.2} variant="desk" />
+      
+      {/* Props for decoration */}
+      <Trashcan position={[-6.5, 0, 6]} scale={1.5} />
+      <Trashcan position={[6.5, 0, -6]} scale={1.5} />
+      <Books position={[-5.3, 0.85, -5.2]} rotation={[0, 0.3, 0]} scale={1.2} />
+      <Books position={[6.2, 0.85, 0.2]} rotation={[0, -0.5, 0]} scale={1.2} />
+      <PottedPlant position={[-7, 0, -7]} scale={2} />
+      <PottedPlant position={[7, 0, 6]} scale={2} />
       
       {/* ========== AMBIENT LIGHTING ========== */}
       {/* General ambient */}
