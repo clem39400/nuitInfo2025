@@ -15,6 +15,24 @@ const SnakeGame = ({ onClose, onWin, winScore = 10 }) => {
     const GRID_SIZE = 20;
     const SPEED = 100; // Original speed with smooth interpolation
 
+    const HACK_MESSAGES = [
+        "Installation de Linux...",
+        "Réparation des composants...",
+        "Reconditionnement...",
+        "Installation de logiciels...",
+        "Optimisation du kernel...",
+        "Défragmentation du disque...",
+        "Compilation du noyau...",
+        "Mise à jour des drivers...",
+        "Nettoyage du cache...",
+        "Overclocking du CPU...",
+        "Remplacement de la pâte thermique...",
+        "Configuration du firewall...",
+        "Analyse antivirus...",
+        "Sauvegarde des données...",
+        "Cryptage du disque..."
+    ];
+
     // Game state
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [food, setFood] = useState({ x: 15, y: 15 });
@@ -24,6 +42,8 @@ const SnakeGame = ({ onClose, onWin, winScore = 10 }) => {
     const [gameWon, setGameWon] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [interpolation, setInterpolation] = useState(0); // 0-1 for smooth visual transition
+    const [activeMessage, setActiveMessage] = useState("");
+    const [messageKey, setMessageKey] = useState(0);
 
     const canvasRef = useRef(null);
     const directionRef = useRef({ x: 0, y: 0 }); // Ref to avoid closure staleness in interval
@@ -39,6 +59,9 @@ const SnakeGame = ({ onClose, onWin, winScore = 10 }) => {
         setGameOver(false);
         setGameWon(false);
         setIsPaused(false);
+        setGameWon(false);
+        setIsPaused(false);
+        setActiveMessage("");
     };
 
     // Generate random food position
@@ -127,6 +150,11 @@ const SnakeGame = ({ onClose, onWin, winScore = 10 }) => {
                 if (newHead.x === food.x && newHead.y === food.y) {
                     const newScore = score + 1;
                     setScore(newScore);
+
+                    // Trigger random hack message
+                    const randomMsg = HACK_MESSAGES[Math.floor(Math.random() * HACK_MESSAGES.length)];
+                    setActiveMessage(randomMsg);
+                    setMessageKey(prev => prev + 1);
 
                     if (newScore >= winScore) {
                         setGameWon(true);
@@ -407,6 +435,12 @@ const SnakeGame = ({ onClose, onWin, winScore = 10 }) => {
                     0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.3); }
                     50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.5); }
                 }
+                @keyframes messagePop {
+                    0% { opacity: 0; transform: translateY(10px) scale(0.9); }
+                    20% { opacity: 1; transform: translateY(0) scale(1.1); }
+                    80% { opacity: 1; transform: translateY(0) scale(1); }
+                    100% { opacity: 0; transform: translateY(-10px) scale(0.9); }
+                }
             `}</style>
 
             <div style={{
@@ -430,6 +464,32 @@ const SnakeGame = ({ onClose, onWin, winScore = 10 }) => {
                     <span style={{ color: gameWon ? '#00ffcc' : gameOver ? '#ff4444' : '#00ff88', fontWeight: 'bold' }}>
                         STATUS: {gameWon ? 'ACCESS GRANTED' : gameOver ? 'CRITICAL FAILURE...' : 'RUNNING...'}
                     </span>
+                </div>
+
+                {/* Dynamic Hack Message Overlay */}
+                <div style={{
+                    height: '30px',
+                    marginBottom: '10px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    overflow: 'hidden'
+                }}>
+                    {activeMessage && (
+                        <div key={messageKey} style={{
+                            color: '#00ffcc',
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            textShadow: '0 0 10px #00ffcc',
+                            animation: 'messagePop 2s forwards',
+                            background: 'rgba(0, 255, 136, 0.1)',
+                            padding: '4px 12px',
+                            borderRadius: '4px',
+                            border: '1px solid rgba(0, 255, 136, 0.3)'
+                        }}>
+                            {activeMessage}
+                        </div>
+                    )}
                 </div>
 
                 {/* Game Canvas Container with Side Alerts */}
