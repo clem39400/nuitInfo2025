@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Person, StudentGroup } from '../components/models/Person';
-import { Bird, Dog, Cat, Snake, Butterfly, Squirrel } from '../components/models/Animals';
+import { Bird, Dog, Cat, Snake, Butterfly, Squirrel, Flower, FlowerPatch } from '../components/models/Animals';
 
 /**
  * Gate Scene - Phase 1: The Gatekeeper
@@ -339,6 +339,25 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
       <Squirrel position={[11, 0, 0]} rotation={-0.8} scale={1.2} />
       <Squirrel position={[-6, 0, -10]} rotation={Math.PI / 3} scale={1.1} />
       <Squirrel position={[7, 0, -10]} rotation={-Math.PI / 5} scale={1.35} />
+
+      {/* ========== FLOWERS - COLORFUL GARDEN ========== */}
+      {/* Patches near the path */}
+      <FlowerPatch position={[-4, 0, -2]} count={8} spread={1.5} />
+      <FlowerPatch position={[4, 0, -2]} count={8} spread={1.5} />
+      
+      {/* Patches near trees */}
+      <FlowerPatch position={[-8, 0, 2]} count={12} spread={2} colors={['#ff6b9d', '#e91e63', '#9c27b0']} />
+      <FlowerPatch position={[8, 0, 2]} count={12} spread={2} colors={['#ffeb3b', '#ff9800', '#f44336']} />
+      
+      {/* Wildflowers in the grass */}
+      <FlowerPatch position={[-12, 0, -5]} count={15} spread={3} />
+      <FlowerPatch position={[12, 0, -5]} count={15} spread={3} />
+      <FlowerPatch position={[-6, 0, 8]} count={10} spread={2} colors={['#ffffff', '#e6e6fa', '#dda0dd']} />
+      <FlowerPatch position={[6, 0, 8]} count={10} spread={2} colors={['#ffffff', '#e6e6fa', '#dda0dd']} />
+      
+      {/* Flowers near the school building */}
+      <FlowerPatch position={[-10, 0, -11]} count={8} spread={1.5} />
+      <FlowerPatch position={[10, 0, -11]} count={8} spread={1.5} />
       
       {/* ===== HIDDEN SNAKE - Easter egg! Triggers Snake Game ===== */}
       {/* Hidden near the hedge - players can discover it */}

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -599,4 +599,112 @@ export function Squirrel({
   );
 }
 
-export default { Bird, Dog, Cat, Snake, Butterfly, Squirrel };
+/**
+ * Single Flower with petals and gentle swaying
+ */
+export function Flower({ 
+  position = [0, 0, 0], 
+  petalColor = '#ff6b9d',
+  centerColor = '#ffd700',
+  stemColor = '#228b22',
+  scale = 1,
+  petalCount = 5
+}) {
+  const groupRef = useRef();
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    const t = state.clock.elapsedTime;
+    // Gentle swaying in the wind
+    groupRef.current.rotation.z = Math.sin(t * 1.5 + position[0]) * 0.05;
+    groupRef.current.rotation.x = Math.sin(t * 1.2 + position[2]) * 0.03;
+  });
+
+  return (
+    <group ref={groupRef} position={position} scale={scale}>
+      {/* Stem */}
+      <mesh position={[0, 0.15, 0]}>
+        <cylinderGeometry args={[0.015, 0.02, 0.3, 6]} />
+        <meshStandardMaterial color={stemColor} roughness={0.8} />
+      </mesh>
+      
+      {/* Leaves */}
+      <mesh position={[0.04, 0.1, 0]} rotation={[0, 0, 0.5]}>
+        <sphereGeometry args={[0.04, 6, 4, 0, Math.PI]} />
+        <meshStandardMaterial color={stemColor} roughness={0.8} />
+      </mesh>
+      <mesh position={[-0.04, 0.08, 0]} rotation={[0, Math.PI, -0.5]}>
+        <sphereGeometry args={[0.035, 6, 4, 0, Math.PI]} />
+        <meshStandardMaterial color={stemColor} roughness={0.8} />
+      </mesh>
+      
+      {/* Flower head */}
+      <group position={[0, 0.32, 0]}>
+        {/* Petals */}
+        {Array.from({ length: petalCount }).map((_, i) => (
+          <mesh 
+            key={i} 
+            position={[
+              Math.cos((i / petalCount) * Math.PI * 2) * 0.045,
+              0,
+              Math.sin((i / petalCount) * Math.PI * 2) * 0.045
+            ]}
+            rotation={[
+              Math.PI / 4,
+              (i / petalCount) * Math.PI * 2,
+              0
+            ]}
+          >
+            <sphereGeometry args={[0.04, 6, 6, 0, Math.PI]} />
+            <meshStandardMaterial color={petalColor} roughness={0.6} />
+          </mesh>
+        ))}
+        
+        {/* Center */}
+        <mesh>
+          <sphereGeometry args={[0.03, 8, 8]} />
+          <meshStandardMaterial color={centerColor} roughness={0.4} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+/**
+ * A patch of multiple flowers for easy placement
+ */
+export function FlowerPatch({ 
+  position = [0, 0, 0], 
+  count = 5,
+  spread = 1,
+  colors = ['#ff6b9d', '#ff9800', '#e91e63', '#9c27b0', '#ffeb3b', '#f44336']
+}) {
+  // Generate random flower positions within the patch
+  const flowers = useMemo(() => {
+    return Array.from({ length: count }).map((_, i) => ({
+      x: (Math.random() - 0.5) * spread,
+      z: (Math.random() - 0.5) * spread,
+      scale: 0.6 + Math.random() * 0.6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      petalCount: 4 + Math.floor(Math.random() * 4),
+      rotation: Math.random() * Math.PI * 2,
+    }));
+  }, [count, spread, colors]);
+
+  return (
+    <group position={position}>
+      {flowers.map((f, i) => (
+        <Flower
+          key={i}
+          position={[f.x, 0, f.z]}
+          petalColor={f.color}
+          scale={f.scale}
+          petalCount={f.petalCount}
+        />
+      ))}
+    </group>
+  );
+}
+
+export default { Bird, Dog, Cat, Snake, Butterfly, Squirrel, Flower, FlowerPatch };
+

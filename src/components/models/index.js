@@ -36,5 +36,7 @@ export {
   Cat, 
   Snake, 
   Butterfly, 
-  Squirrel 
+  Squirrel,
+  Flower,
+  FlowerPatch
 } from './Animals';
