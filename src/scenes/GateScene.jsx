@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Person, StudentGroup } from '../components/models/Person';
+import { Bird, Dog, Cat, Snake, Butterfly, Squirrel } from '../components/models/Animals';
 
 /**
  * Gate Scene - Phase 1: The Gatekeeper
@@ -17,7 +18,7 @@ import { Person, StudentGroup } from '../components/models/Person';
  * - Snake game triggers via completePuzzle('gate')
  */
 function GateScene({ onOpenChatbot, isChatbotOpen }) {
-  const { completePuzzle, goToHallway } = useGameStore();
+  const { completePuzzle, goToHallway, setSnakeGameOpen } = useGameStore();
   const hologramRef = useRef();
   const hologramCoreRef = useRef();
 
@@ -291,6 +292,61 @@ function GateScene({ onOpenChatbot, isChatbotOpen }) {
         hairColor="#1a1a1a"
         hasBackpack={true}
         scale={0.92}
+      />
+
+      {/* ========== ANIMALS - Lots of wildlife! ========== */}
+      
+      {/* Birds flying/perched - flock in sky */}
+      <Bird position={[-9, 5, -4]} rotation={0.5} color="#5a6a7a" scale={1.2} />
+      <Bird position={[-7, 6, -6]} rotation={-0.3} color="#8a7a6a" scale={1} />
+      <Bird position={[8, 4.5, -5]} rotation={Math.PI} color="#4a5a6a" scale={1.1} />
+      <Bird position={[10, 3, 1]} rotation={-Math.PI / 2} color="#6a5a4a" scale={0.9} />
+      <Bird position={[-12, 7, -3]} rotation={0.8} color="#6a7a8a" scale={1.3} />
+      <Bird position={[5, 8, -8]} rotation={-0.5} color="#7a6a5a" scale={1} />
+      <Bird position={[-5, 4, 3]} rotation={Math.PI * 0.7} color="#5a5a6a" scale={0.85} />
+      <Bird position={[12, 5, -2]} rotation={-1.2} color="#8a8a7a" scale={1.15} />
+      <Bird position={[0, 9, -10]} rotation={0.2} color="#4a4a5a" scale={1.4} />
+      <Bird position={[-3, 6, -9]} rotation={-0.7} color="#6a5a5a" scale={0.95} />
+      
+      {/* Dogs - one near students, one wandering */}
+      <Dog position={[-8, 0, 1]} rotation={Math.PI / 4} color="#a0522d" scale={1.3} />
+      <Dog position={[6, 0, -6]} rotation={-Math.PI / 2} color="#8b4513" scale={1.1} />
+      <Dog position={[-3, 0, 5]} rotation={0.8} color="#deb887" scale={1.2} />
+      
+      {/* Cats lounging and exploring */}
+      <Cat position={[4, 0, -1]} rotation={-Math.PI / 3} color="#ff8c42" scale={1.4} />
+      <Cat position={[-4, 0, -7]} rotation={Math.PI / 6} color="#808080" scale={1.2} />
+      <Cat position={[-6, 0, 4]} rotation={Math.PI / 2} color="#2a2a2a" scale={1.3} />
+      <Cat position={[8, 0, -8]} rotation={-0.5} color="#f5f5dc" scale={1.1} />
+      <Cat position={[2, 0, 6]} rotation={Math.PI * 0.8} color="#8b4513" scale={1} />
+      
+      {/* Butterflies fluttering everywhere */}
+      <Butterfly position={[-5, 1.5, 2]} color="#ff6b9d" scale={1.5} />
+      <Butterfly position={[6, 2, -2]} color="#9b59b6" scale={1.2} />
+      <Butterfly position={[-2, 1.8, 4]} color="#f39c12" scale={1.3} />
+      <Butterfly position={[3, 2.2, -4]} color="#3498db" scale={1.1} />
+      <Butterfly position={[-8, 1.2, -2]} color="#e74c3c" scale={1.4} />
+      <Butterfly position={[9, 1.6, 2]} color="#2ecc71" scale={1} />
+      <Butterfly position={[-1, 2.5, -6]} color="#e91e63" scale={1.3} />
+      <Butterfly position={[5, 1.4, 5]} color="#ff9800" scale={1.2} />
+      <Butterfly position={[-7, 1.9, 6]} color="#673ab7" scale={1.1} />
+      <Butterfly position={[0, 2.8, 2]} color="#00bcd4" scale={1.5} />
+      
+      {/* Squirrels near the trees and around */}
+      <Squirrel position={[-9, 0, -3]} rotation={Math.PI / 2} scale={1.5} />
+      <Squirrel position={[9, 0, -4]} rotation={-Math.PI / 4} scale={1.3} />
+      <Squirrel position={[-11, 0, 2]} rotation={0.6} scale={1.4} />
+      <Squirrel position={[11, 0, 0]} rotation={-0.8} scale={1.2} />
+      <Squirrel position={[-6, 0, -10]} rotation={Math.PI / 3} scale={1.1} />
+      <Squirrel position={[7, 0, -10]} rotation={-Math.PI / 5} scale={1.35} />
+      
+      {/* ===== HIDDEN SNAKE - Easter egg! Triggers Snake Game ===== */}
+      {/* Hidden near the hedge - players can discover it */}
+      <Snake 
+        position={[-4, 0, 0.5]}
+        rotation={Math.PI / 6}
+        scale={1.2}
+        onClick={() => setSnakeGameOpen(true)}
       />
 
       {/* Subtle stone marker with snake game clue - near left hedge, player's side */}

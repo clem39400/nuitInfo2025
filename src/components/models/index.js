@@ -30,3 +30,11 @@ export {
   WalkingStudent, 
   Teacher 
 } from './Person';
+export { 
+  Bird, 
+  Dog, 
+  Cat, 
+  Snake, 
+  Butterfly, 
+  Squirrel 
+} from './Animals';
