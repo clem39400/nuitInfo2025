@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentions Légales - NIRD École Virtuelle</title>
+    <title>Le Codex Légal du Nexus (Mentions Légales) - NIRD</title>
     <style>
+        /* =================================================== */
+        /* CSS DU NEXUS (Thème Cyperpunk / NIRD) */
+        /* =================================================== */
         :root {
-            --nird-green: #00ff88;
-            --nird-blue: #0078d4;
+            --nird-green: #00ff88; /* Néon Vert */
+            --nird-blue: #00a2ff; /* Bleu Électrique */
             --bg-dark: #0a0a15;
             --text-light: #e0e0e0;
+            --text-faded: #9090a0;
         }
 
         * {
@@ -19,70 +23,75 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Consolas', 'Courier New', monospace; /* Police de terminal */
             background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
             color: var(--text-light);
             min-height: 100vh;
-            padding: 2rem;
-            line-height: 1.6;
+            padding: 3rem 1rem;
+            line-height: 1.7;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
-            padding: 2rem 3rem;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            box-shadow: 0 0 40px rgba(0, 120, 212, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 3rem 4rem;
+            border: 2px solid var(--nird-green); /* Bordure Néon Vert */
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.2), 0 0 10px rgba(0, 162, 255, 0.1);
         }
 
         header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+            border-bottom: 3px double var(--nird-blue); /* Ligne double thématique */
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: var(--nird-green);
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
             margin-bottom: 0.5rem;
+            font-weight: 800;
         }
 
         .subtitle {
             color: var(--nird-blue);
             font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(0, 162, 255, 0.5);
         }
 
         h2 {
             color: var(--nird-green);
-            font-size: 1.4rem;
-            margin: 2rem 0 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+            font-size: 1.8rem;
+            margin: 3rem 0 1rem;
+            padding-left: 10px;
+            border-left: 4px solid var(--nird-green); /* Ligne d'accentuation */
+            border-bottom: none;
         }
 
         h3 {
             color: var(--nird-blue);
-            font-size: 1.1rem;
-            margin: 1.5rem 0 0.5rem;
+            font-size: 1.2rem;
+            margin: 2rem 0 0.8rem;
+            font-weight: normal;
         }
 
         p, li {
-            margin-bottom: 0.8rem;
-            color: #b0b0c0;
+            margin-bottom: 1rem;
+            color: var(--text-faded);
         }
 
         ul {
             list-style: none;
-            padding-left: 1rem;
+            padding-left: 0;
         }
 
         ul li::before {
-            content: "▸ ";
+            content: " [>>] "; /* Puce thématique */
             color: var(--nird-green);
+            font-weight: bold;
         }
 
         a {
@@ -94,154 +103,145 @@
         a:hover {
             color: var(--nird-green);
             text-decoration: underline;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
         }
 
         .credit-card {
-            background: rgba(0, 120, 212, 0.1);
-            border: 1px solid rgba(0, 120, 212, 0.3);
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            margin: 1rem 0;
+            background: rgba(0, 120, 212, 0.05);
+            border: 1px dashed rgba(0, 255, 136, 0.4); /* Bordure en pointillé/dash */
+            border-radius: 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
         }
 
         .credit-card h4 {
             color: var(--nird-green);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.7rem;
+            font-size: 1.1rem;
         }
 
         .license-badge {
-            display: inline-block;
-            background: rgba(0, 255, 136, 0.2);
-            color: var(--nird-green);
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            margin-left: 0.5rem;
+            background: var(--nird-green);
+            color: var(--bg-dark);
+            padding: 0.3rem 0.8rem;
+            border-radius: 2px;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
 
         .back-link {
             display: inline-block;
-            margin-top: 2rem;
-            padding: 0.8rem 1.5rem;
-            background: linear-gradient(135deg, var(--nird-blue), #00a2ff);
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            background: var(--nird-blue);
             color: white;
-            border-radius: 8px;
+            border-radius: 4px;
             font-weight: bold;
-            transition: transform 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
         }
 
         .back-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 120, 212, 0.4);
+            transform: scale(1.05);
+            background: var(--nird-green);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--nird-green);
             text-decoration: none;
         }
 
         footer {
             text-align: center;
-            margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(0, 255, 136, 0.2);
-            color: #666;
-            font-size: 0.9rem;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 255, 136, 0.3);
+            color: var(--text-faded);
+            font-size: 0.85rem;
         }
 
         .nird-logo {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin-right: 0.5rem;
+            text-shadow: 0 0 10px var(--nird-green);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><span class="nird-logo">🦎</span> Mentions Légales</h1>
-            <p class="subtitle">NIRD - Numérique Inclusif, Responsable et Durable</p>
+            <h1><span class="nird-logo">📜</span> Le Codex Légal du Nexus</h1>
+            <p class="subtitle">Nexus Interactif, Responsable et Distribué (NIRD) — Opération Nuit de l'Info 2025</p>
         </header>
 
         <main>
             <section>
-                <h2>📋 Informations Générales</h2>
-                <p>Ce site web a été créé dans le cadre de la <strong>Nuit de l'Info 2025</strong>, un événement national de développement web collaboratif.</p>
+                <h2>🌐 Identité du Flux de Données</h2>
+                <p>Ce portail interactif a été conçu et déployé par les <strong>Chevaliers du Code ⚔️</strong> de l'équipe [Nom de l'Équipe], dans le cadre de la <strong>Nuit de l'Info 2025</strong>.</p>
                 <ul>
-                    <li><strong>Projet :</strong> École Virtuelle NIRD - Plateforme Interactive</li>
-                    <li><strong>Événement :</strong> Nuit de l'Info 2025</li>
-                    <li><strong>Date de création :</strong> Décembre 2025</li>
+                    <li><strong>Nom de Code du Projet :</strong> Nexus Connecté : L'Écho Personnalisé</li>
+                    <li><strong>Version du Cycle :</strong> 1.0 (Décembre 2025)</li>
+                    <li><strong>Mission Primaire :</strong> Promotion du Numérique Inclusif, Responsable et Durable.</li>
                 </ul>
             </section>
 
             <section>
-                <h2>🎨 Crédits Graphiques et Modèles 3D</h2>
-                <p>Ce projet utilise la bibliothèque <strong>Three.js</strong> pour le rendu 3D et les éléments suivants :</p>
-
-                <h3>Textures</h3>
+                <h2>💾 Attribution des Ressources (Circuits et Données)</h2>
+                <p>Le <strong>Nexus</strong> repose sur l'intégration harmonieuse de ressources originales et de modules Open Source, essentiels à la stabilité des flux de données :</p>
+                
+                <h3>Modules Graphiques et Textures</h3>
                 <div class="credit-card">
-                    <h4>PolyHaven <span class="license-badge">CC0</span></h4>
-                    <p>Textures libres de droits utilisées :</p>
+                    <h4>PolyHaven : Réserve de Textures <span class="license-badge">CC0 (Domaine Public)</span></h4>
+                    <p>Ces <strong>paquets de données visuelles</strong> sont cruciaux pour l'immersion de la Réalité Virtuelle :</p>
                     <ul>
-                        <li><strong>Grass Texture</strong> - texture d'herbe réaliste pour le sol extérieur</li>
-                        <li><strong>Stone Texture</strong> - texture de pierre pour les chemins</li>
-                        <li><strong>Wood Texture</strong> - texture de bois pour les éléments architecturaux</li>
+                        <li><strong>Grass Texture</strong> : Simulation de la flore numérique pour la zone extérieure.</li>
+                        <li><strong>Stone Texture</strong> : Base matérielle des fondations du Nexus.</li>
+                        <li><strong>Wood Texture</strong> : Éléments de mobilier et structures.</li>
                     </ul>
-                    <p>Source : <a href="https://polyhaven.com" target="_blank" rel="noopener">https://polyhaven.com</a></p>
-                    <p><em>Licence : CC0 (Creative Commons Zero) - Domaine public</em></p>
+                    <p>Source : <a href="https://polyhaven.com" target="_blank" rel="noopener">polyhaven.com</a></p>
+                </div>
+                
+                <h3>Modèles et Architecture 3D</h3>
+                <div class="credit-card">
+                    <h4>Schémas de Conception Originaux <span class="license-badge">© NIRD 2025</span></h4>
+                    <p>L'intégralité des structures 3D de l'<strong>École NIRD</strong> et des éléments interactifs ont été créés par l'équipe en utilisant la modélisation procédurale.</p>
+                    <ul>
+                        <li>Architecture de l'École et des Salles Thématiques</li>
+                        <li>Le <strong>Terminal d'Installation Linux Express</strong> (Mini-Jeu)</li>
+                        <li>L'Avatar <strong>Axolotl</strong> du Chatbot (représentation holographique)</li>
+                    </ul>
+                    <p>Ces structures garantissent l'unicité de notre "Nexus".</p>
                 </div>
 
-                <h3>Modèles 3D Procéduraux</h3>
+                <h3>Dépendances Open Source (Les Piliers du Code)</h3>
                 <div class="credit-card">
-                    <h4>Créations Originales <span class="license-badge">Original</span></h4>
-                    <p>Les modèles 3D suivants ont été créés de manière procédurale avec Three.js :</p>
+                    <h4>Les Piliers de l'Architecture (Licence MIT)</h4>
+                    <p>Notre édifice repose sur les fondations Open Source. Nous honorons ces <strong>maîtres-circuits</strong> :</p>
                     <ul>
-                        <li>Bâtiment scolaire (École NIRD)</li>
-                        <li>Portail et grilles d'entrée</li>
-                        <li>Arbres et végétation</li>
-                        <li>Mobilier scolaire (bureaux, chaises, ordinateurs)</li>
-                        <li>Éléments décoratifs (lampes, étagères)</li>
-                        <li>Avatar holographique du chatbot</li>
-                    </ul>
-                    <p><em>Ces éléments sont des créations originales du projet.</em></p>
-                </div>
-
-                <h3>Bibliothèques JavaScript</h3>
-                <div class="credit-card">
-                    <h4>Dépendances Open Source</h4>
-                    <ul>
-                        <li><strong>Three.js</strong> - Licence MIT - <a href="https://threejs.org" target="_blank" rel="noopener">threejs.org</a></li>
-                        <li><strong>React Three Fiber</strong> - Licence MIT - <a href="https://docs.pmnd.rs/react-three-fiber" target="_blank" rel="noopener">R3F</a></li>
-                        <li><strong>React Three Drei</strong> - Licence MIT - <a href="https://github.com/pmndrs/drei" target="_blank" rel="noopener">Drei</a></li>
-                        <li><strong>React</strong> - Licence MIT - <a href="https://react.dev" target="_blank" rel="noopener">react.dev</a></li>
-                        <li><strong>Vite</strong> - Licence MIT - <a href="https://vitejs.dev" target="_blank" rel="noopener">vitejs.dev</a></li>
-                        <li><strong>Zustand</strong> - Licence MIT - <a href="https://github.com/pmndrs/zustand" target="_blank" rel="noopener">Zustand</a></li>
+                        <li><strong>Three.js</strong> : Le moteur de rendu de la Réalité Virtuelle.</li>
+                        <li><strong>React Three Fiber</strong> : La liaison avec les composants React.</li>
+                        <li><strong>React Three Drei</strong> : Modules utilitaires pour les objets 3D.</li>
+                        <li><strong>React</strong> et <strong>Vite</strong> : La structure d'assemblage du portail.</li>
+                        <li><strong>Zustand</strong> : Le système de gestion des états du Nexus.</li>
                     </ul>
                 </div>
             </section>
 
             <section>
-                <h2>🎮 À Propos du Projet</h2>
-                <p>Ce projet propose une expérience interactive 3D pour promouvoir les valeurs du <strong>NIRD</strong> (Numérique Inclusif, Responsable et Durable) :</p>
-                <ul>
-                    <li><strong>Inclusivité</strong> - Rendre le numérique accessible à tous</li>
-                    <li><strong>Responsabilité</strong> - Sensibiliser aux impacts du numérique</li>
-                    <li><strong>Durabilité</strong> - Promouvoir un usage éco-responsable</li>
-                </ul>
+                <h2>⚖️ Protocole de Propriété Intellectuelle</h2>
+                <p>L'ensemble du <strong>Code Source</strong> et des <strong>Schémas de Conception Originaux</strong> sont la propriété de l'équipe. En accord avec l'esprit Open Source de la Nuit de l'Info, le code sera rendu <strong>public</strong> après l'événement sous la licence [**Ajouter ici la Licence choisie : Ex: MIT/GPL**].</p>
+                <p>Les <strong>Bugs Ancestraux 🐛</strong> trouvés par l'utilisateur ne sont pas considérés comme propriété intellectuelle.</p>
             </section>
 
             <section>
-                <h2>⚖️ Propriété Intellectuelle</h2>
-                <p>Tous les éléments originaux de ce site (code, design, textes) sont la propriété de l'équipe de développement du projet Nuit de l'Info 2025.</p>
-                <p>Les ressources tierces sont utilisées conformément à leurs licences respectives mentionnées ci-dessus.</p>
+                <h2>📧 Canal de Communication du Support</h2>
+                <p>Pour signaler une corruption des données, un "Bug Ancestral" 🐛, ou pour toute question sur le <strong>Codex du Nexus</strong>, veuillez utiliser notre <strong><a href="/formulaire">Portail d'Intention 🚪</a></strong> (choisir la mission "Établir le Contact" ou "Demander des Informations").</p>
             </section>
 
-            <section>
-                <h2>📞 Contact</h2>
-                <p>Pour toute question concernant ce projet, veuillez utiliser le formulaire de contact intégré dans l'application.</p>
-            </section>
-
-            <a href="/" class="back-link">← Retour à l'application</a>
+            <a href="/" class="back-link">🚀 Retourner au Nexus</a>
         </main>
 
         <footer>
-            <p>🦎 NIRD - Nuit de l'Info 2025</p>
-            <p>Fait avec ❤️ et Three.js</p>
+            <p>Code Légal mis à jour lors du Cycle **2025**.</p>
+            <p>Généré par les Chevaliers du Code ⚔️ et optimisé par les Flux Three.js.</p>
         </footer>
     </div>
 </body>
