@@ -12,6 +12,9 @@ import Bookcase from '../../components/models/Bookcase';
 import SideTable from '../../components/models/SideTable';
 import FloorLamp from '../../components/models/FloorLamp';
 import { PottedPlant, Books, Trashcan } from '../../components/models/Props';
+import Door from '../../components/Door';
+import { useThree } from '@react-three/fiber';
+import { tweenCamera } from '../../components/CameraController';
 
 /**
  * Admin Office Room - Data Privacy & The Nexus theme
@@ -23,8 +26,22 @@ import { PottedPlant, Books, Trashcan } from '../../components/models/Props';
  * - Call completePuzzle('office') when puzzle is solved
  */
 function AdminOfficeRoom() {
-  const { openNIRDForm } = useGameStore();
+  const { openNIRDForm, exitRoom, setTransitioning } = useGameStore();
   const hologramRef = useRef();
+  const { camera } = useThree();
+
+  const handleBackToHallway = () => {
+    setTransitioning(true);
+    tweenCamera(
+      camera,
+      { x: 0, y: 1.6, z: 5 },
+      { x: 0, y: 1.6, z: 0 },
+      2,
+      () => {
+        exitRoom();
+      }
+    );
+  };
 
   // Animate hologram
   useFrame((state) => {
@@ -35,7 +52,7 @@ function AdminOfficeRoom() {
   });
 
   return (
-    <RoomBase lightingPreset="office">
+    <RoomBase lightingPreset="office" showBackButton={false}>
       {/* Wooden-look floor with some reflection */}
       <ReflectiveFloor
         position={[0, 0, 0]}
@@ -70,6 +87,14 @@ function AdminOfficeRoom() {
         <boxGeometry args={[14, 5, 0.2]} />
         <meshStandardMaterial color="#2a2520" roughness={0.85} />
       </mesh>
+
+      {/* Return Door - Behind the user */}
+      <Door
+        position={[0, 0, 6.9]}
+        rotation={[0, Math.PI, 0]}
+        label="Retour au Couloir"
+        onCustomClick={handleBackToHallway}
+      />
 
       {/* Ceiling */}
       <mesh position={[0, 5, 0]}>
@@ -182,32 +207,32 @@ function AdminOfficeRoom() {
       </group>
 
       {/* ========== REAL 3D OFFICE FURNITURE ========== */}
-      
+
       {/* Bookcases along left wall */}
       <Bookcase position={[-6, 0, -4]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
       <Bookcase position={[-6, 0, -1]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
       <Bookcase position={[-6, 0, 2]} rotation={[0, Math.PI / 2, 0]} scale={1.8} />
-      
+
       {/* Lounge seating area */}
       <LoungeChair position={[4, 0, -4]} rotation={[0, -Math.PI / 4, 0]} scale={1.5} />
       <LoungeChair position={[5.5, 0, -2]} rotation={[0, -Math.PI / 2, 0]} scale={1.5} />
       <SideTable position={[5, 0, -3]} scale={1.5} />
-      
+
       {/* Floor lamps for ambiance */}
       <FloorLamp position={[-5.5, 0, 5]} scale={1.5} lightColor="#ffaa66" lightIntensity={0.4} />
       <FloorLamp position={[5.5, 0, 5]} scale={1.5} lightColor="#ffaa66" lightIntensity={0.4} />
-      
+
       {/* Decorative plants */}
       <PottedPlant position={[-6.2, 0, -6]} scale={2.5} />
       <PottedPlant position={[6.2, 0, -6]} scale={2.5} />
       <PottedPlant position={[-6.2, 0, 5]} scale={2} />
-      
+
       {/* Books on side table */}
       <Books position={[5, 0.55, -3]} rotation={[0, 0.5, 0]} scale={1.2} />
-      
+
       {/* Trashcan near desk */}
       <Trashcan position={[1.8, 0, -2.5]} scale={1.5} />
-      
+
       {/* Executive desk chair */}
       <Chair position={[0, 0, -1.8]} rotation={[0, Math.PI, 0]} scale={1.5} variant="desk" />
 

@@ -63,8 +63,19 @@ function CameraController({ disableMovement = false }) {
   });
 
   useEffect(() => {
-    camera.position.set(0, 1.6, 5);
+    // Set initial position based on phase
+    if (currentPhase === 'gate') {
+      camera.position.set(0, 1.6, 0); // Closer to gate (was 5)
+    } else if (currentPhase === 'hallway') {
+      camera.position.set(0, 1.6, 0);
+    } else {
+      camera.position.set(0, 1.6, 5);
+    }
+
     camera.rotation.order = 'YXZ';
+    // Reset rotation
+    rotation.current = { yaw: 0, pitch: 0 };
+    camera.rotation.set(0, 0, 0);
 
     const handleKeyDown = (event) => {
       switch (event.code) {
@@ -148,7 +159,7 @@ function CameraController({ disableMovement = false }) {
       gl.domElement.removeEventListener('mousemove', handleMouseMove);
       gl.domElement.removeEventListener('contextmenu', handleContextMenu);
     };
-  }, [camera, gl]);
+  }, [camera, gl, currentPhase]);
 
   const checkObstacleCollision = (pos, obstacles) => {
     const playerRadius = 0.4;

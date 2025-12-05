@@ -14,14 +14,19 @@ import useGameStore from '../core/GameStateContext';
  * @param {Array} props.cameraTarget - Camera position when entering room
  * @param {string} props.label - Door label text
  */
-function Door({ roomId, position, cameraTarget, label }) {
+function Door({ roomId, position, rotation = [0, 0, 0], cameraTarget, label, onCustomClick }) {
   const doorRef = useRef();
   const { camera } = useThree();
   const { enterRoom, setTransitioning } = useGameStore();
 
   const handleClick = () => {
+    if (onCustomClick) {
+      onCustomClick();
+      return;
+    }
+
     setTransitioning(true);
-    
+
     // Animate camera into the room
     tweenCamera(
       camera,
@@ -43,7 +48,7 @@ function Door({ roomId, position, cameraTarget, label }) {
 
   return (
     <InteractiveObject onClick={handleClick} tooltip={label}>
-      <group ref={doorRef} position={position}>
+      <group ref={doorRef} position={position} rotation={rotation}>
         {/* Door outer frame - dark wood */}
         <mesh position={[0, 1.35, -0.02]}>
           <boxGeometry args={[1.4, 2.7, 0.08]} />
@@ -53,7 +58,7 @@ function Door({ roomId, position, cameraTarget, label }) {
             metalness={0.1}
           />
         </mesh>
-        
+
         {/* Door panel - main wooden door */}
         <mesh position={[0, 1.35, 0.02]}>
           <boxGeometry args={[1.2, 2.5, 0.08]} />
@@ -63,7 +68,7 @@ function Door({ roomId, position, cameraTarget, label }) {
             metalness={0.05}
           />
         </mesh>
-        
+
         {/* Door panels (decorative insets) */}
         {/* Top panel */}
         <mesh position={[0, 2.1, 0.06]}>
@@ -80,7 +85,7 @@ function Door({ roomId, position, cameraTarget, label }) {
           <boxGeometry args={[0.9, 0.5, 0.02]} />
           <meshStandardMaterial color="#4a2815" roughness={0.4} />
         </mesh>
-        
+
         {/* Door window (small glass pane at top) */}
         <mesh position={[0, 2.1, 0.07]}>
           <boxGeometry args={[0.6, 0.4, 0.01]} />
@@ -93,7 +98,7 @@ function Door({ roomId, position, cameraTarget, label }) {
             metalness={0.9}
           />
         </mesh>
-        
+
         {/* Door handle - brass/gold */}
         <group position={[0.45, 1.2, 0.1]}>
           {/* Handle plate */}
@@ -104,16 +109,16 @@ function Door({ roomId, position, cameraTarget, label }) {
           {/* Handle knob */}
           <mesh position={[0.04, 0, 0.03]}>
             <sphereGeometry args={[0.04, 16, 16]} />
-            <meshStandardMaterial 
-              color="#daa520" 
-              metalness={0.95} 
+            <meshStandardMaterial
+              color="#daa520"
+              metalness={0.95}
               roughness={0.1}
               emissive="#ffaa00"
               emissiveIntensity={0.2}
             />
           </mesh>
         </group>
-        
+
         {/* Subtle glow around door when hovered - indicates interactivity */}
         <pointLight position={[0, 1.35, 0.3]} intensity={0.3} color="#ffcc88" distance={2} />
       </group>

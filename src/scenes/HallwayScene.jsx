@@ -3,6 +3,8 @@ import VideoRoom from './rooms/VideoRoom';
 import useGameStore from '../core/GameStateContext';
 import { FlickeringLight, DustParticles } from '../effects/AtmosphericEffects';
 import { ReflectiveFloor } from '../components/Environment';
+import { useThree } from '@react-three/fiber';
+import { tweenCamera } from '../components/CameraController';
 // Real 3D Models from Kenney Furniture Kit
 import Bench from '../components/models/Bench';
 import WallLamp from '../components/models/WallLamp';
@@ -21,7 +23,21 @@ import { RectangleRug, Doormat } from '../components/models/Rug';
  * - Real door frames with decorations
  */
 function HallwayScene({ isChatbotOpen }) {
-  const { goToGate } = useGameStore();
+  const { goToGate, setTransitioning } = useGameStore();
+  const { camera } = useThree();
+
+  const handleReturnToGate = () => {
+    setTransitioning(true);
+    tweenCamera(
+      camera,
+      { x: 0, y: 1.6, z: 12 },
+      { x: 0, y: 1.6, z: 20 },
+      1.5,
+      () => {
+        goToGate();
+      }
+    );
+  };
 
   // Light warm wall color
   const wallColor = "#6B5B4F";
@@ -46,28 +62,13 @@ function HallwayScene({ isChatbotOpen }) {
       <Doormat position={[0, 0.01, -13]} scale={1.5} />
       <Doormat position={[3.2, 0.01, -13]} scale={1.5} />
 
-      {/* Return to Gate - styled as exit sign */}
-      <group position={[4.5, 2.5, 13.5]}>
-        <mesh
-          onClick={goToGate}
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            document.body.style.cursor = 'pointer';
-          }}
-          onPointerOut={(e) => {
-            e.stopPropagation();
-            document.body.style.cursor = 'default';
-          }}
-        >
-          <boxGeometry args={[1, 0.4, 0.1]} />
-          <meshStandardMaterial
-            color="#22aa44"
-            emissive="#00ff44"
-            emissiveIntensity={0.5}
-          />
-        </mesh>
-        <pointLight position={[0, 0, 0.3]} intensity={0.6} color="#00ff44" distance={4} />
-      </group>
+      {/* Return to Gate - Real Door */}
+      <Door
+        position={[0, 0, 13.9]}
+        rotation={[0, Math.PI, 0]}
+        label="Sortie vers le Portail"
+        onCustomClick={handleReturnToGate}
+      />
 
       {/* ========== LEFT WALL - SOLID ========== */}
       <group position={[-6, 0, 0]}>
