@@ -320,7 +320,7 @@ function AdminOfficeRoom() {
           <mesh
             ref={hologramRef}
             onClick={(e) => {
-              console.log('Blue Hologram Clicked!');
+
               e.stopPropagation();
               openNIRDForm();
             }}

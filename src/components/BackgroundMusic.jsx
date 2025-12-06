@@ -15,14 +15,14 @@ function BackgroundMusic() {
     audioRef.current = new Audio('/assets/ambient-music.mp3');
     audioRef.current.loop = true;
     audioRef.current.volume = volume;
-    
+
     // Handle audio errors
     audioRef.current.onerror = (e) => {
       console.error('🎵 Audio failed to load:', e);
     };
-    
+
     audioRef.current.oncanplaythrough = () => {
-      console.log('🎵 Audio ready to play');
+
     };
 
     return () => {
@@ -43,16 +43,16 @@ function BackgroundMusic() {
 
   const handleToggle = async () => {
     if (!audioRef.current) return;
-    
+
     try {
       if (!isPlaying) {
         await audioRef.current.play();
         setIsPlaying(true);
-        console.log('🎵 Music started playing');
+
       } else {
         audioRef.current.pause();
         setIsPlaying(false);
-        console.log('🎵 Music paused');
+
       }
     } catch (err) {
       console.error('🎵 Playback error:', err);
@@ -75,8 +75,8 @@ function BackgroundMusic() {
       width: '56px',
       height: '56px',
       borderRadius: '50%',
-      background: isPlaying 
-        ? 'linear-gradient(145deg, #00ff88, #00cc6a)' 
+      background: isPlaying
+        ? 'linear-gradient(145deg, #00ff88, #00cc6a)'
         : 'linear-gradient(145deg, #2d2d44, #1a1a2e)',
       border: isPlaying ? '3px solid #00ff88' : '3px solid #555',
       color: isPlaying ? '#000' : '#00ff88',
@@ -85,8 +85,8 @@ function BackgroundMusic() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      boxShadow: isPlaying 
-        ? '0 0 25px rgba(0, 255, 136, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4)' 
+      boxShadow: isPlaying
+        ? '0 0 25px rgba(0, 255, 136, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4)'
         : '0 6px 20px rgba(0, 0, 0, 0.4)',
       transition: 'all 0.3s ease',
       transform: isHovered ? 'scale(1.1)' : 'scale(1)',
@@ -123,7 +123,7 @@ function BackgroundMusic() {
   };
 
   return (
-    <div 
+    <div
       style={styles.container}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -141,7 +141,7 @@ function BackgroundMusic() {
           aria-label="Volume control"
         />
       </div>
-      
+
       {/* Toggle button */}
       <button
         onClick={handleToggle}
@@ -151,7 +151,7 @@ function BackgroundMusic() {
       >
         {isPlaying ? '🎵' : '🔇'}
       </button>
-      
+
       {/* Status label */}
       <span style={styles.label}>
         {isPlaying ? '♪ Playing' : 'Music'}

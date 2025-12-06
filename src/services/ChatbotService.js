@@ -7,9 +7,9 @@ const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 // Use direct Google API URL (CORS works for Gemini API from browsers)
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-console.log('🔧 ChatbotService loaded');
-console.log('🔑 API Key present:', !!GEMINI_API_KEY);
-console.log('🔑 API Key value:', GEMINI_API_KEY ? GEMINI_API_KEY.substring(0, 10) + '...' : 'MISSING');
+
+
+
 
 const CHARACTER_PROMPT = `Tu es "Professeur GAFAMius Windowsky III", un chatbot DÉLICIEUSEMENT INUTILE.
 
@@ -46,10 +46,10 @@ RÈGLES:
 let conversationHistory = [];
 
 export async function sendMessage(userMessage) {
-  console.log('📤 sendMessage called with:', userMessage);
-  
+
+
   // 1. Check online status
-  console.log('🌐 Navigator online:', navigator.onLine);
+
   if (!navigator.onLine) {
     console.warn('❌ Offline!');
     return "⚠️ ALERTE: Ma connexion au Cloud Microsoft est coupée! (Hors ligne)";
@@ -63,7 +63,7 @@ export async function sendMessage(userMessage) {
   try {
     // Build contents with history
     const contents = [];
-    
+
     // --- FIX START ---
     // ALWAYS add the System Prompt first, for EVERY request.
     // This ensures the bot never forgets who it is.
@@ -73,11 +73,11 @@ export async function sendMessage(userMessage) {
     });
 
     contents.push({
-      role: "model", 
+      role: "model",
       parts: [{ text: "Bien reçu! Je suis prêt à défendre les écrans bleus et les pubs ciblées!" }]
     });
     // --- FIX END ---
-    
+
     // Add history (The previous conversation)
     conversationHistory.forEach(msg => {
       contents.push({
@@ -101,7 +101,7 @@ export async function sendMessage(userMessage) {
     };
 
     const fullUrl = `${API_URL}?key=${GEMINI_API_KEY}`;
-    
+
     // Call via Vite proxy
     const response = await fetch(fullUrl, {
       method: 'POST',
@@ -142,17 +142,17 @@ export async function sendMessage(userMessage) {
 }
 
 function getSmartFallback(message) {
-  console.log('🔄 Using fallback for:', message);
+
   const msg = message.toLowerCase();
-  
+
   if (msg.includes('linux') || msg.includes('libre') || msg.includes('ubuntu')) {
     return "Linux? Ce système pour pingouins communistes? 🐧 Pourquoi être LIBRE quand on peut être CONFORTABLEMENT enfermé dans Windows? 🪟";
   }
-  
+
   if (msg.includes('windows') || msg.includes('microsoft')) {
     return "Windows! La perfection! Chaque écran bleu est une œuvre d'art abstraite! 💙🖼️";
   }
-  
+
   if (msg.includes('données') || msg.includes('privée')) {
     return "La vie privée? Dépassé! Je partage mes données avec 47 entreprises et c'est MERVEILLEUX! 📊";
   }
@@ -166,17 +166,17 @@ function getSmartFallback(message) {
     "Excellente question! Mise à jour système de 4h pour y répondre! ⏳",
     "Abonnez-vous à OneDrive Premium pour débloquer ma sagesse! ☁️💳"
   ];
-  
+
   return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
 
 export function getGreeting() {
-  console.log('👋 getGreeting called');
+
   return `🎩 Bonjour! Je suis le **Professeur GAFAMius**, défenseur de la VRAIE technologie! 💻\n\nAttention aux dangereux libristes! 🐧❌`;
 }
 
 export function resetConversation() {
-  console.log('🔄 resetConversation called');
+
   conversationHistory = [];
 }
 
